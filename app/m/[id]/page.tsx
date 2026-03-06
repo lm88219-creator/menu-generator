@@ -204,15 +204,19 @@ export default async function Page({ params }: PageProps) {
           {data.logoDataUrl ? (
             <div style={{ marginBottom: 14 }}>
               <img
-                src={data.logoDataUrl}
-                alt={`${data.restaurant} logo`}
-                style={{
-                  width: 88,
-                  height: 88,
-                  objectFit: "contain"
-                  borderRadius: 24,
-                  boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
-                }}
+  src={data.logoDataUrl}
+  alt={`${data.restaurant} logo`}
+  style={{
+    width: 88,
+    height: 88,
+    objectFit: "contain",
+    objectPosition: "center",
+    borderRadius: 24,
+    background: "#fff",
+    padding: 8,
+    boxSizing: "border-box",
+    boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
+  }}
               />
             </div>
           ) : null}
