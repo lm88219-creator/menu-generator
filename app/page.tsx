@@ -9,10 +9,11 @@ export default function Home() {
   const [address, setAddress] = useState("");
   const [hours, setHours] = useState("");
   const [menu, setMenu] = useState("");
+  const [theme, setTheme] = useState("dark");
+
   const [qrText, setQrText] = useState("");
   const [creating, setCreating] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [theme, setTheme] = useState("dark");
 
   async function generateMenu() {
     if (!restaurant.trim()) {
@@ -34,13 +35,13 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-  restaurant,
-  phone,
-  address,
-  hours,
-  menuText: menu,
-  theme,
-}),
+          restaurant,
+          phone,
+          address,
+          hours,
+          menuText: menu,
+          theme,
+        }),
       });
 
       const data = await res.json();
@@ -54,7 +55,7 @@ export default function Home() {
       setQrText(url);
     } catch (error) {
       console.error(error);
-      alert("生成失敗，請稍後再試");
+      alert("生成失敗");
     } finally {
       setCreating(false);
     }
@@ -65,6 +66,7 @@ export default function Home() {
     setPhone("0912-345-678");
     setAddress("嘉義市西區友愛路100號");
     setHours("17:00 - 01:00");
+
     setMenu(`鵝肉
 鹽水鵝肉 200
 麻油鵝肉 220
@@ -90,17 +92,12 @@ export default function Home() {
   }
 
   async function copyUrl() {
-    try {
-      await navigator.clipboard.writeText(qrText);
-      setCopied(true);
+    await navigator.clipboard.writeText(qrText);
+    setCopied(true);
 
-      setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-    } catch (error) {
-      console.error(error);
-      alert("複製失敗");
-    }
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
   }
 
   function downloadQR() {
@@ -108,16 +105,14 @@ export default function Home() {
 
     if (!canvas) return;
 
-    const pngUrl = canvas
+    const url = canvas
       .toDataURL("image/png")
       .replace("image/png", "image/octet-stream");
 
-    const downloadLink = document.createElement("a");
-    downloadLink.href = pngUrl;
-    downloadLink.download = "menu-qrcode.png";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "menu-qrcode.png";
+    a.click();
   }
 
   const inputStyle: React.CSSProperties = {
@@ -128,7 +123,6 @@ export default function Home() {
     background: "rgba(255,255,255,0.04)",
     color: "#fff",
     fontSize: 16,
-    boxSizing: "border-box",
   };
 
   const buttonStyle: React.CSSProperties = {
@@ -149,7 +143,7 @@ export default function Home() {
           "radial-gradient(circle at top,#1a1a1a 0%,#000 45%,#000 100%)",
         color: "#fff",
         padding: "40px 16px",
-        fontFamily: "Arial, sans-serif",
+        fontFamily: "Arial",
       }}
     >
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -162,24 +156,13 @@ export default function Home() {
             backdropFilter: "blur(10px)",
           }}
         >
-          <h1
-            style={{
-              fontSize: 44,
-              margin: 0,
-            }}
-          >
-            QR Code 菜單生成器
-          </h1>
+          <h1 style={{ fontSize: 44, margin: 0 }}>QR Code 菜單生成器</h1>
 
-          <p
-            style={{
-              marginTop: 10,
-              color: "#aaa",
-              fontSize: 16,
-            }}
-          >
+          <p style={{ marginTop: 10, color: "#aaa", fontSize: 16 }}>
             輸入餐廳資訊與菜單，立即產生可分享的 QR Code 菜單
           </p>
+
+          {/* 餐廳名稱 */}
 
           <div style={{ marginTop: 30 }}>
             <div style={{ marginBottom: 6 }}>餐廳名稱</div>
@@ -190,6 +173,8 @@ export default function Home() {
             />
           </div>
 
+          {/* 電話 */}
+
           <div style={{ marginTop: 20 }}>
             <div style={{ marginBottom: 6 }}>電話</div>
             <input
@@ -198,6 +183,8 @@ export default function Home() {
               style={inputStyle}
             />
           </div>
+
+          {/* 地址 */}
 
           <div style={{ marginTop: 20 }}>
             <div style={{ marginBottom: 6 }}>地址</div>
@@ -208,6 +195,8 @@ export default function Home() {
             />
           </div>
 
+          {/* 營業時間 */}
+
           <div style={{ marginTop: 20 }}>
             <div style={{ marginBottom: 6 }}>營業時間</div>
             <input
@@ -217,27 +206,49 @@ export default function Home() {
             />
           </div>
 
-          <div style={{ marginTop: 20 }}>
-  <div style={{ marginBottom: 6 }}>菜單風格</div>
+          {/* 菜單風格 */}
 
-  <select
-    value={theme}
-    onChange={(e) => setTheme(e.target.value)}
-    style={{
-      width: "100%",
-      padding: "12px",
-      borderRadius: 10,
-      fontSize: 16,
-    }}
-  >
-    <option value="dark">黑色餐廳風</option>
-    <option value="light">簡約白色</option>
-    <option value="warm">溫暖咖啡風</option>
-  </select>
-</div>
+          <div style={{ marginTop: 20 }}>
+            <div style={{ marginBottom: 6 }}>菜單風格</div>
+
+            <div style={{ position: "relative" }}>
+              <select
+                value={theme}
+                onChange={(e) => setTheme(e.target.value)}
+                style={{
+                  ...inputStyle,
+                  appearance: "none",
+                  WebkitAppearance: "none",
+                  MozAppearance: "none",
+                  cursor: "pointer",
+                  paddingRight: 44,
+                }}
+              >
+                <option value="dark">黑色餐廳風</option>
+                <option value="light">簡約白色</option>
+                <option value="warm">溫暖咖啡風</option>
+              </select>
+
+              <span
+                style={{
+                  position: "absolute",
+                  right: 16,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  pointerEvents: "none",
+                  color: "#aaa",
+                }}
+              >
+                ▼
+              </span>
+            </div>
+          </div>
+
+          {/* 菜單 */}
 
           <div style={{ marginTop: 20 }}>
             <div style={{ marginBottom: 6 }}>菜單</div>
+
             <textarea
               rows={10}
               value={menu}
@@ -245,6 +256,8 @@ export default function Home() {
               style={inputStyle}
             />
           </div>
+
+          {/* 按鈕 */}
 
           <div
             style={{
@@ -279,11 +292,11 @@ export default function Home() {
               textAlign: "center",
             }}
           >
-            <h2 style={{ marginTop: 0 }}>菜單 QR Code</h2>
+            <h2>菜單 QR Code</h2>
 
             <div
               style={{
-                marginTop: 16,
+                marginTop: 10,
                 background: "#fff",
                 display: "inline-block",
                 padding: 16,
@@ -293,18 +306,17 @@ export default function Home() {
               <QRCodeCanvas id="qr-code" value={qrText} size={220} />
             </div>
 
-            <div style={{ marginTop: 20, wordBreak: "break-all" }}>
+            <div style={{ marginTop: 20 }}>
               <a
                 href={qrText}
                 target="_blank"
-                rel="noreferrer"
-                style={{ color: "#7cc4ff" }}
+                style={{ color: "#7cc4ff", wordBreak: "break-all" }}
               >
                 {qrText}
               </a>
             </div>
 
-            <div style={{ marginTop: 12, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={{ marginTop: 12, display: "flex", gap: 10, justifyContent:"center"}}>
               <button onClick={copyUrl} style={buttonStyle}>
                 {copied ? "已複製網址" : "複製網址"}
               </button>
