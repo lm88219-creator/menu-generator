@@ -75,9 +75,31 @@ export default async function Page({ params }: PageProps) {
       </h1>
 
       <div style={{ lineHeight: 1.9, fontSize: 18 }}>
-        {data.phone ? <div>電話：{data.phone}</div> : null}
-        {data.address ? <div>地址：{data.address}</div> : null}
-        {data.hours ? <div>營業時間：{data.hours}</div> : null}
+        {data.phone && (
+  <div>
+    📞 電話：
+    <a href={`tel:${data.phone}`} style={{ color: "#7cc4ff", marginLeft: 6 }}>
+      {data.phone}
+    </a>
+  </div>
+)}
+
+{data.address && (
+  <div>
+    📍 地址：
+    <a
+      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        data.address
+      )}`}
+      target="_blank"
+      style={{ color: "#7cc4ff", marginLeft: 6 }}
+    >
+      {data.address}
+    </a>
+  </div>
+)}
+
+{data.hours && <div>🕒 營業時間：{data.hours}</div>}
       </div>
 
       <div style={{ marginTop: 36 }}>
