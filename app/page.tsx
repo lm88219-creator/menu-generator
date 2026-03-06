@@ -12,6 +12,7 @@ export default function Home() {
   const [qrText, setQrText] = useState("");
   const [creating, setCreating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [theme, setTheme] = useState("dark");
 
   async function generateMenu() {
     if (!restaurant.trim()) {
@@ -33,12 +34,13 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          restaurant,
-          phone,
-          address,
-          hours,
-          menuText: menu,
-        }),
+  restaurant,
+  phone,
+  address,
+  hours,
+  menuText: menu,
+  theme,
+}),
       });
 
       const data = await res.json();
@@ -214,6 +216,25 @@ export default function Home() {
               style={inputStyle}
             />
           </div>
+
+          <div style={{ marginTop: 20 }}>
+  <div style={{ marginBottom: 6 }}>菜單風格</div>
+
+  <select
+    value={theme}
+    onChange={(e) => setTheme(e.target.value)}
+    style={{
+      width: "100%",
+      padding: "12px",
+      borderRadius: 10,
+      fontSize: 16,
+    }}
+  >
+    <option value="dark">黑色餐廳風</option>
+    <option value="light">簡約白色</option>
+    <option value="warm">溫暖咖啡風</option>
+  </select>
+</div>
 
           <div style={{ marginTop: 20 }}>
             <div style={{ marginBottom: 6 }}>菜單</div>

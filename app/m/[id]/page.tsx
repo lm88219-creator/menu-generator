@@ -54,6 +54,8 @@ export default async function Page({ params }: PageProps) {
     );
   }
 
+  const theme = data.theme ?? "dark";
+
   const lines = data.menuText.split("\n");
 
   let currentCategory = "";
@@ -81,11 +83,44 @@ export default async function Page({ params }: PageProps) {
 
   let lastCategory = "";
 
+  const pageBackground =
+    theme === "light"
+      ? "#ffffff"
+      : theme === "warm"
+      ? "#f6f1e7"
+      : "radial-gradient(circle at top, #1a1a1a 0%, #000 45%, #000 100%)";
+
+  const pageTextColor = theme === "light" || theme === "warm" ? "#111" : "#fff";
+
+  const cardBackground =
+    theme === "light"
+      ? "#f8f8f8"
+      : theme === "warm"
+      ? "rgba(255,248,240,0.9)"
+      : "rgba(255,255,255,0.03)";
+
+  const cardBorder =
+    theme === "light" || theme === "warm"
+      ? "1px solid rgba(0,0,0,0.08)"
+      : "1px solid rgba(255,255,255,0.08)";
+
+  const mutedColor = theme === "light" || theme === "warm" ? "#666" : "#aaa";
+  const lineColor =
+    theme === "light" || theme === "warm"
+      ? "rgba(0,0,0,0.12)"
+      : "rgba(255,255,255,0.12)";
+  const rowBorder =
+    theme === "light" || theme === "warm"
+      ? "1px solid rgba(0,0,0,0.08)"
+      : "1px solid rgba(255,255,255,0.08)";
+
+  const linkColor = theme === "light" || theme === "warm" ? "#0b57d0" : "#7cc4ff";
+
   const cardStyle: React.CSSProperties = {
     borderRadius: 24,
     padding: 24,
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(255,255,255,0.03)",
+    border: cardBorder,
+    background: cardBackground,
     backdropFilter: "blur(10px)",
   };
 
@@ -93,30 +128,35 @@ export default async function Page({ params }: PageProps) {
     display: "inline-block",
     padding: "12px 16px",
     borderRadius: 12,
-    background: "rgba(255,255,255,0.08)",
-    color: "#fff",
+    background: theme === "light" || theme === "warm" ? "#ffffff" : "rgba(255,255,255,0.08)",
+    color: pageTextColor,
     textDecoration: "none",
-    border: "1px solid rgba(255,255,255,0.06)",
+    border:
+      theme === "light" || theme === "warm"
+        ? "1px solid rgba(0,0,0,0.08)"
+        : "1px solid rgba(255,255,255,0.06)",
   };
 
   const primaryActionStyle: React.CSSProperties = {
     display: "inline-block",
     padding: "12px 16px",
     borderRadius: 12,
-    background: "#fff",
-    color: "#000",
+    background: theme === "light" || theme === "warm" ? "#111" : "#fff",
+    color: theme === "light" || theme === "warm" ? "#fff" : "#000",
     textDecoration: "none",
     fontWeight: 700,
-    border: "1px solid rgba(255,255,255,0.1)",
+    border:
+      theme === "light" || theme === "warm"
+        ? "1px solid rgba(0,0,0,0.1)"
+        : "1px solid rgba(255,255,255,0.1)",
   };
 
   return (
     <main
       style={{
         minHeight: "100vh",
-        background:
-          "radial-gradient(circle at top, #1a1a1a 0%, #000 45%, #000 100%)",
-        color: "#fff",
+        background: pageBackground,
+        color: pageTextColor,
         padding: "24px 16px 60px",
         fontFamily: "Arial, sans-serif",
       }}
@@ -130,7 +170,7 @@ export default async function Page({ params }: PageProps) {
         >
           <div
             style={{
-              color: "#bbb",
+              color: mutedColor,
               fontSize: 13,
               letterSpacing: 3,
               marginBottom: 10,
@@ -162,13 +202,13 @@ export default async function Page({ params }: PageProps) {
           >
             {data.phone && (
               <div>
-                <div style={{ color: "#aaa", fontSize: 14, marginBottom: 4 }}>
+                <div style={{ color: mutedColor, fontSize: 14, marginBottom: 4 }}>
                   📞 電話
                 </div>
                 <a
                   href={`tel:${data.phone}`}
                   style={{
-                    color: "#7cc4ff",
+                    color: linkColor,
                     textDecoration: "none",
                     fontSize: 18,
                   }}
@@ -180,7 +220,7 @@ export default async function Page({ params }: PageProps) {
 
             {data.address && (
               <div>
-                <div style={{ color: "#aaa", fontSize: 14, marginBottom: 4 }}>
+                <div style={{ color: mutedColor, fontSize: 14, marginBottom: 4 }}>
                   📍 地址
                 </div>
                 <a
@@ -190,7 +230,7 @@ export default async function Page({ params }: PageProps) {
                   target="_blank"
                   rel="noreferrer"
                   style={{
-                    color: "#7cc4ff",
+                    color: linkColor,
                     textDecoration: "none",
                     fontSize: 18,
                   }}
@@ -202,11 +242,11 @@ export default async function Page({ params }: PageProps) {
 
             {data.hours && (
               <div>
-                <div style={{ color: "#aaa", fontSize: 14, marginBottom: 4 }}>
+                <div style={{ color: mutedColor, fontSize: 14, marginBottom: 4 }}>
                   🕒 營業時間
                 </div>
                 <div style={{ fontSize: 18 }}>{data.hours}</div>
-                <div style={{ color: "#9a9a9a", fontSize: 14, marginTop: 4 }}>
+                <div style={{ color: mutedColor, fontSize: 14, marginTop: 4 }}>
                   最後點餐時間：0:30
                 </div>
               </div>
@@ -245,7 +285,7 @@ export default async function Page({ params }: PageProps) {
                         style={{
                           flex: 1,
                           height: 1,
-                          background: "rgba(255,255,255,0.12)",
+                          background: lineColor,
                         }}
                       />
                       <div
@@ -262,7 +302,7 @@ export default async function Page({ params }: PageProps) {
                         style={{
                           flex: 1,
                           height: 1,
-                          background: "rgba(255,255,255,0.12)",
+                          background: lineColor,
                         }}
                       />
                     </div>
@@ -275,7 +315,7 @@ export default async function Page({ params }: PageProps) {
                     alignItems: "center",
                     gap: 12,
                     padding: "14px 0",
-                    borderBottom: "1px solid rgba(255,255,255,0.08)",
+                    borderBottom: rowBorder,
                   }}
                 >
                   <div
@@ -291,7 +331,7 @@ export default async function Page({ params }: PageProps) {
                   <div
                     style={{
                       flex: 1,
-                      borderBottom: "1px dashed rgba(255,255,255,0.2)",
+                      borderBottom: `1px dashed ${lineColor.replace("0.12", "0.2")}`,
                       transform: "translateY(2px)",
                     }}
                   />

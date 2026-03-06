@@ -13,6 +13,7 @@ export async function POST(req: Request) {
     const address = String(body.address ?? "").trim();
     const hours = String(body.hours ?? "").trim();
     const menuText = String(body.menuText ?? body.menu ?? "").trim();
+    const theme = String(body.theme ?? "dark");
 
     if (!restaurant) {
       return Response.json({ error: "請輸入餐廳名稱" }, { status: 400 });
@@ -25,12 +26,13 @@ export async function POST(req: Request) {
     const id = randomId();
 
     await saveMenu(id, {
-      restaurant,
-      phone,
-      address,
-      hours,
-      menuText,
-    });
+  restaurant,
+  phone,
+  address,
+  hours,
+  menuText,
+  theme,
+});
 
     return Response.json({ id });
   } catch (error) {

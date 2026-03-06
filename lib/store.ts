@@ -8,6 +8,7 @@ export type MenuData = {
   address?: string;
   hours?: string;
   menuText: string;
+  theme?: string;
 };
 
 export async function saveMenu(id: string, data: MenuData) {
