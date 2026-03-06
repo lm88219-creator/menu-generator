@@ -618,7 +618,43 @@ export default function Home() {
                   padding: 16,
                 }}
               >
-                <input type="file" accept="image/*" onChange={handleLogoUpload} />
+                <label
+  style={{
+    display: "block",
+    borderRadius: 16,
+    border: "2px dashed rgba(0,0,0,0.15)",
+    padding: "24px",
+    textAlign: "center",
+    cursor: "pointer",
+    background: "rgba(255,255,255,0.5)",
+  }}
+>
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleLogoUpload}
+    style={{ display: "none" }}
+  />
+
+  {logoDataUrl ? (
+    <img
+      src={logoDataUrl}
+      style={{
+        width: 80,
+        height: 80,
+        borderRadius: 16,
+        objectFit: "cover",
+      }}
+    />
+  ) : (
+    <div>
+      <div style={{ fontWeight: 600 }}>點擊上傳餐廳 Logo</div>
+      <div style={{ fontSize: 12, opacity: 0.6 }}>
+        PNG / JPG 建議方形圖片
+      </div>
+    </div>
+  )}
+</label>
 
                 {logoDataUrl && (
                   <div
