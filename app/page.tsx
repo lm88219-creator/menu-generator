@@ -859,18 +859,32 @@ y += 150;
             >
               <div style={{ textAlign: "center" }}>
                 {logoDataUrl ? (
-                  <img
-                    src={logoDataUrl}
-                    alt="logo preview"
-                    style={{
-                      width: 84,
-                      height: 84,
-                      objectFit: "cover",
-                      borderRadius: 22,
-                      marginBottom: 14,
-                      boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
-                    }}
-                  />
+                  <div
+  style={{
+    width: 92,
+    height: 92,
+    borderRadius: "50%",
+    margin: "0 auto 14px",
+    background: "#fff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 8px 24px rgba(0,0,0,0.14)",
+    border: "1px solid rgba(0,0,0,0.06)",
+    overflow: "hidden",
+    padding: 10,
+  }}
+>
+  <img
+    src={logoDataUrl}
+    alt="logo preview"
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+    }}
+  />
+</div>
                 ) : (
                   <div
   style={{
@@ -1004,7 +1018,7 @@ y += 150;
                   style={{
                     display: "inline-block",
                     background: "#fff",
-                    padding: 20,
+                    padding: 26,
                     borderRadius: 26,
                     boxShadow: "0 14px 28px rgba(0,0,0,0.12)",
                   }}
@@ -1012,7 +1026,7 @@ y += 150;
                   <QRCodeCanvas
                     id="qr-code"
                     value={qrText}
-                    size={220}
+                    size={240}
                     level="H"
                     includeMargin={true}
                     imageSettings={
