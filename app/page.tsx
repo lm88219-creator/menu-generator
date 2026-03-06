@@ -42,8 +42,9 @@ export default function Home() {
 
     const data = await res.json();
 
-    const fullUrl = `${window.location.origin}${data.url}`;
-
+    const url = `${window.location.origin}/m/${data.id}`
+    
+    setQrText(url)
     setQrText(fullUrl);
     setCreating(false);
   }

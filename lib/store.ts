@@ -1,14 +1,17 @@
 type Menu = {
-  restaurant: string;
-  menuText: string;
-};
+  restaurant: string
+  phone: string
+  address: string
+  hours: string
+  menuText: string
+}
 
-const menus: Record<string, Menu> = {};
+const menus: Record<string, Menu> = {}
 
 export function saveMenu(id: string, data: Menu) {
-  menus[id] = data;
+  menus[id] = data
 }
 
 export function getMenu(id: string) {
-  return menus[id];
+  return menus[id]
 }
