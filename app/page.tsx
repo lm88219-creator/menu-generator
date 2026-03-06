@@ -672,7 +672,7 @@ export default function Home() {
                       style={{
                         width: 72,
                         height: 72,
-                        objectFit: "cover",
+                        objectFit: "contain"
                         borderRadius: 18,
                         border: currentTheme.inputBorder,
                       }}
