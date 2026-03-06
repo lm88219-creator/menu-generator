@@ -209,7 +209,7 @@ export default async function Page({ params }: PageProps) {
                 style={{
                   width: 88,
                   height: 88,
-                  objectFit: "cover",
+                  objectFit: "contain"
                   borderRadius: 24,
                   boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
                 }}
