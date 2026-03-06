@@ -1,7 +1,7 @@
-import { saveMenu } from "@/lib/store";
+import { supabase } from "@/lib/supabase";
 
 function randomId() {
-  return Math.random().toString(36).slice(2, 7);
+  return Math.random().toString(36).slice(2, 8);
 }
 
 export async function POST(req: Request) {
@@ -24,20 +24,23 @@ export async function POST(req: Request) {
 
     const id = randomId();
 
-    saveMenu(id, {
+    const { error } = await supabase.from("menus").insert({
+      id,
       restaurant,
       phone,
       address,
       hours,
-      menuText,
+      menu_text: menuText,
     });
+
+    if (error) {
+      console.error("Supabase insert error:", error);
+      return Response.json({ error: "儲存失敗" }, { status: 500 });
+    }
 
     return Response.json({ id });
   } catch (error) {
     console.error("API /api/menu error:", error);
-    return Response.json(
-      { error: "伺服器儲存失敗" },
-      { status: 500 }
-    );
+    return Response.json({ error: "伺服器錯誤" }, { status: 500 });
   }
 }
