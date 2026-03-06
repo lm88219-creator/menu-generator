@@ -14,6 +14,7 @@ export default function Home() {
       alert("請輸入餐廳名稱");
       return;
     }
+
     if (!menu.trim()) {
       alert("請輸入菜單內容");
       return;
@@ -32,21 +33,19 @@ export default function Home() {
       console.log("API 回傳：", data);
 
       if (!res.ok) {
-      console.log("API 錯誤資料：", data);
-      alert(JSON.stringify(data) || "生成失敗");
-       return;
-      }
-
-      if (!data?.id) {
-        alert("沒有拿到 id（API 回傳異常）");
+        console.log("API 錯誤資料：", data);
+        alert(JSON.stringify(data) || "生成失敗");
         return;
       }
 
-      const url = `${window.location.origin}/m/${data.id}`;
-      setQrText(url);
-      } 
-      
-      finally {
+      if (!data?.url) {
+        alert("沒有拿到 url（API 回傳異常）");
+        return;
+      }
+
+      const fullUrl = `${window.location.origin}${data.url}`;
+      setQrText(fullUrl);
+    } finally {
       setCreating(false);
     }
   }
