@@ -40,27 +40,27 @@ export default async function Page({
       </div>
 
       <div style={{ marginTop: 30 }}>
-        {lines.map((line, i) => {
-          const parts = line.split(" ")
-          const price = parts.pop()
-          const name = parts.join(" ")
+  {lines.map((line: string, i: number) => {
+    const parts = line.trim().split(" ")
+    const price = parts.pop() ?? ""
+    const itemName = parts.join(" ")
 
-          return (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                borderBottom: "1px solid #333",
-                padding: "10px 0",
-              }}
-            >
-              <span>{name}</span>
-              <span>{price}</span>
-            </div>
-          )
-        })}
+    return (
+      <div
+        key={i}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          borderBottom: "1px solid #333",
+          padding: "10px 0",
+        }}
+      >
+        <span>{itemName}</span>
+        <span>{price}</span>
       </div>
+    )
+  })}
+</div>
     </main>
   )
 }
