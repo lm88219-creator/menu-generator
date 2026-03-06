@@ -14,49 +14,49 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
 
   async function generateMenu() {
-  if (!restaurant.trim()) {
-    alert("請輸入餐廳名稱");
-    return;
-  }
-
-  if (!menu.trim()) {
-    alert("請輸入菜單內容");
-    return;
-  }
-
-  setCreating(true);
-
-  try {
-    const res = await fetch("/api/menu", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        restaurant,
-        phone,
-        address,
-        hours,
-        menuText: menu,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok || !data?.id) {
-      alert(data?.error || "生成失敗");
+    if (!restaurant.trim()) {
+      alert("請輸入餐廳名稱");
       return;
     }
 
-    const url = `${window.location.origin}/m/${data.id}`;
-    setQrText(url);
-  } catch (error) {
-    console.error(error);
-    alert("生成失敗，請稍後再試");
-  } finally {
-    setCreating(false);
+    if (!menu.trim()) {
+      alert("請輸入菜單內容");
+      return;
+    }
+
+    setCreating(true);
+
+    try {
+      const res = await fetch("/api/menu", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant,
+          phone,
+          address,
+          hours,
+          menuText: menu,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data?.id) {
+        alert(data?.error || "生成失敗");
+        return;
+      }
+
+      const url = `${window.location.origin}/m/${data.id}`;
+      setQrText(url);
+    } catch (error) {
+      console.error(error);
+      alert("生成失敗，請稍後再試");
+    } finally {
+      setCreating(false);
+    }
   }
-}
 
   function fillExample() {
     setRestaurant("友愛熱炒");
@@ -84,18 +84,24 @@ export default function Home() {
     setHours("");
     setMenu("");
     setQrText("");
+    setCopied(false);
   }
 
   async function copyUrl() {
-    await navigator.clipboard.writeText(qrText);
-    setCopied(true);
+    try {
+      await navigator.clipboard.writeText(qrText);
+      setCopied(true);
 
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      alert("複製失敗");
+    }
   }
 
-  const inputStyle = {
+  const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "14px 16px",
     borderRadius: 12,
@@ -103,6 +109,17 @@ export default function Home() {
     background: "rgba(255,255,255,0.04)",
     color: "#fff",
     fontSize: 16,
+    boxSizing: "border-box",
+  };
+
+  const buttonStyle: React.CSSProperties = {
+    padding: "12px 18px",
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.08)",
+    color: "#fff",
+    cursor: "pointer",
+    fontSize: 15,
   };
 
   return (
@@ -113,7 +130,7 @@ export default function Home() {
           "radial-gradient(circle at top,#1a1a1a 0%,#000 45%,#000 100%)",
         color: "#fff",
         padding: "40px 16px",
-        fontFamily: "Arial",
+        fontFamily: "Arial, sans-serif",
       }}
     >
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -183,9 +200,8 @@ export default function Home() {
 
           <div style={{ marginTop: 20 }}>
             <div style={{ marginBottom: 6 }}>菜單</div>
-
             <textarea
-              rows={7}
+              rows={10}
               value={menu}
               onChange={(e) => setMenu(e.target.value)}
               style={inputStyle}
@@ -200,13 +216,17 @@ export default function Home() {
               flexWrap: "wrap",
             }}
           >
-            <button onClick={generateMenu}>
+            <button onClick={generateMenu} style={buttonStyle}>
               {creating ? "生成中..." : "生成 QR 菜單"}
             </button>
 
-            <button onClick={fillExample}>填入範例</button>
+            <button onClick={fillExample} style={buttonStyle}>
+              填入範例
+            </button>
 
-            <button onClick={clearAll}>清空</button>
+            <button onClick={clearAll} style={buttonStyle}>
+              清空
+            </button>
           </div>
         </div>
 
@@ -218,13 +238,14 @@ export default function Home() {
               padding: 32,
               border: "1px solid rgba(255,255,255,0.08)",
               background: "rgba(255,255,255,0.03)",
+              textAlign: "center",
             }}
           >
-            <h2>菜單 QR Code</h2>
+            <h2 style={{ marginTop: 0 }}>菜單 QR Code</h2>
 
             <div
               style={{
-                marginTop: 10,
+                marginTop: 16,
                 background: "#fff",
                 display: "inline-block",
                 padding: 16,
@@ -234,14 +255,19 @@ export default function Home() {
               <QRCodeCanvas value={qrText} size={220} />
             </div>
 
-            <div style={{ marginTop: 20 }}>
-              <a href={qrText} target="_blank">
+            <div style={{ marginTop: 20, wordBreak: "break-all" }}>
+              <a
+                href={qrText}
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: "#7cc4ff" }}
+              >
                 {qrText}
               </a>
             </div>
 
             <div style={{ marginTop: 12 }}>
-              <button onClick={copyUrl}>
+              <button onClick={copyUrl} style={buttonStyle}>
                 {copied ? "已複製網址" : "複製網址"}
               </button>
             </div>
