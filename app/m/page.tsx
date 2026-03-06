@@ -1,13 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function MenuPage() {
-  const searchParams = useSearchParams();
+  const [restaurant, setRestaurant] = useState("");
+  const [menuText, setMenuText] = useState("");
+  const [loaded, setLoaded] = useState(false);
 
-  const restaurant = searchParams.get("restaurant") ?? "";
-  const menuText = searchParams.get("menu") ?? "";
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const restaurantValue = params.get("restaurant") ?? "";
+    const menuValue = params.get("menu") ?? "";
+
+    setRestaurant(restaurantValue);
+    setMenuText(menuValue);
+    setLoaded(true);
+  }, []);
+
+  if (!loaded) {
+    return (
+      <main
+        style={{
+          padding: 24,
+          color: "white",
+          background: "black",
+          minHeight: "100vh",
+          fontFamily: "Arial",
+        }}
+      >
+        <p>載入中...</p>
+      </main>
+    );
+  }
 
   if (!restaurant || !menuText) {
     return (
@@ -17,6 +42,7 @@ export default function MenuPage() {
           color: "white",
           background: "black",
           minHeight: "100vh",
+          fontFamily: "Arial",
         }}
       >
         <h1>找不到這份菜單</h1>
@@ -48,7 +74,7 @@ export default function MenuPage() {
 
       <div style={{ marginTop: 16 }}>
         {lines.map((line, i) => {
-          const parts = line.split(" ");
+          const parts = line.trim().split(/\s+/);
           const price = parts[parts.length - 1];
           const name = parts.slice(0, -1).join(" ");
 
