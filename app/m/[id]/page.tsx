@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
-export default async function Page({ params }: any) {
-  const id = params?.id ?? "";
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 
   const { data, error } = await supabase
     .from("menus")
@@ -10,7 +14,11 @@ export default async function Page({ params }: any) {
     .eq("id", id)
     .maybeSingle();
 
-  if (error || !data) {
+  if (error) {
+    console.error("menu page fetch error:", error);
+  }
+
+  if (!data) {
     return (
       <main
         style={{
@@ -57,7 +65,7 @@ export default async function Page({ params }: any) {
       </div>
 
       <div style={{ marginTop: 30 }}>
-        {items.map((item: any, i: number) => (
+        {items.map((item: { name: string; price: string }, i: number) => (
           <div
             key={i}
             style={{
