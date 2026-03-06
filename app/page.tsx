@@ -638,13 +638,14 @@ export default function Home() {
 
   {logoDataUrl ? (
     <img
-      src={logoDataUrl}
-      style={{
-        width: 80,
-        height: 80,
-        borderRadius: 16,
-        objectFit: "cover",
-      }}
+  src={logoDataUrl}
+  style={{
+    width: 80,
+    height: 80,
+    borderRadius: 16,
+    objectFit: "contain",
+    objectPosition: "center",
+  }}
     />
   ) : (
     <div>
@@ -667,15 +668,17 @@ export default function Home() {
                     }}
                   >
                     <img
-                      src={logoDataUrl}
-                      alt="logo preview"
-                      style={{
-                        width: 72,
-                        height: 72,
-                        objectFit: "cover",
-                        borderRadius: 18,
-                        border: currentTheme.inputBorder,
-                      }}
+  src={logoDataUrl}
+  alt="logo preview"
+  style={{
+    width: 72,
+    height: 72,
+    objectFit: "contain",
+    objectPosition: "center",
+    borderRadius: 18,
+    border: currentTheme.inputBorder,
+    background: "#fff"
+  }}
                     />
 
                     <button onClick={removeLogo} style={ghostButtonStyle}>
