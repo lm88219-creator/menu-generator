@@ -27,27 +27,31 @@ export default function Home() {
     setCreating(true);
 
     const res = await fetch("/api/menu", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        restaurant,
-        phone,
-        address,
-        hours,
-        menuText: menu,
-      }),
-    });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    restaurant,
+    phone,
+    address,
+    hours,
+    menuText: menu,
+  }),
+});
 
-    const data = await res.json();
+const data = await res.json();
 
-    const url = `${window.location.origin}/m/${data.id}`
-    
-    setQrText(url)
-    setQrText(fullUrl);
-    setCreating(false);
-  }
+if (!res.ok || !data?.id) {
+  alert(data?.error || "生成失敗");
+  setCreating(false);
+  return;
+}
+
+const url = `${window.location.origin}/m/${data.id}`;
+setQrText(url);
+setCreating(false);
+}
 
   function fillExample() {
     setRestaurant("友愛熱炒");
