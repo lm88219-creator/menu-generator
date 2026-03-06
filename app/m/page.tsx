@@ -10,16 +10,19 @@ type MenuItem = {
 
 export default function MenuPage() {
   const [restaurant, setRestaurant] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [hours, setHours] = useState("");
   const [menuText, setMenuText] = useState("");
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const restaurantValue = params.get("restaurant") ?? "";
-    const menuValue = params.get("menu") ?? "";
-
-    setRestaurant(restaurantValue);
-    setMenuText(menuValue);
+    setRestaurant(params.get("restaurant") ?? "");
+    setPhone(params.get("phone") ?? "");
+    setAddress(params.get("address") ?? "");
+    setHours(params.get("hours") ?? "");
+    setMenuText(params.get("menu") ?? "");
     setLoaded(true);
   }, []);
 
@@ -71,7 +74,7 @@ export default function MenuPage() {
       >
         <div
           style={{
-            maxWidth: 640,
+            maxWidth: 680,
             margin: "0 auto",
             border: "1px solid #222",
             borderRadius: 20,
@@ -99,12 +102,7 @@ export default function MenuPage() {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <div
-        style={{
-          maxWidth: 680,
-          margin: "0 auto",
-        }}
-      >
+      <div style={{ maxWidth: 720, margin: "0 auto" }}>
         <div
           style={{
             border: "1px solid #222",
@@ -133,6 +131,25 @@ export default function MenuPage() {
           >
             {restaurant}
           </h1>
+
+          {(phone || address || hours) && (
+            <div
+              style={{
+                marginTop: 16,
+                padding: 14,
+                borderRadius: 14,
+                background: "#111",
+                border: "1px solid #1f1f1f",
+                color: "#cfcfcf",
+                lineHeight: 1.8,
+                fontSize: 15,
+              }}
+            >
+              {phone && <div>電話：{phone}</div>}
+              {address && <div>地址：{address}</div>}
+              {hours && <div>營業時間：{hours}</div>}
+            </div>
+          )}
 
           <div
             style={{

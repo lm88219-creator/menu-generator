@@ -2,6 +2,9 @@ export async function POST(req: Request) {
   const body = await req.json();
 
   const restaurant = String(body.restaurant ?? "").trim();
+  const phone = String(body.phone ?? "").trim();
+  const address = String(body.address ?? "").trim();
+  const hours = String(body.hours ?? "").trim();
   const menuText = String(body.menuText ?? "").trim();
 
   if (!restaurant) {
@@ -14,6 +17,9 @@ export async function POST(req: Request) {
 
   const url =
     `/m?restaurant=${encodeURIComponent(restaurant)}` +
+    `&phone=${encodeURIComponent(phone)}` +
+    `&address=${encodeURIComponent(address)}` +
+    `&hours=${encodeURIComponent(hours)}` +
     `&menu=${encodeURIComponent(menuText)}`;
 
   return Response.json({ url });
