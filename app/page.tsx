@@ -63,9 +63,17 @@ export default function Home() {
     setPhone("0912-345-678");
     setAddress("嘉義市西區友愛路100號");
     setHours("17:00 - 01:00");
-    setMenu(`炒蝦球 200
-炒螺肉 120
+    setMenu(`鵝肉
+鹽水鵝肉 200
+麻油鵝肉 220
+
+主食
 炒飯 80
+炒麵 80
+
+熱炒
+炒蝦球 200
+炒螺肉 120
 燙青菜 50`);
   }
 
