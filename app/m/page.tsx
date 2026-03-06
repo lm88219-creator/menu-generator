@@ -1,13 +1,13 @@
-type PageProps = {
-  searchParams: {
-    restaurant?: string;
-    menu?: string;
-  };
-};
+"use client";
 
-export default function MenuPage({ searchParams }: PageProps) {
-  const restaurant = searchParams.restaurant ?? "";
-  const menuText = searchParams.menu ?? "";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+
+export default function MenuPage() {
+  const searchParams = useSearchParams();
+
+  const restaurant = searchParams.get("restaurant") ?? "";
+  const menuText = searchParams.get("menu") ?? "";
 
   if (!restaurant || !menuText) {
     return (
@@ -21,9 +21,9 @@ export default function MenuPage({ searchParams }: PageProps) {
       >
         <h1>找不到這份菜單</h1>
         <p>網址缺少資料。</p>
-        <a href="/" style={{ color: "#4da3ff" }}>
+        <Link href="/" style={{ color: "#4da3ff" }}>
           回生成器
-        </a>
+        </Link>
       </main>
     );
   }
@@ -40,23 +40,42 @@ export default function MenuPage({ searchParams }: PageProps) {
         color: "white",
         background: "black",
         minHeight: "100vh",
+        fontFamily: "Arial",
       }}
     >
-      <h1>{restaurant}</h1>
-      <h2>菜單</h2>
+      <h1 style={{ marginBottom: 16 }}>{restaurant}</h1>
+      <h2 style={{ marginBottom: 16 }}>菜單</h2>
 
       <div style={{ marginTop: 16 }}>
-        {lines.map((line, i) => (
-          <div key={i} style={{ marginBottom: 8, fontSize: 20 }}>
-            {line}
-          </div>
-        ))}
+        {lines.map((line, i) => {
+          const parts = line.split(" ");
+          const price = parts[parts.length - 1];
+          const name = parts.slice(0, -1).join(" ");
+
+          return (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                maxWidth: 320,
+                marginBottom: 12,
+                fontSize: 20,
+                borderBottom: "1px solid #333",
+                paddingBottom: 6,
+              }}
+            >
+              <span>{name || line}</span>
+              <span>{name ? price : ""}</span>
+            </div>
+          );
+        })}
       </div>
 
       <div style={{ marginTop: 24 }}>
-        <a href="/" style={{ color: "#4da3ff" }}>
+        <Link href="/" style={{ color: "#4da3ff" }}>
           回生成器
-        </a>
+        </Link>
       </div>
     </main>
   );
