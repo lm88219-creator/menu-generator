@@ -81,7 +81,7 @@ export default async function Page({ params }: PageProps) {
 
   let lastCategory = "";
 
-  const infoCardStyle: React.CSSProperties = {
+  const cardStyle: React.CSSProperties = {
     borderRadius: 24,
     padding: 24,
     border: "1px solid rgba(255,255,255,0.08)",
@@ -89,7 +89,7 @@ export default async function Page({ params }: PageProps) {
     backdropFilter: "blur(10px)",
   };
 
-  const actionStyle: React.CSSProperties = {
+  const secondaryActionStyle: React.CSSProperties = {
     display: "inline-block",
     padding: "12px 16px",
     borderRadius: 12,
@@ -97,6 +97,17 @@ export default async function Page({ params }: PageProps) {
     color: "#fff",
     textDecoration: "none",
     border: "1px solid rgba(255,255,255,0.06)",
+  };
+
+  const primaryActionStyle: React.CSSProperties = {
+    display: "inline-block",
+    padding: "12px 16px",
+    borderRadius: 12,
+    background: "#fff",
+    color: "#000",
+    textDecoration: "none",
+    fontWeight: 700,
+    border: "1px solid rgba(255,255,255,0.1)",
   };
 
   return (
@@ -120,8 +131,8 @@ export default async function Page({ params }: PageProps) {
           <div
             style={{
               color: "#bbb",
-              fontSize: 14,
-              letterSpacing: 2,
+              fontSize: 13,
+              letterSpacing: 3,
               marginBottom: 10,
             }}
           >
@@ -140,57 +151,64 @@ export default async function Page({ params }: PageProps) {
           </h1>
         </div>
 
-        <div style={infoCardStyle}>
+        <div style={cardStyle}>
           <div
             style={{
               display: "grid",
-              gap: 14,
+              gap: 18,
               fontSize: 18,
               lineHeight: 1.8,
             }}
           >
             {data.phone && (
               <div>
-                <span style={{ color: "#aaa" }}>📞 電話</span>
-                <div>
-                  <a
-                    href={`tel:${data.phone}`}
-                    style={{
-                      color: "#7cc4ff",
-                      textDecoration: "none",
-                    }}
-                  >
-                    {data.phone}
-                  </a>
+                <div style={{ color: "#aaa", fontSize: 14, marginBottom: 4 }}>
+                  📞 電話
                 </div>
+                <a
+                  href={`tel:${data.phone}`}
+                  style={{
+                    color: "#7cc4ff",
+                    textDecoration: "none",
+                    fontSize: 18,
+                  }}
+                >
+                  {data.phone}
+                </a>
               </div>
             )}
 
             {data.address && (
               <div>
-                <span style={{ color: "#aaa" }}>📍 地址</span>
-                <div>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                      data.address
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      color: "#7cc4ff",
-                      textDecoration: "none",
-                    }}
-                  >
-                    {data.address}
-                  </a>
+                <div style={{ color: "#aaa", fontSize: 14, marginBottom: 4 }}>
+                  📍 地址
                 </div>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    data.address
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    color: "#7cc4ff",
+                    textDecoration: "none",
+                    fontSize: 18,
+                  }}
+                >
+                  {data.address}
+                </a>
               </div>
             )}
 
             {data.hours && (
               <div>
-                <span style={{ color: "#aaa" }}>🕒 營業時間（最後點餐時間0:30）</span>
-                <div>{data.hours}</div>
+                <div style={{ color: "#aaa", fontSize: 14, marginBottom: 4 }}>
+                  🕒 營業時間
+                </div>
+                <div style={{ fontSize: 18 }}>{data.hours}</div>
+                <div style={{ color: "#9a9a9a", fontSize: 14, marginTop: 4 }}>
+                  最後點餐時間：0:30
+                </div>
               </div>
             )}
           </div>
@@ -198,12 +216,8 @@ export default async function Page({ params }: PageProps) {
 
         <div
           style={{
+            ...cardStyle,
             marginTop: 24,
-            borderRadius: 24,
-            padding: 24,
-            border: "1px solid rgba(255,255,255,0.08)",
-            background: "rgba(255,255,255,0.03)",
-            backdropFilter: "blur(10px)",
           }}
         >
           {items.map((item, index) => {
@@ -215,23 +229,42 @@ export default async function Page({ params }: PageProps) {
                 {showCategory && item.category ? (
                   <div
                     style={{
-                      marginTop: index === 0 ? 0 : 28,
+                      marginTop: index === 0 ? 0 : 30,
                       marginBottom: 12,
+                      textAlign: "center",
                     }}
                   >
                     <div
                       style={{
-                        display: "inline-block",
-                        padding: "8px 14px",
-                        borderRadius: 999,
-                        background: "rgba(255,255,255,0.08)",
-                        color: "#fff",
-                        fontSize: 15,
-                        fontWeight: 700,
-                        letterSpacing: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
                       }}
                     >
-                      {item.category}
+                      <div
+                        style={{
+                          flex: 1,
+                          height: 1,
+                          background: "rgba(255,255,255,0.12)",
+                        }}
+                      />
+                      <div
+                        style={{
+                          fontSize: 18,
+                          fontWeight: 700,
+                          letterSpacing: 2,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {item.category}
+                      </div>
+                      <div
+                        style={{
+                          flex: 1,
+                          height: 1,
+                          background: "rgba(255,255,255,0.12)",
+                        }}
+                      />
                     </div>
                   </div>
                 ) : null}
@@ -239,9 +272,8 @@ export default async function Page({ params }: PageProps) {
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
                     alignItems: "center",
-                    gap: 16,
+                    gap: 12,
                     padding: "14px 0",
                     borderBottom: "1px solid rgba(255,255,255,0.08)",
                   }}
@@ -250,6 +282,7 @@ export default async function Page({ params }: PageProps) {
                     style={{
                       fontSize: 19,
                       fontWeight: 500,
+                      whiteSpace: "nowrap",
                     }}
                   >
                     {item.name}
@@ -257,12 +290,22 @@ export default async function Page({ params }: PageProps) {
 
                   <div
                     style={{
+                      flex: 1,
+                      borderBottom: "1px dashed rgba(255,255,255,0.2)",
+                      transform: "translateY(2px)",
+                    }}
+                  />
+
+                  <div
+                    style={{
                       fontSize: 20,
                       fontWeight: 700,
                       whiteSpace: "nowrap",
+                      minWidth: 60,
+                      textAlign: "right",
                     }}
                   >
-                    ${item.price}
+                    {item.price ? `$${item.price}` : ""}
                   </div>
                 </div>
               </div>
@@ -279,12 +322,8 @@ export default async function Page({ params }: PageProps) {
             justifyContent: "center",
           }}
         >
-          <a href="/" style={actionStyle}>
-            ← 返回首頁
-          </a>
-
           {data.phone && (
-            <a href={`tel:${data.phone}`} style={actionStyle}>
+            <a href={`tel:${data.phone}`} style={primaryActionStyle}>
               📞 撥打電話
             </a>
           )}
@@ -296,11 +335,15 @@ export default async function Page({ params }: PageProps) {
               )}`}
               target="_blank"
               rel="noreferrer"
-              style={actionStyle}
+              style={secondaryActionStyle}
             >
               📍 開啟地圖
             </a>
           )}
+
+          <a href="/" style={secondaryActionStyle}>
+            ← 返回首頁
+          </a>
         </div>
       </div>
     </main>
