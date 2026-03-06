@@ -35,15 +35,25 @@ export default async function Page({
     );
   }
 
+  // 解析菜單與價格
   const items = String(data.menu_text || "")
-    .split("\n")
+    .split(/\r?\n/)
     .map((line: string) => line.trim())
     .filter(Boolean)
     .map((line: string) => {
-      const parts = line.split(/\s+/);
-      const price = parts.pop() ?? "";
-      const name = parts.join(" ");
-      return { name, price };
+      const match = line.match(/^(.*?)(\d+)\s*$/);
+
+      if (match) {
+        return {
+          name: match[1].trim(),
+          price: match[2].trim(),
+        };
+      }
+
+      return {
+        name: line,
+        price: "",
+      };
     });
 
   return (
@@ -73,6 +83,7 @@ export default async function Page({
               justifyContent: "space-between",
               borderBottom: "1px solid #333",
               padding: "10px 0",
+              fontSize: 18,
             }}
           >
             <span>{item.name}</span>
