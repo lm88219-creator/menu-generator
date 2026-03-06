@@ -1,25 +1,29 @@
 import { getMenu } from "@/lib/store"
 import Link from "next/link"
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
+export default function Page({ params }: any) {
+  const id = params?.id ?? ""
   const data = getMenu(id)
 
   if (!data) {
     return (
       <main style={{ padding: 40, color: "white", background: "black" }}>
-        找不到菜單
-        <br />
+        <h1>找不到菜單</h1>
         <Link href="/">回生成器</Link>
       </main>
     )
   }
 
-  const lines = data.menuText.split("\n")
+  const items = String(data.menuText || "")
+    .split("\n")
+    .map((line: string) => line.trim())
+    .filter(Boolean)
+    .map((line: string) => {
+      const parts = line.split(/\s+/)
+      const price = parts.pop() ?? ""
+      const name = parts.join(" ")
+      return { name, price }
+    })
 
   return (
     <main
@@ -40,27 +44,21 @@ export default async function Page({
       </div>
 
       <div style={{ marginTop: 30 }}>
-  {lines.map((line: string, i: number) => {
-    const parts = line.trim().split(" ")
-    const price = parts.pop() ?? ""
-    const itemName = parts.join(" ")
-
-    return (
-      <div
-        key={i}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          borderBottom: "1px solid #333",
-          padding: "10px 0",
-        }}
-      >
-        <span>{itemName}</span>
-        <span>{price}</span>
+        {items.map((item: any, i: number) => (
+          <div
+            key={i}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              borderBottom: "1px solid #333",
+              padding: "10px 0",
+            }}
+          >
+            <span>{item.name}</span>
+            <span>{item.price}</span>
+          </div>
+        ))}
       </div>
-    )
-  })}
-</div>
     </main>
   )
 }

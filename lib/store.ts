@@ -11,13 +11,32 @@ type Menu = {
 
 const filePath = path.join(process.cwd(), "data", "menus.json")
 
-function readMenus() {
-  const text = fs.readFileSync(filePath, "utf8")
-  return JSON.parse(text)
+function ensureFile() {
+  const dir = path.dirname(filePath)
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+  }
+
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, "{}", "utf8")
+  }
 }
 
-function writeMenus(data: any) {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+function readMenus(): Record<string, Menu> {
+  ensureFile()
+
+  try {
+    const text = fs.readFileSync(filePath, "utf8")
+    return JSON.parse(text || "{}")
+  } catch {
+    return {}
+  }
+}
+
+function writeMenus(data: Record<string, Menu>) {
+  ensureFile()
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8")
 }
 
 export function saveMenu(id: string, data: Menu) {
