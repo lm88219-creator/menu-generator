@@ -1,8 +1,13 @@
 import { getMenu } from "@/lib/store"
 import Link from "next/link"
 
-export default function Page({ params }: { params: { id: string } }) {
-  const data = getMenu(params.id)
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+  const data = getMenu(id)
 
   if (!data) {
     return (
