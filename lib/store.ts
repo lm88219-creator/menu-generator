@@ -1,51 +1,20 @@
-import fs from "fs"
-import path from "path"
+import { Redis } from "@upstash/redis";
 
-type Menu = {
-  restaurant: string
-  phone: string
-  address: string
-  hours: string
-  menuText: string
+const redis = Redis.fromEnv();
+
+export type MenuData = {
+  restaurant: string;
+  phone?: string;
+  address?: string;
+  hours?: string;
+  menuText: string;
+};
+
+export async function saveMenu(id: string, data: MenuData) {
+  await redis.set(`menu:${id}`, data);
 }
 
-const filePath = path.join(process.cwd(), "data", "menus.json")
-
-function ensureFile() {
-  const dir = path.dirname(filePath)
-
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true })
-  }
-
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, "{}", "utf8")
-  }
-}
-
-function readMenus(): Record<string, Menu> {
-  ensureFile()
-
-  try {
-    const text = fs.readFileSync(filePath, "utf8")
-    return JSON.parse(text || "{}")
-  } catch {
-    return {}
-  }
-}
-
-function writeMenus(data: Record<string, Menu>) {
-  ensureFile()
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8")
-}
-
-export function saveMenu(id: string, data: Menu) {
-  const menus = readMenus()
-  menus[id] = data
-  writeMenus(menus)
-}
-
-export function getMenu(id: string) {
-  const menus = readMenus()
-  return menus[id]
+export async function getMenu(id: string): Promise<MenuData | null> {
+  const data = await redis.get<MenuData>(`menu:${id}`);
+  return data ?? null;
 }

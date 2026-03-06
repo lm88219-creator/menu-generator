@@ -1,6 +1,4 @@
-import { supabase } from "@/lib/supabase";
-
-export const runtime = "nodejs";
+import { saveMenu } from "@/lib/store";
 
 function randomId() {
   return Math.random().toString(36).slice(2, 8);
@@ -14,7 +12,7 @@ export async function POST(req: Request) {
     const phone = String(body.phone ?? "").trim();
     const address = String(body.address ?? "").trim();
     const hours = String(body.hours ?? "").trim();
-    const menuText = String(body.menuText ?? "").trim();
+    const menuText = String(body.menuText ?? body.menu ?? "").trim();
 
     if (!restaurant) {
       return Response.json({ error: "請輸入餐廳名稱" }, { status: 400 });
@@ -26,28 +24,17 @@ export async function POST(req: Request) {
 
     const id = randomId();
 
-    console.log("SUPABASE_URL exists:", !!process.env.NEXT_PUBLIC_SUPABASE_URL);
-    console.log("SUPABASE_KEY exists:", !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-    console.log("SUPABASE_URL value:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-
-    const { data, error } = await supabase.from("menus").insert({
-      id,
+    await saveMenu(id, {
       restaurant,
       phone,
       address,
       hours,
-      menu_text: menuText,
+      menuText,
     });
 
-    if (error) {
-      console.error("Supabase insert error full:", JSON.stringify(error, null, 2));
-      return Response.json({ error: "儲存失敗" }, { status: 500 });
-    }
-
-    console.log("Insert success:", data);
     return Response.json({ id });
   } catch (error) {
-    console.error("API /api/menu catch error:", error);
-    return Response.json({ error: "伺服器錯誤" }, { status: 500 });
+    console.error("POST /api/menu error:", error);
+    return Response.json({ error: "建立菜單失敗" }, { status: 500 });
   }
 }
