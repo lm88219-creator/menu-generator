@@ -1,18 +1,23 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
 
 type MenuItem = {
   name: string;
   price: string;
 };
 
-export default function MenuPage({ params }: { params: { name: string } }) {
+export default function MenuPage() {
+  const params = useParams();
+  const rawName = params?.name;
+  const restaurant = Array.isArray(rawName)
+    ? decodeURIComponent(rawName[0] ?? "")
+    : decodeURIComponent(rawName ?? "");
+
   const [menuText, setMenuText] = useState("");
   const [loaded, setLoaded] = useState(false);
-
-  const restaurant = decodeURIComponent(params.name);
 
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
@@ -27,6 +32,10 @@ export default function MenuPage({ params }: { params: { name: string } }) {
       .filter(Boolean)
       .map((l) => {
         const parts = l.split(/\s+/);
+        if (parts.length < 2) {
+          return { name: l, price: "" };
+        }
+
         return {
           name: parts.slice(0, -1).join(" "),
           price: parts[parts.length - 1],
@@ -34,7 +43,41 @@ export default function MenuPage({ params }: { params: { name: string } }) {
       });
   }, [menuText]);
 
-  if (!loaded) return <div>載入中...</div>;
+  if (!loaded) {
+    return (
+      <main
+        style={{
+          minHeight: "100vh",
+          background: "black",
+          color: "white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "Arial",
+        }}
+      >
+        載入中...
+      </main>
+    );
+  }
+
+  if (!restaurant || !menuText) {
+    return (
+      <main
+        style={{
+          minHeight: "100vh",
+          background: "black",
+          color: "white",
+          padding: 40,
+          fontFamily: "Arial",
+        }}
+      >
+        <h1>找不到菜單</h1>
+        <p>網址缺少資料</p>
+        <Link href="/">回生成器</Link>
+      </main>
+    );
+  }
 
   return (
     <main
@@ -46,10 +89,10 @@ export default function MenuPage({ params }: { params: { name: string } }) {
         fontFamily: "Arial",
       }}
     >
-      <h1 style={{ fontSize: 40 }}>{restaurant}</h1>
+      <h1 style={{ fontSize: 40, marginBottom: 30 }}>{restaurant}</h1>
 
-      <div style={{ marginTop: 30 }}>
-        {items.map((i, idx) => (
+      <div>
+        {items.map((item, idx) => (
           <div
             key={idx}
             style={{
@@ -60,14 +103,16 @@ export default function MenuPage({ params }: { params: { name: string } }) {
               fontSize: 20,
             }}
           >
-            <span>{i.name}</span>
-            <span>{i.price}</span>
+            <span>{item.name}</span>
+            <span>{item.price}</span>
           </div>
         ))}
       </div>
 
       <div style={{ marginTop: 30 }}>
-        <Link href="/">回生成器</Link>
+        <Link href="/" style={{ color: "#7ab8ff" }}>
+          回生成器
+        </Link>
       </div>
     </main>
   );
