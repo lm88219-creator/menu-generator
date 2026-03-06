@@ -198,7 +198,7 @@ export default async function Page({ params }: PageProps) {
               background: themeStyles.heroBadgeBg,
             }}
           >
-            DIGITAL MENU
+            DIGITAL MENU TEST
           </div>
 
           {data.logoDataUrl ? (
