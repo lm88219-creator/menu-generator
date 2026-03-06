@@ -1,5 +1,7 @@
 import { supabase } from "@/lib/supabase";
 
+export const runtime = "nodejs";
+
 function randomId() {
   return Math.random().toString(36).slice(2, 8);
 }
@@ -24,7 +26,11 @@ export async function POST(req: Request) {
 
     const id = randomId();
 
-    const { error } = await supabase.from("menus").insert({
+    console.log("SUPABASE_URL exists:", !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log("SUPABASE_KEY exists:", !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    console.log("SUPABASE_URL value:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+
+    const { data, error } = await supabase.from("menus").insert({
       id,
       restaurant,
       phone,
@@ -34,13 +40,14 @@ export async function POST(req: Request) {
     });
 
     if (error) {
-      console.error("Supabase insert error:", error);
+      console.error("Supabase insert error full:", JSON.stringify(error, null, 2));
       return Response.json({ error: "儲存失敗" }, { status: 500 });
     }
 
+    console.log("Insert success:", data);
     return Response.json({ id });
   } catch (error) {
-    console.error("API /api/menu error:", error);
+    console.error("API /api/menu catch error:", error);
     return Response.json({ error: "伺服器錯誤" }, { status: 500 });
   }
 }
