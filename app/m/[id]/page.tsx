@@ -60,7 +60,7 @@ export default async function Page({ params }: PageProps) {
         background: "#000",
         color: "#fff",
         padding: "32px 20px 60px",
-        fontFamily: "sans-serif",
+        fontFamily: "Arial, sans-serif",
       }}
     >
       <h1
@@ -76,30 +76,42 @@ export default async function Page({ params }: PageProps) {
 
       <div style={{ lineHeight: 1.9, fontSize: 18 }}>
         {data.phone && (
-  <div>
-    📞 電話：
-    <a href={`tel:${data.phone}`} style={{ color: "#7cc4ff", marginLeft: 6 }}>
-      {data.phone}
-    </a>
-  </div>
-)}
+          <div>
+            📞 電話：
+            <a
+              href={`tel:${data.phone}`}
+              style={{
+                color: "#7cc4ff",
+                marginLeft: 6,
+                textDecoration: "none",
+              }}
+            >
+              {data.phone}
+            </a>
+          </div>
+        )}
 
-{data.address && (
-  <div>
-    📍 地址：
-    <a
-      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        data.address
-      )}`}
-      target="_blank"
-      style={{ color: "#7cc4ff", marginLeft: 6 }}
-    >
-      {data.address}
-    </a>
-  </div>
-)}
+        {data.address && (
+          <div>
+            📍 地址：
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                data.address
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                color: "#7cc4ff",
+                marginLeft: 6,
+                textDecoration: "none",
+              }}
+            >
+              {data.address}
+            </a>
+          </div>
+        )}
 
-{data.hours && <div>🕒 營業時間：{data.hours}(最後點餐時間0:30)</div>}
+        {data.hours ? <div>🕒 營業時間：{data.hours}(最後點餐時間0:30)</div> : null}
       </div>
 
       <div style={{ marginTop: 36 }}>
@@ -141,6 +153,67 @@ export default async function Page({ params }: PageProps) {
             </div>
           );
         })}
+      </div>
+
+      <div
+        style={{
+          marginTop: 36,
+          paddingTop: 20,
+          borderTop: "1px solid #222",
+          display: "flex",
+          gap: 12,
+          flexWrap: "wrap",
+        }}
+      >
+        <a
+          href="/"
+          style={{
+            display: "inline-block",
+            padding: "12px 16px",
+            borderRadius: 12,
+            background: "rgba(255,255,255,0.08)",
+            color: "#fff",
+            textDecoration: "none",
+          }}
+        >
+          ← 返回首頁
+        </a>
+
+        {data.phone && (
+          <a
+            href={`tel:${data.phone}`}
+            style={{
+              display: "inline-block",
+              padding: "12px 16px",
+              borderRadius: 12,
+              background: "rgba(255,255,255,0.08)",
+              color: "#fff",
+              textDecoration: "none",
+            }}
+          >
+            📞 撥打電話
+          </a>
+        )}
+
+        {data.address && (
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+              data.address
+            )}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              display: "inline-block",
+              padding: "12px 16px",
+              borderRadius: 12,
+              background: "rgba(255,255,255,0.08)",
+              color: "#fff",
+              textDecoration: "none",
+            }}
+          >
+            📍 開啟地圖
+          </a>
+        )}
       </div>
     </main>
   );
