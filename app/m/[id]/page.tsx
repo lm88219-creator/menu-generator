@@ -8,7 +8,7 @@ export default async function Page({ params }: any) {
     .from("menus")
     .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
   if (error || !data) {
     return (
@@ -21,6 +21,7 @@ export default async function Page({ params }: any) {
         }}
       >
         <h1>找不到菜單</h1>
+        <br />
         <Link href="/">回生成器</Link>
       </main>
     );
