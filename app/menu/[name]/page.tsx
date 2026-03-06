@@ -12,9 +12,10 @@ type MenuItem = {
 export default function MenuPage() {
   const params = useParams();
   const rawName = params?.name;
+
   const restaurant = Array.isArray(rawName)
-    ? decodeURIComponent(rawName[0] ?? "")
-    : decodeURIComponent(rawName ?? "");
+    ? decodeURIComponent(String(rawName[0] || ""))
+    : decodeURIComponent(String(rawName || ""));
 
   const [menuText, setMenuText] = useState("");
   const [loaded, setLoaded] = useState(false);
