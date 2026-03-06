@@ -1,95 +1,97 @@
-import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { getMenu } from "@/lib/store";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-
-  const { data, error } = await supabase
-    .from("menus")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) {
-    console.error("menu page fetch error:", error);
-  }
+export default function Page({ params }: { params: { id: string } }) {
+  const data = getMenu(params.id);
 
   if (!data) {
     return (
-      <main
-        style={{
-          padding: 40,
-          color: "white",
-          background: "black",
-          minHeight: "100vh",
-        }}
-      >
+      <main style={{ padding: 20 }}>
         <h1>找不到菜單</h1>
-        <br />
-        <Link href="/">回生成器</Link>
       </main>
     );
   }
 
-  // 解析菜單與價格
-  const items = String(data.menu_text || "")
-    .split(/\r?\n/)
-    .map((line: string) => line.trim())
-    .filter(Boolean)
-    .map((line: string) => {
-      const match = line.match(/^(.*?)(\d+)\s*$/);
+  const lines = data.menuText.split("\n");
 
-      if (match) {
-        return {
-          name: match[1].trim(),
-          price: match[2].trim(),
-        };
-      }
+  let currentCategory = "";
+  const items: { category: string; name: string; price: string }[] = [];
 
-      return {
-        name: line,
-        price: "",
-      };
-    });
+  for (const line of lines) {
+    const text = line.trim();
+    if (!text) continue;
+
+    const parts = text.split(" ");
+
+    if (parts.length === 1) {
+      // 只有一個字 → 當分類
+      currentCategory = parts[0];
+    } else {
+      const price = parts.pop();
+      const name = parts.join(" ");
+
+      items.push({
+        category: currentCategory,
+        name,
+        price: price || "",
+      });
+    }
+  }
+
+  let lastCategory = "";
 
   return (
     <main
       style={{
+        maxWidth: 600,
+        margin: "0 auto",
+        padding: 20,
+        background: "#000",
+        color: "#fff",
         minHeight: "100vh",
-        background: "black",
-        color: "white",
-        padding: 40,
-        fontFamily: "Arial",
+        fontFamily: "sans-serif",
       }}
     >
-      <h1>{data.restaurant}</h1>
+      <h1 style={{ fontSize: 28, marginBottom: 10 }}>{data.restaurant}</h1>
 
-      <div style={{ marginTop: 10 }}>
-        {data.phone && <div>電話：{data.phone}</div>}
-        {data.address && <div>地址：{data.address}</div>}
-        {data.hours && <div>營業時間：{data.hours}</div>}
-      </div>
+      {data.phone && <div>電話：{data.phone}</div>}
+      {data.address && <div>地址：{data.address}</div>}
+      {data.hours && <div>營業時間：{data.hours}</div>}
 
       <div style={{ marginTop: 30 }}>
-        {items.map((item: { name: string; price: string }, i: number) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              borderBottom: "1px solid #333",
-              padding: "10px 0",
-              fontSize: 18,
-            }}
-          >
-            <span>{item.name}</span>
-            <span>{item.price}</span>
-          </div>
-        ))}
+
+        {items.map((item, i) => {
+          const showCategory = item.category !== lastCategory;
+          lastCategory = item.category;
+
+          return (
+            <div key={i}>
+              {showCategory && item.category && (
+                <h2
+                  style={{
+                    marginTop: 30,
+                    marginBottom: 10,
+                    borderBottom: "1px solid #444",
+                    paddingBottom: 5,
+                  }}
+                >
+                  {item.category}
+                </h2>
+              )}
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "6px 0",
+                  borderBottom: "1px solid #222",
+                }}
+              >
+                <span>{item.name}</span>
+                <span>{item.price}</span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </main>
   );
