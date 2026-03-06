@@ -1,14 +1,19 @@
+export const dynamic = "force-dynamic";
+
 import { getMenu } from "@/lib/store";
+import { groupMenuItems } from "@/lib/menu";
 import type { CSSProperties } from "react";
 
 type PageProps = {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ table?: string }>;
 };
 
-type ThemeType = "dark" | "light" | "warm";
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
 
-export default async function Page({ params }: PageProps) {
+export default async function Page({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const query = (searchParams ? await searchParams : {}) ?? {};
   const data = await getMenu(id);
 
   if (!data) {
@@ -58,33 +63,8 @@ export default async function Page({ params }: PageProps) {
   }
 
   const theme = (data.theme ?? "dark") as ThemeType;
-
-  const lines = data.menuText.split("\n");
-
-  let currentCategory = "";
-  const items: { category: string; name: string; price: string }[] = [];
-
-  for (const rawLine of lines) {
-    const text = rawLine.trim();
-    if (!text) continue;
-
-    const parts = text.split(/\s+/);
-
-    if (parts.length === 1) {
-      currentCategory = parts[0];
-    } else {
-      const price = parts.pop() ?? "";
-      const name = parts.join(" ");
-
-      items.push({
-        category: currentCategory,
-        name,
-        price,
-      });
-    }
-  }
-
-  let lastCategory = "";
+  const grouped = groupMenuItems(data.menuText);
+  const table = String(query.table ?? "").trim();
 
   const themeStyles = {
     dark: {
@@ -133,308 +113,251 @@ export default async function Page({ params }: PageProps) {
       primaryBg: "#4e3426",
       primaryText: "#fff",
     },
-  }[theme];
+    ocean: {
+      pageBackground: "linear-gradient(180deg,#e8f7ff 0%,#cfeeff 100%)",
+      pageTextColor: "#0f3550",
+      cardBackground: "rgba(255,255,255,0.88)",
+      cardBorder: "1px solid rgba(18,108,149,0.14)",
+      mutedColor: "#4d7289",
+      lineColor: "rgba(18,108,149,0.14)",
+      rowBorder: "1px solid rgba(18,108,149,0.12)",
+      linkColor: "#0f6e91",
+      accent: "#118ab2",
+      heroBadgeBg: "rgba(17,138,178,0.08)",
+      secondaryBg: "rgba(255,255,255,0.82)",
+      primaryBg: "#0f6e91",
+      primaryText: "#fff",
+    },
+    forest: {
+      pageBackground: "linear-gradient(180deg,#edf6ef 0%,#d6e7d8 100%)",
+      pageTextColor: "#233b2c",
+      cardBackground: "rgba(250,255,250,0.9)",
+      cardBorder: "1px solid rgba(47,94,61,0.14)",
+      mutedColor: "#5c7564",
+      lineColor: "rgba(47,94,61,0.14)",
+      rowBorder: "1px solid rgba(47,94,61,0.12)",
+      linkColor: "#2f6b3f",
+      accent: "#2f6b3f",
+      heroBadgeBg: "rgba(47,107,63,0.08)",
+      secondaryBg: "rgba(255,255,255,0.78)",
+      primaryBg: "#2f6b3f",
+      primaryText: "#fff",
+    },
+    rose: {
+      pageBackground: "linear-gradient(180deg,#fff2f6 0%,#f4dbe3 100%)",
+      pageTextColor: "#5a3141",
+      cardBackground: "rgba(255,250,252,0.92)",
+      cardBorder: "1px solid rgba(145,78,101,0.14)",
+      mutedColor: "#8b6573",
+      lineColor: "rgba(145,78,101,0.14)",
+      rowBorder: "1px solid rgba(145,78,101,0.12)",
+      linkColor: "#a14b68",
+      accent: "#b35c7a",
+      heroBadgeBg: "rgba(179,92,122,0.08)",
+      secondaryBg: "rgba(255,255,255,0.82)",
+      primaryBg: "#a14b68",
+      primaryText: "#fff",
+    },
+  } as const;
+
+  const current = themeStyles[theme];
 
   const cardStyle: CSSProperties = {
     borderRadius: 28,
-    padding: 26,
-    border: themeStyles.cardBorder,
-    background: themeStyles.cardBackground,
-    backdropFilter: "blur(12px)",
+    padding: 24,
+    background: current.cardBackground,
+    border: current.cardBorder,
     boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+    backdropFilter: "blur(12px)",
   };
 
-  const secondaryActionStyle: CSSProperties = {
-    display: "inline-block",
+  const secondaryButtonStyle: CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
     padding: "12px 16px",
     borderRadius: 14,
-    background: themeStyles.secondaryBg,
-    color: themeStyles.pageTextColor,
-    textDecoration: "none",
-    border: themeStyles.cardBorder,
-    fontWeight: 600,
-  };
-
-  const primaryActionStyle: CSSProperties = {
-    display: "inline-block",
-    padding: "12px 16px",
-    borderRadius: 14,
-    background: themeStyles.primaryBg,
-    color: themeStyles.primaryText,
     textDecoration: "none",
     fontWeight: 700,
+    background: current.secondaryBg,
+    color: current.pageTextColor,
+    border: current.cardBorder,
+  };
+
+  const primaryButtonStyle: CSSProperties = {
+    ...secondaryButtonStyle,
+    background: current.primaryBg,
+    color: current.primaryText,
     border: "none",
-    boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
   };
 
   return (
     <main
       style={{
         minHeight: "100vh",
-        background: themeStyles.pageBackground,
-        color: themeStyles.pageTextColor,
+        background: current.pageBackground,
+        color: current.pageTextColor,
         padding: "24px 16px 60px",
         fontFamily: "Arial, sans-serif",
       }}
     >
       <div style={{ maxWidth: 860, margin: "0 auto" }}>
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: 24,
-          }}
-        >
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              color: themeStyles.mutedColor,
+              color: current.mutedColor,
               fontSize: 13,
-              letterSpacing: 3,
+              letterSpacing: 2,
               marginBottom: 14,
               padding: "8px 14px",
               borderRadius: 999,
-              background: themeStyles.heroBadgeBg,
+              background: current.heroBadgeBg,
             }}
           >
-            DIGITAL MENU TEST
+            DIGITAL MENU V2
           </div>
+
+          {table ? (
+            <div
+              style={{
+                display: "inline-flex",
+                padding: "8px 14px",
+                borderRadius: 999,
+                background: current.secondaryBg,
+                border: current.cardBorder,
+                fontSize: 14,
+                fontWeight: 700,
+                marginBottom: 16,
+              }}
+            >
+              目前桌號：{table}
+            </div>
+          ) : null}
 
           {data.logoDataUrl ? (
             <div style={{ marginBottom: 14 }}>
               <img
-  src={data.logoDataUrl}
-  alt={`${data.restaurant} logo`}
-  style={{
-    width: 88,
-    height: 88,
-    objectFit: "contain",
-    objectPosition: "center",
-    borderRadius: 24,
-    background: "#fff",
-    padding: 8,
-    boxSizing: "border-box",
-    boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
-  }}
+                src={data.logoDataUrl}
+                alt={`${data.restaurant} logo`}
+                style={{
+                  width: 96,
+                  height: 96,
+                  objectFit: "contain",
+                  objectPosition: "center",
+                  borderRadius: "50%",
+                  background: "#fff",
+                  padding: 10,
+                  boxSizing: "border-box",
+                  boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
+                }}
               />
             </div>
           ) : null}
 
-          <h1
-            style={{
-              fontSize: 42,
-              fontWeight: 800,
-              margin: 0,
-              lineHeight: 1.2,
-            }}
-          >
+          <h1 style={{ fontSize: 42, fontWeight: 800, margin: 0, lineHeight: 1.2 }}>
             {data.restaurant}
           </h1>
 
-          <p
-            style={{
-              marginTop: 10,
-              color: themeStyles.mutedColor,
-              fontSize: 15,
-            }}
-          >
+          <p style={{ marginTop: 10, color: current.mutedColor, fontSize: 15 }}>
             掃碼即看，手機友善的餐廳數位菜單
           </p>
         </div>
 
         <div style={cardStyle}>
-          <div
-            style={{
-              display: "grid",
-              gap: 18,
-              fontSize: 18,
-              lineHeight: 1.8,
-            }}
-          >
-            {data.phone && (
+          <div style={{ display: "grid", gap: 18, fontSize: 18, lineHeight: 1.8 }}>
+            {data.phone ? (
               <div>
-                <div style={{ color: themeStyles.mutedColor, fontSize: 14, marginBottom: 4 }}>
+                <div style={{ color: current.mutedColor, fontSize: 14, marginBottom: 4 }}>
                   📞 電話
                 </div>
-                <a
-                  href={`tel:${data.phone}`}
-                  style={{
-                    color: themeStyles.linkColor,
-                    textDecoration: "none",
-                    fontSize: 18,
-                    fontWeight: 700,
-                  }}
-                >
+                <a href={`tel:${data.phone}`} style={{ color: current.linkColor, textDecoration: "none" }}>
                   {data.phone}
                 </a>
               </div>
-            )}
-
-            {data.address && (
+            ) : null}
+            {data.address ? (
               <div>
-                <div style={{ color: themeStyles.mutedColor, fontSize: 14, marginBottom: 4 }}>
+                <div style={{ color: current.mutedColor, fontSize: 14, marginBottom: 4 }}>
                   📍 地址
                 </div>
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    data.address
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    color: themeStyles.linkColor,
-                    textDecoration: "none",
-                    fontSize: 18,
-                  }}
-                >
-                  {data.address}
-                </a>
+                <div>{data.address}</div>
               </div>
-            )}
-
-            {data.hours && (
+            ) : null}
+            {data.hours ? (
               <div>
-                <div style={{ color: themeStyles.mutedColor, fontSize: 14, marginBottom: 4 }}>
+                <div style={{ color: current.mutedColor, fontSize: 14, marginBottom: 4 }}>
                   🕒 營業時間
                 </div>
-                <div style={{ fontSize: 18 }}>{data.hours}</div>
+                <div>{data.hours}</div>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
 
-        <div
-          style={{
-            ...cardStyle,
-            marginTop: 24,
-          }}
-        >
-          {items.map((item, index) => {
-            const showCategory = item.category !== lastCategory;
-            lastCategory = item.category;
+        <div style={{ height: 18 }} />
 
-            return (
-              <div key={`${item.category}-${item.name}-${index}`}>
-                {showCategory && item.category ? (
+        <div style={cardStyle}>
+          {grouped.map((group) => (
+            <section key={group.category} style={{ marginBottom: 24 }}>
+              <div
+                style={{
+                  fontSize: 22,
+                  fontWeight: 800,
+                  color: current.accent,
+                  marginBottom: 14,
+                }}
+              >
+                {group.category}
+              </div>
+
+              <div style={{ display: "grid", gap: 10 }}>
+                {group.items.map((item, index) => (
                   <div
+                    key={`${group.category}-${item.name}-${index}`}
                     style={{
-                      marginTop: index === 0 ? 0 : 30,
-                      marginBottom: 12,
-                      textAlign: "center",
+                      borderRadius: 18,
+                      padding: "14px 16px",
+                      border: current.rowBorder,
+                      background: current.secondaryBg,
+                      opacity: item.soldOut ? 0.55 : 1,
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
-                        alignItems: "center",
+                        alignItems: "flex-start",
+                        justifyContent: "space-between",
                         gap: 12,
                       }}
                     >
-                      <div
-                        style={{
-                          flex: 1,
-                          height: 1,
-                          background: themeStyles.lineColor,
-                        }}
-                      />
-                      <div
-                        style={{
-                          fontSize: 18,
-                          fontWeight: 700,
-                          letterSpacing: 2,
-                          whiteSpace: "nowrap",
-                          color: themeStyles.accent,
-                        }}
-                      >
-                        {item.category}
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 18, fontWeight: 700 }}>
+                          {item.name}
+                          {item.soldOut ? (
+                            <span style={{ marginLeft: 8, fontSize: 12, color: current.mutedColor }}>
+                              已售完
+                            </span>
+                          ) : null}
+                        </div>
+                        {item.note ? (
+                          <div style={{ marginTop: 6, color: current.mutedColor, fontSize: 13 }}>
+                            {item.note}
+                          </div>
+                        ) : null}
                       </div>
-                      <div
-                        style={{
-                          flex: 1,
-                          height: 1,
-                          background: themeStyles.lineColor,
-                        }}
-                      />
+
+                      <div style={{ fontSize: 20, fontWeight: 800, color: current.accent }}>
+                        {item.price ? `$${item.price}` : "時價"}
+                      </div>
                     </div>
                   </div>
-                ) : null}
-
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    padding: "14px 0",
-                    borderBottom: themeStyles.rowBorder,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 19,
-                      fontWeight: 500,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {item.name}
-                  </div>
-
-                  <div
-                    style={{
-                      flex: 1,
-                      borderBottom: `1px dashed ${themeStyles.lineColor}`,
-                      transform: "translateY(2px)",
-                    }}
-                  />
-
-                  <div
-                    style={{
-                      fontSize: 20,
-                      fontWeight: 700,
-                      whiteSpace: "nowrap",
-                      minWidth: 60,
-                      textAlign: "right",
-                    }}
-                  >
-                    {item.price ? `$${item.price}` : ""}
-                  </div>
-                </div>
+                ))}
               </div>
-            );
-          })}
-        </div>
-
-        <div
-          style={{
-            marginTop: 24,
-            display: "flex",
-            gap: 12,
-            flexWrap: "wrap",
-            justifyContent: "center",
-          }}
-        >
-          {data.phone && (
-            <a href={`tel:${data.phone}`} style={primaryActionStyle}>
-              📞 撥打電話
-            </a>
-          )}
-
-          {data.address && (
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                data.address
-              )}`}
-              target="_blank"
-              rel="noreferrer"
-              style={secondaryActionStyle}
-            >
-              📍 開啟地圖
-            </a>
-          )}
-
-          <a href="/" style={secondaryActionStyle}>
-            ← 返回首頁
-          </a>
+            </section>
+          ))}
         </div>
       </div>
     </main>

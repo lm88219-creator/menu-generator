@@ -3,7 +3,23 @@
 import { useMemo, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 
-type ThemeType = "dark" | "light" | "warm";
+function getPublicBaseUrl() {
+  const envUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
+  if (envUrl) {
+    return /^https?:\/\//i.test(envUrl) ? envUrl : `https://${envUrl}`;
+  }
+  return window.location.origin;
+}
+
+
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+
+function generateSlug(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
 
 export default function Home() {
   const [restaurant, setRestaurant] = useState("");
@@ -13,6 +29,7 @@ export default function Home() {
   const [menu, setMenu] = useState("");
   const [theme, setTheme] = useState<ThemeType>("dark");
   const [logoDataUrl, setLogoDataUrl] = useState("");
+  const [customSlug, setCustomSlug] = useState("");
 
   const [qrText, setQrText] = useState("");
   const [creating, setCreating] = useState(false);
@@ -66,6 +83,51 @@ export default function Home() {
         buttonGhostBg: "rgba(255,255,255,0.65)",
         buttonGhostText: "#3e2d20",
       },
+      ocean: {
+        name: "海洋清新風",
+        pageBg: "linear-gradient(180deg,#e8f7ff 0%,#cfeeff 100%)",
+        cardBg: "rgba(255,255,255,0.82)",
+        cardBorder: "1px solid rgba(18,108,149,0.14)",
+        text: "#0f3550",
+        subText: "#4d7289",
+        accent: "#118ab2",
+        inputBg: "rgba(255,255,255,0.88)",
+        inputBorder: "1px solid rgba(18,108,149,0.14)",
+        buttonMainBg: "#0f6e91",
+        buttonMainText: "#fff",
+        buttonGhostBg: "rgba(255,255,255,0.72)",
+        buttonGhostText: "#0f3550",
+      },
+      forest: {
+        name: "森林自然風",
+        pageBg: "linear-gradient(180deg,#edf6ef 0%,#d6e7d8 100%)",
+        cardBg: "rgba(250,255,250,0.86)",
+        cardBorder: "1px solid rgba(47,94,61,0.14)",
+        text: "#233b2c",
+        subText: "#5c7564",
+        accent: "#2f6b3f",
+        inputBg: "rgba(255,255,255,0.82)",
+        inputBorder: "1px solid rgba(47,94,61,0.14)",
+        buttonMainBg: "#2f6b3f",
+        buttonMainText: "#fff",
+        buttonGhostBg: "rgba(255,255,255,0.7)",
+        buttonGhostText: "#233b2c",
+      },
+      rose: {
+        name: "玫瑰奶茶風",
+        pageBg: "linear-gradient(180deg,#fff2f6 0%,#f4dbe3 100%)",
+        cardBg: "rgba(255,250,252,0.9)",
+        cardBorder: "1px solid rgba(145,78,101,0.14)",
+        text: "#5a3141",
+        subText: "#8b6573",
+        accent: "#b35c7a",
+        inputBg: "rgba(255,255,255,0.84)",
+        inputBorder: "1px solid rgba(145,78,101,0.14)",
+        buttonMainBg: "#a14b68",
+        buttonMainText: "#fff",
+        buttonGhostBg: "rgba(255,255,255,0.72)",
+        buttonGhostText: "#5a3141",
+      },
     }),
     []
   );
@@ -99,6 +161,7 @@ export default function Home() {
           menuText: menu,
           theme,
           logoDataUrl,
+          customSlug,
         }),
       });
 
@@ -109,7 +172,8 @@ export default function Home() {
         return;
       }
 
-      const url = `${window.location.origin}/m/${data.id}`;
+      const path = String(data.publicPath ?? data.shortUrl ?? `/m/${data.id}`);
+      const url = String(data.publicUrl ?? `${getPublicBaseUrl()}${path}`);
       setQrText(url);
     } catch (error) {
       console.error(error);
@@ -125,6 +189,7 @@ export default function Home() {
     setAddress("嘉義市西區友愛路100號");
     setHours("17:00 - 01:00");
     setTheme("dark");
+    setCustomSlug("");
     setMenu(`鵝肉
 鹽水鵝肉 200
 麻油鵝肉 220
@@ -147,6 +212,7 @@ export default function Home() {
     setMenu("");
     setTheme("dark");
     setLogoDataUrl("");
+    setCustomSlug("");
     setQrText("");
     setCopied(false);
   }
@@ -522,7 +588,7 @@ y += 150;
         : value === "light"
         ? "linear-gradient(180deg,#ffffff 0%,#f0f0f0 100%)"
         : "linear-gradient(180deg,#f8efe3 0%,#e7d2b8 100%)",
-    color: value === "dark" ? "#fff" : value === "light" ? "#111" : "#4e3426",
+    color: value === "dark" ? "#fff" : value === "light" ? "#111" : value === "warm" ? "#4e3426" : value === "ocean" ? "#0f3550" : value === "forest" ? "#233b2c" : "#5a3141",
     cursor: "pointer",
     minHeight: 108,
     display: "flex",
@@ -593,8 +659,16 @@ y += 150;
             <div style={{ marginTop: 28 }}>
               <div style={{ marginBottom: 8, fontWeight: 700 }}>餐廳名稱</div>
               <input
-                value={restaurant}
-                onChange={(e) => setRestaurant(e.target.value)}
+  value={restaurant}
+  onChange={(e) => {
+    const name = e.target.value;
+    setRestaurant(name);
+
+    if (!customSlug) {
+      const slug = generateSlug(name);
+      setCustomSlug(slug);
+    }
+  }}
                 style={inputStyle}
                 placeholder="例如：友愛熱炒"
               />
@@ -637,6 +711,41 @@ y += 150;
                 style={inputStyle}
                 placeholder="例如：嘉義市西區友愛路100號"
               />
+            </div>
+
+
+            <div style={{ marginTop: 18 }}>
+              <div style={{ marginBottom: 8, fontWeight: 700 }}>自訂網址代稱</div>
+              <input
+  value={customSlug}
+  onChange={(e) => {
+    const value = e.target.value
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "");
+    setCustomSlug(value);
+  }}
+  style={inputStyle}
+  placeholder="例如：FOOD-168"
+/>
+{customSlug && (
+  <div
+    style={{
+      marginTop: 10,
+      padding: "10px 14px",
+      borderRadius: 10,
+      background: currentTheme.inputBg,
+      border: currentTheme.inputBorder,
+      fontSize: 13,
+      color: currentTheme.subText,
+      wordBreak: "break-all",
+    }}
+  >
+    https://你的網站/menu/{customSlug}
+  </div>
+)}
+              <div style={{ marginTop: 8, color: currentTheme.subText, fontSize: 13, lineHeight: 1.7 }}>
+                可選填、若不填，系統會自動將餐廳名稱轉為英文網址(無法輸入中文)
+              </div>
             </div>
 
             <div style={{ marginTop: 22 }}>
@@ -760,7 +869,7 @@ y += 150;
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(3, 1fr)",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
                   gap: 12,
                 }}
               >
@@ -777,6 +886,21 @@ y += 150;
                 <div onClick={() => setTheme("warm")} style={themeCardStyle("warm")}>
                   <div style={{ fontWeight: 700 }}>溫暖咖啡風</div>
                   <div style={{ fontSize: 13, opacity: 0.8 }}>木質、餐館、溫暖感</div>
+                </div>
+
+                <div onClick={() => setTheme("ocean")} style={themeCardStyle("ocean")}>
+                  <div style={{ fontWeight: 700 }}>海洋清新風</div>
+                  <div style={{ fontSize: 13, opacity: 0.8 }}>清爽、海味、明亮感</div>
+                </div>
+
+                <div onClick={() => setTheme("forest")} style={themeCardStyle("forest")}>
+                  <div style={{ fontWeight: 700 }}>森林自然風</div>
+                  <div style={{ fontSize: 13, opacity: 0.8 }}>自然、手作、健康感</div>
+                </div>
+
+                <div onClick={() => setTheme("rose")} style={themeCardStyle("rose")}>
+                  <div style={{ fontWeight: 700 }}>玫瑰奶茶風</div>
+                  <div style={{ fontSize: 13, opacity: 0.8 }}>柔和、甜點、質感感</div>
                 </div>
               </div>
             </div>
@@ -853,7 +977,7 @@ y += 150;
                   theme === "dark"
                     ? "1px solid rgba(255,255,255,0.08)"
                     : "1px solid rgba(0,0,0,0.08)",
-                color: theme === "dark" ? "#fff" : theme === "light" ? "#111" : "#4e3426",
+                color: theme === "dark" ? "#fff" : theme === "light" ? "#111" : theme === "warm" ? "#4e3426" : theme === "ocean" ? "#0f3550" : theme === "forest" ? "#233b2c" : "#5a3141",
                 minHeight: 580,
               }}
             >
@@ -1107,6 +1231,21 @@ y += 150;
                   <button onClick={openFacebookShare} style={ghostButtonStyle}>
                     分享 FB
                   </button>
+                  <a
+  href="/dashboard"
+  style={{
+    display: "inline-block",
+    marginTop: 10,
+    padding: "10px 18px",
+    borderRadius: 12,
+    background: "#eee",
+    color: "#333",
+    textDecoration: "none",
+    fontWeight: 600,
+  }}
+>
+  返回後台
+</a>
                 </div>
               </div>
             </div>
