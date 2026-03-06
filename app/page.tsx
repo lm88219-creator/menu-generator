@@ -29,10 +29,12 @@ export default function Home() {
       });
 
       const data = await res.json();
+      console.log("API 回傳：", data);
 
       if (!res.ok) {
-        alert(data?.error || "生成失敗");
-        return;
+      console.log("API 錯誤資料：", data);
+      alert(JSON.stringify(data) || "生成失敗");
+       return;
       }
 
       if (!data?.id) {
