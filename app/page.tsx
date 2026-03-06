@@ -101,6 +101,23 @@ export default function Home() {
     }
   }
 
+  function downloadQR() {
+    const canvas = document.getElementById("qr-code") as HTMLCanvasElement;
+
+    if (!canvas) return;
+
+    const pngUrl = canvas
+      .toDataURL("image/png")
+      .replace("image/png", "image/octet-stream");
+
+    const downloadLink = document.createElement("a");
+    downloadLink.href = pngUrl;
+    downloadLink.download = "menu-qrcode.png";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }
+
   const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "14px 16px",
@@ -252,7 +269,7 @@ export default function Home() {
                 borderRadius: 16,
               }}
             >
-              <QRCodeCanvas value={qrText} size={220} />
+              <QRCodeCanvas id="qr-code" value={qrText} size={220} />
             </div>
 
             <div style={{ marginTop: 20, wordBreak: "break-all" }}>
@@ -266,9 +283,13 @@ export default function Home() {
               </a>
             </div>
 
-            <div style={{ marginTop: 12 }}>
+            <div style={{ marginTop: 12, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
               <button onClick={copyUrl} style={buttonStyle}>
                 {copied ? "已複製網址" : "複製網址"}
+              </button>
+
+              <button onClick={downloadQR} style={buttonStyle}>
+                下載 QR Code
               </button>
             </div>
           </div>
