@@ -99,7 +99,7 @@ export default async function Page({ params }: PageProps) {
   </div>
 )}
 
-{data.hours && <div>🕒 營業時間：{data.hours}</div>}
+{data.hours && <div>🕒 營業時間：{data.hours}(最後點餐時間0:30)</div>}
       </div>
 
       <div style={{ marginTop: 36 }}>
