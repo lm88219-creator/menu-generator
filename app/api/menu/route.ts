@@ -16,11 +16,8 @@ export async function POST(req: Request) {
   }
 
   const url =
-    `/m?restaurant=${encodeURIComponent(restaurant)}` +
-    `&phone=${encodeURIComponent(phone)}` +
-    `&address=${encodeURIComponent(address)}` +
-    `&hours=${encodeURIComponent(hours)}` +
-    `&menu=${encodeURIComponent(menuText)}`;
+  `/menu/${encodeURIComponent(restaurant)}` +
+  `?menu=${encodeURIComponent(menuText)}`;
 
   return Response.json({ url });
 }
