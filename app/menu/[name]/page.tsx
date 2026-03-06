@@ -1,66 +1,41 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+
+type PageProps = {
+  params: Promise<{
+    name: string;
+  }>;
+  searchParams: Promise<{
+    menu?: string;
+  }>;
+};
 
 type MenuItem = {
   name: string;
   price: string;
 };
 
-export default function MenuPage() {
-  const params = useParams();
-  const rawName = params?.name;
+export default async function MenuPage({ params, searchParams }: PageProps) {
+  const { name } = await params;
+  const { menu } = await searchParams;
 
-  const restaurant = Array.isArray(rawName)
-    ? decodeURIComponent(String(rawName[0] || ""))
-    : decodeURIComponent(String(rawName || ""));
+  const restaurant = decodeURIComponent(name || "");
+  const menuText = menu ? decodeURIComponent(menu) : "";
 
-  const [menuText, setMenuText] = useState("");
-  const [loaded, setLoaded] = useState(false);
+  const items: MenuItem[] = menuText
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const parts = line.split(/\s+/);
+      if (parts.length < 2) {
+        return { name: line, price: "" };
+      }
 
-  useEffect(() => {
-    const p = new URLSearchParams(window.location.search);
-    setMenuText(p.get("menu") ?? "");
-    setLoaded(true);
-  }, []);
-
-  const items = useMemo<MenuItem[]>(() => {
-    return menuText
-      .split("\n")
-      .map((l) => l.trim())
-      .filter(Boolean)
-      .map((l) => {
-        const parts = l.split(/\s+/);
-        if (parts.length < 2) {
-          return { name: l, price: "" };
-        }
-
-        return {
-          name: parts.slice(0, -1).join(" "),
-          price: parts[parts.length - 1],
-        };
-      });
-  }, [menuText]);
-
-  if (!loaded) {
-    return (
-      <main
-        style={{
-          minHeight: "100vh",
-          background: "black",
-          color: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "Arial",
-        }}
-      >
-        載入中...
-      </main>
-    );
-  }
+      return {
+        name: parts.slice(0, -1).join(" "),
+        price: parts[parts.length - 1],
+      };
+    });
 
   if (!restaurant || !menuText) {
     return (
@@ -75,7 +50,9 @@ export default function MenuPage() {
       >
         <h1>找不到菜單</h1>
         <p>網址缺少資料</p>
-        <Link href="/">回生成器</Link>
+        <Link href="/" style={{ color: "#7ab8ff" }}>
+          回生成器
+        </Link>
       </main>
     );
   }
