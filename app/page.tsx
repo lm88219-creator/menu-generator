@@ -320,16 +320,48 @@ export default function Home() {
       if (logoDataUrl) {
         try {
           const logoImg = await loadImage(logoDataUrl);
-          const logoSize = 120;
-          const logoX = canvas.width / 2 - logoSize / 2;
+const logoSize = 120;
+const logoX = canvas.width / 2 - logoSize / 2;
+const logoY = y;
 
-          ctx.save();
-          roundRect(ctx, logoX, y, logoSize, logoSize, 24, false, true);
-          ctx.clip();
-          ctx.drawImage(logoImg, logoX, y, logoSize, logoSize);
-          ctx.restore();
+// 白色圓形底
+ctx.save();
+ctx.beginPath();
+ctx.arc(canvas.width / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+ctx.closePath();
+ctx.fillStyle = "#ffffff";
+ctx.fill();
 
-          y += 150;
+// 外框
+ctx.strokeStyle = "rgba(0,0,0,0.08)";
+ctx.lineWidth = 2;
+ctx.stroke();
+
+// 陰影感
+ctx.shadowColor = "rgba(0,0,0,0.12)";
+ctx.shadowBlur = 18;
+ctx.shadowOffsetY = 6;
+ctx.restore();
+
+// 裁成圓形後再畫 logo
+ctx.save();
+ctx.beginPath();
+ctx.arc(canvas.width / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+ctx.closePath();
+ctx.clip();
+
+const innerPadding = 14;
+ctx.drawImage(
+  logoImg,
+  logoX + innerPadding,
+  logoY + innerPadding,
+  logoSize - innerPadding * 2,
+  logoSize - innerPadding * 2
+);
+
+ctx.restore();
+
+y += 150;
         } catch (error) {
           console.error("logo draw error", error);
         }
@@ -637,16 +669,34 @@ export default function Home() {
   />
 
   {logoDataUrl ? (
-    <img
-  src={logoDataUrl}
+    <div
   style={{
-    width: 80,
-    height: 80,
-    borderRadius: 16,
-    objectFit: "contain",
-    objectPosition: "center",
+    width: 88,
+    height: 88,
+    borderRadius: "50%",
+    background: "#fff",
+    margin: "0 auto",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
+    border: "1px solid rgba(0,0,0,0.06)",
+    overflow: "hidden",
+    padding: 10,
   }}
-    />
+>
+  <img
+    src={logoDataUrl}
+    alt="logo"
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      objectPosition: "center",
+      display: "block",
+    }}
+  />
+</div>
   ) : (
     <div>
       <div style={{ fontWeight: 600 }}>點擊上傳餐廳 Logo</div>
@@ -667,19 +717,34 @@ export default function Home() {
                       flexWrap: "wrap",
                     }}
                   >
-                    <img
-  src={logoDataUrl}
-  alt="logo preview"
+                    <div
   style={{
-    width: 72,
-    height: 72,
-    objectFit: "contain",
-    objectPosition: "center",
-    borderRadius: 18,
-    border: currentTheme.inputBorder,
-    background: "#fff"
+    width: 92,
+    height: 92,
+    borderRadius: "50%",
+    margin: "0 auto 14px",
+    background: "#fff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 8px 24px rgba(0,0,0,0.14)",
+    border: "1px solid rgba(0,0,0,0.06)",
+    overflow: "hidden",
+    padding: 10,
   }}
-                    />
+>
+  <img
+    src={logoDataUrl}
+    alt="logo preview"
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      objectPosition: "center",
+      display: "block",
+    }}
+  />
+</div>
 
                     <button onClick={removeLogo} style={ghostButtonStyle}>
                       移除 Logo
@@ -808,24 +873,24 @@ export default function Home() {
                   />
                 ) : (
                   <div
-                    style={{
-                      width: 84,
-                      height: 84,
-                      borderRadius: 22,
-                      margin: "0 auto 14px",
-                      background:
-                        theme === "dark"
-                          ? "rgba(255,255,255,0.08)"
-                          : "rgba(0,0,0,0.05)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 12,
-                      color: theme === "dark" ? "#aaa" : "#666",
-                    }}
-                  >
-                    LOGO
-                  </div>
+  style={{
+    width: 92,
+    height: 92,
+    borderRadius: "50%",
+    margin: "0 auto 14px",
+    background: theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 12,
+    color: theme === "dark" ? "#aaa" : "#666",
+    border: theme === "dark"
+      ? "1px solid rgba(255,255,255,0.08)"
+      : "1px solid rgba(0,0,0,0.06)",
+  }}
+>
+  LOGO
+</div>
                 )}
 
                 <div
