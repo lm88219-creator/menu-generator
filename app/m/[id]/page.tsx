@@ -1,29 +1,41 @@
-import { getMenu } from "@/lib/store"
-import Link from "next/link"
+import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
-export default function Page({ params }: any) {
-  const id = params?.id ?? ""
-  const data = getMenu(id)
+export default async function Page({ params }: any) {
+  const id = params?.id ?? "";
 
-  if (!data) {
+  const { data, error } = await supabase
+    .from("menus")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) {
     return (
-      <main style={{ padding: 40, color: "white", background: "black" }}>
+      <main
+        style={{
+          padding: 40,
+          color: "white",
+          background: "black",
+          minHeight: "100vh",
+        }}
+      >
         <h1>找不到菜單</h1>
         <Link href="/">回生成器</Link>
       </main>
-    )
+    );
   }
 
-  const items = String(data.menuText || "")
+  const items = String(data.menu_text || "")
     .split("\n")
     .map((line: string) => line.trim())
     .filter(Boolean)
     .map((line: string) => {
-      const parts = line.split(/\s+/)
-      const price = parts.pop() ?? ""
-      const name = parts.join(" ")
-      return { name, price }
-    })
+      const parts = line.split(/\s+/);
+      const price = parts.pop() ?? "";
+      const name = parts.join(" ");
+      return { name, price };
+    });
 
   return (
     <main
@@ -60,5 +72,5 @@ export default function Page({ params }: any) {
         ))}
       </div>
     </main>
-  )
+  );
 }

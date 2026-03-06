@@ -14,43 +14,48 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
 
   async function generateMenu() {
-    if (!restaurant.trim()) {
-      alert("請輸入餐廳名稱");
-      return;
-    }
+  if (!restaurant.trim()) {
+    alert("請輸入餐廳名稱");
+    return;
+  }
 
-    if (!menu.trim()) {
-      alert("請輸入菜單內容");
-      return;
-    }
+  if (!menu.trim()) {
+    alert("請輸入菜單內容");
+    return;
+  }
 
-    setCreating(true);
+  setCreating(true);
 
+  try {
     const res = await fetch("/api/menu", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    restaurant,
-    phone,
-    address,
-    hours,
-    menuText: menu,
-  }),
-});
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        restaurant,
+        phone,
+        address,
+        hours,
+        menuText: menu,
+      }),
+    });
 
-const data = await res.json();
+    const data = await res.json();
 
-if (!res.ok || !data?.id) {
-  alert(data?.error || "生成失敗");
-  setCreating(false);
-  return;
-}
+    if (!res.ok || !data?.id) {
+      alert(data?.error || "生成失敗");
+      return;
+    }
 
-const url = `${window.location.origin}/m/${data.id}`;
-setQrText(url);
-setCreating(false);
+    const url = `${window.location.origin}/m/${data.id}`;
+    setQrText(url);
+  } catch (error) {
+    console.error(error);
+    alert("生成失敗，請稍後再試");
+  } finally {
+    setCreating(false);
+  }
 }
 
   function fillExample() {
