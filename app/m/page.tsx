@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+type MenuItem = {
+  name: string;
+  price: string;
+};
 
 export default function MenuPage() {
   const [restaurant, setRestaurant] = useState("");
@@ -18,18 +23,37 @@ export default function MenuPage() {
     setLoaded(true);
   }, []);
 
+  const items = useMemo<MenuItem[]>(() => {
+    return menuText
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const parts = line.split(/\s+/);
+        if (parts.length < 2) {
+          return { name: line, price: "" };
+        }
+
+        const price = parts[parts.length - 1];
+        const name = parts.slice(0, -1).join(" ");
+        return { name, price };
+      });
+  }, [menuText]);
+
   if (!loaded) {
     return (
       <main
         style={{
-          padding: 24,
-          color: "white",
-          background: "black",
           minHeight: "100vh",
-          fontFamily: "Arial",
+          background: "#000",
+          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "Arial, sans-serif",
         }}
       >
-        <p>載入中...</p>
+        載入中...
       </main>
     );
   }
@@ -38,70 +62,142 @@ export default function MenuPage() {
     return (
       <main
         style={{
-          padding: 24,
-          color: "white",
-          background: "black",
           minHeight: "100vh",
-          fontFamily: "Arial",
+          background: "#000",
+          color: "#fff",
+          padding: "32px 20px",
+          fontFamily: "Arial, sans-serif",
         }}
       >
-        <h1>找不到這份菜單</h1>
-        <p>網址缺少資料。</p>
-        <Link href="/" style={{ color: "#4da3ff" }}>
-          回生成器
-        </Link>
+        <div
+          style={{
+            maxWidth: 640,
+            margin: "0 auto",
+            border: "1px solid #222",
+            borderRadius: 20,
+            padding: 24,
+            background: "#0b0b0b",
+          }}
+        >
+          <h1 style={{ marginTop: 0 }}>找不到這份菜單</h1>
+          <p style={{ color: "#aaa", lineHeight: 1.7 }}>網址缺少資料。</p>
+          <Link href="/" style={{ color: "#7ab8ff", textDecoration: "none" }}>
+            回生成器
+          </Link>
+        </div>
       </main>
     );
   }
 
-  const lines = menuText
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-
   return (
     <main
       style={{
-        padding: 24,
-        color: "white",
-        background: "black",
         minHeight: "100vh",
-        fontFamily: "Arial",
+        background: "#000",
+        color: "#fff",
+        padding: "24px 16px 40px",
+        fontFamily: "Arial, sans-serif",
       }}
     >
-      <h1 style={{ marginBottom: 16 }}>{restaurant}</h1>
-      <h2 style={{ marginBottom: 16 }}>菜單</h2>
+      <div
+        style={{
+          maxWidth: 680,
+          margin: "0 auto",
+        }}
+      >
+        <div
+          style={{
+            border: "1px solid #222",
+            borderRadius: 24,
+            padding: 24,
+            background: "#0b0b0b",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 13,
+              color: "#9a9a9a",
+              letterSpacing: 1,
+              marginBottom: 10,
+            }}
+          >
+            MENU
+          </div>
 
-      <div style={{ marginTop: 16 }}>
-        {lines.map((line, i) => {
-          const parts = line.trim().split(/\s+/);
-          const price = parts[parts.length - 1];
-          const name = parts.slice(0, -1).join(" ");
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 34,
+              lineHeight: 1.2,
+            }}
+          >
+            {restaurant}
+          </h1>
 
-          return (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                maxWidth: 320,
-                marginBottom: 12,
-                fontSize: 20,
-                borderBottom: "1px solid #333",
-                paddingBottom: 6,
-              }}
-            >
-              <span>{name || line}</span>
-              <span>{name ? price : ""}</span>
-            </div>
-          );
-        })}
-      </div>
+          <div
+            style={{
+              marginTop: 18,
+              height: 1,
+              background: "#222",
+            }}
+          />
 
-      <div style={{ marginTop: 24 }}>
-        <Link href="/" style={{ color: "#4da3ff" }}>
-          回生成器
-        </Link>
+          <div style={{ marginTop: 18 }}>
+            {items.map((item, index) => (
+              <div
+                key={`${item.name}-${index}`}
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: 12,
+                  padding: "12px 0",
+                  borderBottom:
+                    index === items.length - 1 ? "none" : "1px solid #1d1d1d",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 20,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {item.name}
+                </span>
+
+                <span
+                  style={{
+                    flex: 1,
+                    borderBottom: "1px dashed #333",
+                    transform: "translateY(-2px)",
+                  }}
+                />
+
+                <span
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 700,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {item.price}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: 18, textAlign: "center" }}>
+          <Link
+            href="/"
+            style={{
+              color: "#7ab8ff",
+              textDecoration: "none",
+              fontSize: 15,
+            }}
+          >
+            回生成器
+          </Link>
+        </div>
       </div>
     </main>
   );
