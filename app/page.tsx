@@ -25,41 +25,27 @@ export default function Home() {
     }
 
     setCreating(true);
-    setCopied(false);
 
-    try {
-      const res = await fetch("/api/menu", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          restaurant,
-          phone,
-          address,
-          hours,
-          menuText: menu,
-        }),
-      });
+    const res = await fetch("/api/menu", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        restaurant,
+        phone,
+        address,
+        hours,
+        menuText: menu,
+      }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        alert(data?.error || "生成失敗");
-        return;
-      }
+    const fullUrl = `${window.location.origin}${data.url}`;
 
-      if (!data?.url) {
-        alert("沒有拿到 url（API 回傳異常）");
-        return;
-      }
-
-      const fullUrl = `${window.location.origin}${data.url}`;
-      setQrText(fullUrl);
-    } catch (error) {
-      console.error(error);
-      alert("發生錯誤，請稍後再試");
-    } finally {
-      setCreating(false);
-    }
+    setQrText(fullUrl);
+    setCreating(false);
   }
 
   function fillExample() {
@@ -80,271 +66,166 @@ export default function Home() {
     setHours("");
     setMenu("");
     setQrText("");
-    setCopied(false);
   }
 
   async function copyUrl() {
-    if (!qrText) return;
+    await navigator.clipboard.writeText(qrText);
+    setCopied(true);
 
-    try {
-      await navigator.clipboard.writeText(qrText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error(error);
-      alert("複製失敗");
-    }
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
   }
 
-  const inputStyle: React.CSSProperties = {
+  const inputStyle = {
     width: "100%",
     padding: "14px 16px",
     borderRadius: 12,
-    border: "1px solid #2a2a2a",
-    background: "#111",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.04)",
     color: "#fff",
-    outline: "none",
     fontSize: 16,
-    boxSizing: "border-box",
   };
 
   return (
     <main
       style={{
         minHeight: "100vh",
-        background: "#000",
+        background:
+          "radial-gradient(circle at top,#1a1a1a 0%,#000 45%,#000 100%)",
         color: "#fff",
-        fontFamily: "Arial, sans-serif",
-        padding: "24px 16px",
+        padding: "40px 16px",
+        fontFamily: "Arial",
       }}
     >
-      <div style={{ maxWidth: 760, margin: "0 auto" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <div
           style={{
-            border: "1px solid #222",
-            borderRadius: 20,
-            padding: 24,
-            background: "#0b0b0b",
+            borderRadius: 28,
+            padding: 32,
+            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(255,255,255,0.03)",
+            backdropFilter: "blur(10px)",
           }}
         >
-          <h1 style={{ fontSize: 32, margin: "0 0 8px 0" }}>
-            餐廳 QR Code 菜單生成器
+          <h1
+            style={{
+              fontSize: 44,
+              margin: 0,
+            }}
+          >
+            QR Code 菜單生成器
           </h1>
 
-          <p style={{ margin: 0, color: "#aaa", fontSize: 15, lineHeight: 1.6 }}>
-            輸入店家資訊與菜單，立即生成可分享網址與 QR Code
+          <p
+            style={{
+              marginTop: 10,
+              color: "#aaa",
+              fontSize: 16,
+            }}
+          >
+            輸入餐廳資訊與菜單，立即產生可分享的 QR Code 菜單
           </p>
 
-          <div style={{ marginTop: 24 }}>
-            <label style={{ display: "block", marginBottom: 8, fontWeight: 700 }}>
-              餐廳名稱
-            </label>
+          <div style={{ marginTop: 30 }}>
+            <div style={{ marginBottom: 6 }}>餐廳名稱</div>
             <input
               value={restaurant}
               onChange={(e) => setRestaurant(e.target.value)}
-              placeholder="例如：友愛熱炒"
               style={inputStyle}
             />
           </div>
 
-          <div style={{ marginTop: 18 }}>
-            <label style={{ display: "block", marginBottom: 8, fontWeight: 700 }}>
-              電話
-            </label>
+          <div style={{ marginTop: 20 }}>
+            <div style={{ marginBottom: 6 }}>電話</div>
             <input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="例如：0912-345-678"
               style={inputStyle}
             />
           </div>
 
-          <div style={{ marginTop: 18 }}>
-            <label style={{ display: "block", marginBottom: 8, fontWeight: 700 }}>
-              地址
-            </label>
+          <div style={{ marginTop: 20 }}>
+            <div style={{ marginBottom: 6 }}>地址</div>
             <input
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="例如：嘉義市西區友愛路100號"
               style={inputStyle}
             />
           </div>
 
-          <div style={{ marginTop: 18 }}>
-            <label style={{ display: "block", marginBottom: 8, fontWeight: 700 }}>
-              營業時間
-            </label>
+          <div style={{ marginTop: 20 }}>
+            <div style={{ marginBottom: 6 }}>營業時間</div>
             <input
               value={hours}
               onChange={(e) => setHours(e.target.value)}
-              placeholder="例如：17:00 - 01:00"
               style={inputStyle}
             />
           </div>
 
-          <div style={{ marginTop: 18 }}>
-            <label style={{ display: "block", marginBottom: 8, fontWeight: 700 }}>
-              菜單內容
-            </label>
-            <div style={{ color: "#999", fontSize: 13, marginBottom: 8 }}>
-              每行一項，格式：菜名 空格 價格
-            </div>
+          <div style={{ marginTop: 20 }}>
+            <div style={{ marginBottom: 6 }}>菜單</div>
+
             <textarea
-              rows={8}
+              rows={7}
               value={menu}
               onChange={(e) => setMenu(e.target.value)}
-              placeholder={`炒蝦球 200
-炒螺肉 120
-炒飯 80
-燙青菜 50`}
-              style={{
-                ...inputStyle,
-                resize: "vertical",
-                lineHeight: 1.6,
-              }}
+              style={inputStyle}
             />
           </div>
 
-          <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <button
-              onClick={generateMenu}
-              disabled={creating}
-              style={{
-                padding: "14px 20px",
-                borderRadius: 12,
-                border: "none",
-                background: creating ? "#444" : "#fff",
-                color: creating ? "#ddd" : "#000",
-                cursor: creating ? "not-allowed" : "pointer",
-                fontSize: 16,
-                fontWeight: 700,
-              }}
-            >
+          <div
+            style={{
+              marginTop: 24,
+              display: "flex",
+              gap: 10,
+              flexWrap: "wrap",
+            }}
+          >
+            <button onClick={generateMenu}>
               {creating ? "生成中..." : "生成 QR 菜單"}
             </button>
 
-            <button
-              onClick={fillExample}
-              style={{
-                padding: "14px 20px",
-                borderRadius: 12,
-                border: "1px solid #2a2a2a",
-                background: "#151515",
-                color: "#fff",
-                cursor: "pointer",
-                fontSize: 15,
-                fontWeight: 700,
-              }}
-            >
-              填入範例
-            </button>
+            <button onClick={fillExample}>填入範例</button>
 
-            <button
-              onClick={clearAll}
-              style={{
-                padding: "14px 20px",
-                borderRadius: 12,
-                border: "1px solid #2a2a2a",
-                background: "#151515",
-                color: "#fff",
-                cursor: "pointer",
-                fontSize: 15,
-                fontWeight: 700,
-              }}
-            >
-              清空
-            </button>
+            <button onClick={clearAll}>清空</button>
           </div>
         </div>
 
         {qrText && (
           <div
             style={{
-              marginTop: 20,
-              border: "1px solid #222",
-              borderRadius: 20,
-              padding: 24,
-              background: "#0b0b0b",
+              marginTop: 30,
+              borderRadius: 28,
+              padding: 32,
+              border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(255,255,255,0.03)",
             }}
           >
-            <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 8 }}>
-              ✅ 生成成功
-            </div>
-
-            <div style={{ color: "#aaa", fontSize: 14, marginBottom: 20 }}>
-              掃描 QR Code 或直接開啟網址查看菜單
-            </div>
+            <h2>菜單 QR Code</h2>
 
             <div
               style={{
-                display: "inline-block",
+                marginTop: 10,
                 background: "#fff",
-                padding: 14,
+                display: "inline-block",
+                padding: 16,
                 borderRadius: 16,
               }}
             >
               <QRCodeCanvas value={qrText} size={220} />
             </div>
 
-            <div
-              style={{
-                marginTop: 18,
-                padding: 14,
-                borderRadius: 12,
-                background: "#111",
-                border: "1px solid #222",
-                wordBreak: "break-all",
-                lineHeight: 1.7,
-              }}
-            >
-              <div style={{ color: "#aaa", fontSize: 13, marginBottom: 4 }}>
-                菜單網址
-              </div>
-              <a
-                href={qrText}
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: "#7ab8ff", textDecoration: "none" }}
-              >
+            <div style={{ marginTop: 20 }}>
+              <a href={qrText} target="_blank">
                 {qrText}
               </a>
             </div>
 
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 16 }}>
-              <button
-                onClick={copyUrl}
-                style={{
-                  padding: "12px 16px",
-                  borderRadius: 12,
-                  border: "1px solid #2a2a2a",
-                  background: "#151515",
-                  color: "#fff",
-                  cursor: "pointer",
-                  fontSize: 15,
-                  fontWeight: 700,
-                }}
-              >
+            <div style={{ marginTop: 12 }}>
+              <button onClick={copyUrl}>
                 {copied ? "已複製網址" : "複製網址"}
               </button>
-
-              <a
-                href={qrText}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  padding: "12px 16px",
-                  borderRadius: 12,
-                  border: "1px solid #2a2a2a",
-                  background: "#151515",
-                  color: "#fff",
-                  textDecoration: "none",
-                  fontSize: 15,
-                  fontWeight: 700,
-                }}
-              >
-                開啟菜單頁
-              </a>
             </div>
           </div>
         )}
