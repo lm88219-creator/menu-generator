@@ -1,8 +1,11 @@
 import { getMenu } from "@/lib/store";
+import type { CSSProperties } from "react";
 
 type PageProps = {
   params: Promise<{ id: string }>;
 };
+
+type ThemeType = "dark" | "light" | "warm";
 
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
@@ -54,7 +57,7 @@ export default async function Page({ params }: PageProps) {
     );
   }
 
-  const theme = data.theme ?? "dark";
+  const theme = (data.theme ?? "dark") as ThemeType;
 
   const lines = data.menuText.split("\n");
 
@@ -83,85 +86,98 @@ export default async function Page({ params }: PageProps) {
 
   let lastCategory = "";
 
-  const pageBackground =
-    theme === "light"
-      ? "#ffffff"
-      : theme === "warm"
-      ? "#f6f1e7"
-      : "radial-gradient(circle at top, #1a1a1a 0%, #000 45%, #000 100%)";
+  const themeStyles = {
+    dark: {
+      pageBackground:
+        "radial-gradient(circle at top, #1d1d1d 0%, #050505 50%, #000 100%)",
+      pageTextColor: "#fff",
+      cardBackground: "rgba(255,255,255,0.04)",
+      cardBorder: "1px solid rgba(255,255,255,0.08)",
+      mutedColor: "#a9a9a9",
+      lineColor: "rgba(255,255,255,0.12)",
+      rowBorder: "1px solid rgba(255,255,255,0.08)",
+      linkColor: "#f4d58d",
+      accent: "#f4d58d",
+      heroBadgeBg: "rgba(255,255,255,0.08)",
+      secondaryBg: "rgba(255,255,255,0.08)",
+      primaryBg: "#fff",
+      primaryText: "#000",
+    },
+    light: {
+      pageBackground: "linear-gradient(180deg,#f7f7f7 0%,#ececec 100%)",
+      pageTextColor: "#111",
+      cardBackground: "rgba(255,255,255,0.92)",
+      cardBorder: "1px solid rgba(0,0,0,0.08)",
+      mutedColor: "#666",
+      lineColor: "rgba(0,0,0,0.12)",
+      rowBorder: "1px solid rgba(0,0,0,0.08)",
+      linkColor: "#0b57d0",
+      accent: "#0b57d0",
+      heroBadgeBg: "rgba(0,0,0,0.05)",
+      secondaryBg: "#ffffff",
+      primaryBg: "#111",
+      primaryText: "#fff",
+    },
+    warm: {
+      pageBackground: "linear-gradient(180deg,#f6eee2 0%,#eadbc8 100%)",
+      pageTextColor: "#3e2d20",
+      cardBackground: "rgba(255,250,244,0.92)",
+      cardBorder: "1px solid rgba(88,54,24,0.12)",
+      mutedColor: "#7b6756",
+      lineColor: "rgba(88,54,24,0.16)",
+      rowBorder: "1px solid rgba(88,54,24,0.1)",
+      linkColor: "#8b5e34",
+      accent: "#8b5e34",
+      heroBadgeBg: "rgba(88,54,24,0.08)",
+      secondaryBg: "rgba(255,255,255,0.72)",
+      primaryBg: "#4e3426",
+      primaryText: "#fff",
+    },
+  }[theme];
 
-  const pageTextColor = theme === "light" || theme === "warm" ? "#111" : "#fff";
-
-  const cardBackground =
-    theme === "light"
-      ? "#f8f8f8"
-      : theme === "warm"
-      ? "rgba(255,248,240,0.9)"
-      : "rgba(255,255,255,0.03)";
-
-  const cardBorder =
-    theme === "light" || theme === "warm"
-      ? "1px solid rgba(0,0,0,0.08)"
-      : "1px solid rgba(255,255,255,0.08)";
-
-  const mutedColor = theme === "light" || theme === "warm" ? "#666" : "#aaa";
-  const lineColor =
-    theme === "light" || theme === "warm"
-      ? "rgba(0,0,0,0.12)"
-      : "rgba(255,255,255,0.12)";
-  const rowBorder =
-    theme === "light" || theme === "warm"
-      ? "1px solid rgba(0,0,0,0.08)"
-      : "1px solid rgba(255,255,255,0.08)";
-
-  const linkColor = theme === "light" || theme === "warm" ? "#0b57d0" : "#7cc4ff";
-
-  const cardStyle: React.CSSProperties = {
-    borderRadius: 24,
-    padding: 24,
-    border: cardBorder,
-    background: cardBackground,
-    backdropFilter: "blur(10px)",
+  const cardStyle: CSSProperties = {
+    borderRadius: 28,
+    padding: 26,
+    border: themeStyles.cardBorder,
+    background: themeStyles.cardBackground,
+    backdropFilter: "blur(12px)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
   };
 
-  const secondaryActionStyle: React.CSSProperties = {
+  const secondaryActionStyle: CSSProperties = {
     display: "inline-block",
     padding: "12px 16px",
-    borderRadius: 12,
-    background: theme === "light" || theme === "warm" ? "#ffffff" : "rgba(255,255,255,0.08)",
-    color: pageTextColor,
+    borderRadius: 14,
+    background: themeStyles.secondaryBg,
+    color: themeStyles.pageTextColor,
     textDecoration: "none",
-    border:
-      theme === "light" || theme === "warm"
-        ? "1px solid rgba(0,0,0,0.08)"
-        : "1px solid rgba(255,255,255,0.06)",
+    border: themeStyles.cardBorder,
+    fontWeight: 600,
   };
 
-  const primaryActionStyle: React.CSSProperties = {
+  const primaryActionStyle: CSSProperties = {
     display: "inline-block",
     padding: "12px 16px",
-    borderRadius: 12,
-    background: theme === "light" || theme === "warm" ? "#111" : "#fff",
-    color: theme === "light" || theme === "warm" ? "#fff" : "#000",
+    borderRadius: 14,
+    background: themeStyles.primaryBg,
+    color: themeStyles.primaryText,
     textDecoration: "none",
     fontWeight: 700,
-    border:
-      theme === "light" || theme === "warm"
-        ? "1px solid rgba(0,0,0,0.1)"
-        : "1px solid rgba(255,255,255,0.1)",
+    border: "none",
+    boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
   };
 
   return (
     <main
       style={{
         minHeight: "100vh",
-        background: pageBackground,
-        color: pageTextColor,
+        background: themeStyles.pageBackground,
+        color: themeStyles.pageTextColor,
         padding: "24px 16px 60px",
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ maxWidth: 760, margin: "0 auto" }}>
+      <div style={{ maxWidth: 860, margin: "0 auto" }}>
         <div
           style={{
             textAlign: "center",
@@ -170,14 +186,36 @@ export default async function Page({ params }: PageProps) {
         >
           <div
             style={{
-              color: mutedColor,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: themeStyles.mutedColor,
               fontSize: 13,
               letterSpacing: 3,
-              marginBottom: 10,
+              marginBottom: 14,
+              padding: "8px 14px",
+              borderRadius: 999,
+              background: themeStyles.heroBadgeBg,
             }}
           >
             DIGITAL MENU
           </div>
+
+          {data.logoDataUrl ? (
+            <div style={{ marginBottom: 14 }}>
+              <img
+                src={data.logoDataUrl}
+                alt={`${data.restaurant} logo`}
+                style={{
+                  width: 88,
+                  height: 88,
+                  objectFit: "cover",
+                  borderRadius: 24,
+                  boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
+                }}
+              />
+            </div>
+          ) : null}
 
           <h1
             style={{
@@ -189,6 +227,16 @@ export default async function Page({ params }: PageProps) {
           >
             {data.restaurant}
           </h1>
+
+          <p
+            style={{
+              marginTop: 10,
+              color: themeStyles.mutedColor,
+              fontSize: 15,
+            }}
+          >
+            掃碼即看，手機友善的餐廳數位菜單
+          </p>
         </div>
 
         <div style={cardStyle}>
@@ -202,15 +250,16 @@ export default async function Page({ params }: PageProps) {
           >
             {data.phone && (
               <div>
-                <div style={{ color: mutedColor, fontSize: 14, marginBottom: 4 }}>
+                <div style={{ color: themeStyles.mutedColor, fontSize: 14, marginBottom: 4 }}>
                   📞 電話
                 </div>
                 <a
                   href={`tel:${data.phone}`}
                   style={{
-                    color: linkColor,
+                    color: themeStyles.linkColor,
                     textDecoration: "none",
                     fontSize: 18,
+                    fontWeight: 700,
                   }}
                 >
                   {data.phone}
@@ -220,7 +269,7 @@ export default async function Page({ params }: PageProps) {
 
             {data.address && (
               <div>
-                <div style={{ color: mutedColor, fontSize: 14, marginBottom: 4 }}>
+                <div style={{ color: themeStyles.mutedColor, fontSize: 14, marginBottom: 4 }}>
                   📍 地址
                 </div>
                 <a
@@ -230,7 +279,7 @@ export default async function Page({ params }: PageProps) {
                   target="_blank"
                   rel="noreferrer"
                   style={{
-                    color: linkColor,
+                    color: themeStyles.linkColor,
                     textDecoration: "none",
                     fontSize: 18,
                   }}
@@ -242,13 +291,10 @@ export default async function Page({ params }: PageProps) {
 
             {data.hours && (
               <div>
-                <div style={{ color: mutedColor, fontSize: 14, marginBottom: 4 }}>
+                <div style={{ color: themeStyles.mutedColor, fontSize: 14, marginBottom: 4 }}>
                   🕒 營業時間
                 </div>
                 <div style={{ fontSize: 18 }}>{data.hours}</div>
-                <div style={{ color: mutedColor, fontSize: 14, marginTop: 4 }}>
-                  最後點餐時間：0:30
-                </div>
               </div>
             )}
           </div>
@@ -285,7 +331,7 @@ export default async function Page({ params }: PageProps) {
                         style={{
                           flex: 1,
                           height: 1,
-                          background: lineColor,
+                          background: themeStyles.lineColor,
                         }}
                       />
                       <div
@@ -294,6 +340,7 @@ export default async function Page({ params }: PageProps) {
                           fontWeight: 700,
                           letterSpacing: 2,
                           whiteSpace: "nowrap",
+                          color: themeStyles.accent,
                         }}
                       >
                         {item.category}
@@ -302,7 +349,7 @@ export default async function Page({ params }: PageProps) {
                         style={{
                           flex: 1,
                           height: 1,
-                          background: lineColor,
+                          background: themeStyles.lineColor,
                         }}
                       />
                     </div>
@@ -315,7 +362,7 @@ export default async function Page({ params }: PageProps) {
                     alignItems: "center",
                     gap: 12,
                     padding: "14px 0",
-                    borderBottom: rowBorder,
+                    borderBottom: themeStyles.rowBorder,
                   }}
                 >
                   <div
@@ -331,7 +378,7 @@ export default async function Page({ params }: PageProps) {
                   <div
                     style={{
                       flex: 1,
-                      borderBottom: `1px dashed ${lineColor.replace("0.12", "0.2")}`,
+                      borderBottom: `1px dashed ${themeStyles.lineColor}`,
                       transform: "translateY(2px)",
                     }}
                   />

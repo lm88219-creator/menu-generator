@@ -9,6 +9,7 @@ export type MenuData = {
   hours?: string;
   menuText: string;
   theme?: string;
+  logoDataUrl?: string;
 };
 
 export async function saveMenu(id: string, data: MenuData) {
