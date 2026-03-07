@@ -289,11 +289,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <a href="#appearance-settings" className="uu-btn uu-btn-ghost">外觀設定</a>
             <a href="#advanced-tools" className="uu-btn uu-btn-ghost">進階工具</a>
           </div>
-          <div className="uu-form-actions uu-pro-editor-toolbar-actions">
-            <span className={`uu-status ${isPublished ? "is-on" : "is-off"}`}>{isPublished ? "上架中" : "已下架"}</span>
-            {message ? <span className="uu-inline-hint is-success">{message}</span> : null}
-            <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
-          </div>
+          {message ? <div className="uu-editor-v4-topbar-message"><span className="uu-inline-hint is-success">{message}</span></div> : null}
         </div>
       </section>
 
@@ -333,33 +329,67 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>菜單品項</h2>
-                <p>這裡是最常編輯的地方，所以直接做成固定欄位清單。</p>
+                <p>把最常用的編輯區做成卡片式欄位，分類、價格與狀態一眼就能看清楚。</p>
               </div>
               <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
             </div>
 
-            <div className="uu-items-stack">
-              <div className="uu-item-table-header">
-                <span>分類</span>
-                <span>菜名</span>
-                <span>價格</span>
-                <span>備註</span>
-                <span>狀態</span>
-                <span className="is-actions">操作</span>
+            <div className="uu-menu-editor-toolbar">
+              <div className="uu-menu-editor-stats">
+                <div className="uu-menu-editor-stat">
+                  <span>總列數</span>
+                  <strong>{formItems.length}</strong>
+                </div>
+                <div className="uu-menu-editor-stat">
+                  <span>供應中</span>
+                  <strong>{activeCount}</strong>
+                </div>
+                <div className="uu-menu-editor-stat">
+                  <span>售完</span>
+                  <strong>{soldOutCount}</strong>
+                </div>
               </div>
+              <div className="uu-menu-editor-tip-card">
+                <strong>編輯建議</strong>
+                <p>分類用統一名稱、價格只填數字、備註留給辣度或限量資訊，整份菜單會更整齊。</p>
+              </div>
+            </div>
+
+            <div className="uu-items-stack uu-menu-editor-stack">
               {formItems.map((item, index) => (
-                <article key={item.uid} className="uu-item-row">
-                  <input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="熱炒" />
-                  <input className="uu-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="炒螺肉" />
-                  <input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="120" />
-                  <input className="uu-input" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="小辣 / 限量" />
-                  <label className="uu-switch-row uu-switch-cell">
-                    <input type="checkbox" checked={item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: e.target.checked })} />
-                    <span>{item.soldOut ? "售完" : "供應中"}</span>
-                  </label>
-                  <div className="uu-row-actions">
-                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => duplicateItem(index)}>複製列</button>
-                    <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
+                <article key={item.uid} className="uu-menu-item-card">
+                  <div className="uu-menu-item-card-head">
+                    <div>
+                      <span className="uu-menu-item-index">第 {index + 1} 項</span>
+                      <strong>{item.name.trim() || "未命名品項"}</strong>
+                    </div>
+                    <label className={`uu-menu-item-status ${item.soldOut ? "is-off" : "is-on"}`}>
+                      <input type="checkbox" checked={item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: e.target.checked })} />
+                      <span>{item.soldOut ? "售完" : "供應中"}</span>
+                    </label>
+                  </div>
+
+                  <div className="uu-menu-item-grid">
+                    <Field label="分類">
+                      <input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="熱炒" />
+                    </Field>
+                    <Field label="菜名">
+                      <input className="uu-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="炒螺肉" />
+                    </Field>
+                    <Field label="價格">
+                      <div className="uu-price-input-wrap">
+                        <span>$</span>
+                        <input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="120" />
+                      </div>
+                    </Field>
+                    <Field label="備註">
+                      <input className="uu-input" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="小辣 / 限量" />
+                    </Field>
+                  </div>
+
+                  <div className="uu-menu-item-actions">
+                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => duplicateItem(index)}>複製這項</button>
+                    <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除這項</button>
                   </div>
                 </article>
               ))}
@@ -370,25 +400,32 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>外觀設定</h2>
-                <p>把主題、Logo 與公開頁預覽放在同一區，選風格時會更有方向，也更像真的品牌設定。</p>
+                <p>把風格挑選、Logo 與公開頁預覽整合成一個品牌設定區，選主題時更直覺也更容易判斷效果。</p>
               </div>
             </div>
 
             <div className="uu-editor-v4-appearance-layout">
               <div className="uu-editor-v4-appearance-main">
-                <div className="uu-editor-v4-appearance-overview">
+                <div className="uu-editor-v4-appearance-overview uu-editor-v4-appearance-overview-pro">
                   <div className="uu-editor-v4-appearance-intro">
                     <span className="uu-chip">目前主題：{selectedTheme.label}</span>
                     <p>{selectedTheme.desc}</p>
                     <div className="uu-editor-v4-appearance-tags">
                       <span>公開頁同步套用</span>
                       <span>{logoDataUrl ? "含 Logo" : "未使用 Logo"}</span>
+                      <span>預覽即時更新</span>
                     </div>
                   </div>
                   <div className="uu-editor-v4-theme-note-accent" style={{ background: selectedTheme.accent }} />
                 </div>
 
-                <Field label="菜單風格">
+                <div className="uu-editor-v4-theme-selector-card">
+                  <div className="uu-editor-v4-subhead">
+                    <div>
+                      <span>主題挑選</span>
+                      <strong>選一個最符合店家氣質的視覺風格</strong>
+                    </div>
+                  </div>
                   <div className="uu-editor-theme-grid">
                     {THEME_OPTIONS.map((option) => {
                       const active = option.value === theme;
@@ -414,9 +451,9 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                       );
                     })}
                   </div>
-                </Field>
+                </div>
 
-                <div className="uu-editor-v4-theme-note-card">
+                <div className="uu-editor-v4-theme-note-card uu-editor-v4-theme-preview-card">
                   <div className="uu-editor-v4-theme-note-head">
                     <div>
                       <span>客戶公開頁預覽</span>
@@ -447,15 +484,20 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                       </div>
                     </div>
                   </div>
+                  <div className="uu-editor-v4-theme-checklist">
+                    <div><strong>字體閱讀性</strong><span>主色與背景已一起調整，不容易看起來太花。</span></div>
+                    <div><strong>品牌一致性</strong><span>Logo、主題與公開頁會同步呈現同一種風格。</span></div>
+                    <div><strong>手機版觀感</strong><span>公開頁在手機上也會沿用這組配色與質感設定。</span></div>
+                  </div>
                 </div>
               </div>
 
               <div className="uu-editor-v4-appearance-side">
-                <section className="uu-editor-v4-asset-card">
+                <section className="uu-editor-v4-asset-card uu-editor-v4-logo-pro-card">
                   <div className="uu-section-head uu-section-head-tight">
                     <div>
                       <h3>Logo 設定</h3>
-                      <p>建議使用正方形圖片，客人頁面看起來會比較整齊。</p>
+                      <p>建議使用正方形或圓形識別，客人頁面看起來會更專業。</p>
                     </div>
                   </div>
                   <div className="uu-editor-v4-logo-panel">
@@ -482,7 +524,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   </div>
                 </section>
 
-                <section className="uu-editor-v4-asset-card uu-editor-v4-appearance-tips">
+                <section className="uu-editor-v4-asset-card uu-editor-v4-appearance-tips uu-editor-v4-brand-tips-card">
                   <div className="uu-section-head uu-section-head-tight">
                     <div>
                       <h3>建議搭配</h3>
