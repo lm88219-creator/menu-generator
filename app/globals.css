@@ -4222,3 +4222,250 @@ select.uu-input:focus {
     align-items: stretch;
   }
 }
+
+
+.uu-editor-v4-appearance-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.uu-editor-v4-appearance-section::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 140px;
+  background: linear-gradient(180deg, rgba(110, 168, 255, 0.08), rgba(110, 168, 255, 0));
+  pointer-events: none;
+}
+
+.uu-editor-v4-appearance-layout,
+.uu-editor-v4-tools-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.uu-editor-v4-appearance-layout {
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  align-items: start;
+}
+
+.uu-editor-v4-appearance-main,
+.uu-editor-v4-appearance-side {
+  display: grid;
+  gap: 16px;
+}
+
+.uu-editor-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.uu-editor-theme-card {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  text-align: left;
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: linear-gradient(180deg, rgba(17, 22, 29, 0.98), rgba(11, 15, 21, 0.98));
+  color: #edf2fb;
+  cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.uu-editor-theme-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(110, 168, 255, 0.3);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
+}
+
+.uu-editor-theme-card.is-active {
+  border-color: rgba(110, 168, 255, 0.48);
+  box-shadow: inset 0 0 0 1px rgba(110, 168, 255, 0.18), 0 18px 36px rgba(0, 0, 0, 0.28);
+}
+
+.uu-editor-theme-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.uu-editor-theme-card strong {
+  font-size: 15px;
+}
+
+.uu-editor-theme-card em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 800;
+  color: #d7e5ff;
+}
+
+.uu-editor-theme-card p {
+  margin: 0;
+  color: #98a6ba;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.uu-editor-theme-card i {
+  display: block;
+  width: 44px;
+  height: 4px;
+  border-radius: 999px;
+}
+
+.uu-editor-theme-preview {
+  display: grid;
+  grid-template-columns: 1.15fr .95fr .75fr;
+  gap: 8px;
+}
+
+.uu-editor-theme-preview span {
+  display: block;
+  height: 62px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.uu-editor-v4-theme-note-card,
+.uu-editor-v4-asset-card,
+.uu-editor-v4-tool-card,
+.uu-editor-v4-tool-empty {
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: linear-gradient(180deg, rgba(15, 19, 26, 0.98), rgba(10, 13, 18, 0.98));
+}
+
+.uu-editor-v4-theme-note-card,
+.uu-editor-v4-asset-card,
+.uu-editor-v4-tool-empty {
+  padding: 18px;
+}
+
+.uu-editor-v4-theme-note-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.uu-editor-v4-theme-note-head span {
+  display: block;
+  color: #8f9ab1;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.uu-editor-v4-theme-note-head strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 18px;
+}
+
+.uu-editor-v4-theme-note-card p,
+.uu-editor-v4-tool-empty p,
+.uu-editor-v4-raw-note,
+.uu-editor-v4-tool-tip {
+  margin: 0;
+  color: #98a6ba;
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+.uu-editor-v4-theme-note-accent {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.uu-editor-v4-logo-panel,
+.uu-editor-v4-logo-preview-card,
+.uu-editor-v4-logo-actions,
+.uu-editor-v4-logo-empty {
+  display: grid;
+  gap: 14px;
+}
+
+.uu-editor-v4-logo-preview-card {
+  align-items: start;
+}
+
+.uu-editor-v4-logo-preview-large {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(255,255,255,0.04);
+  box-shadow: 0 18px 32px rgba(0,0,0,0.22);
+}
+
+.uu-upload-box-compact {
+  min-width: 0;
+  min-height: 52px;
+  width: 100%;
+}
+
+.uu-editor-v4-tools-grid {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+}
+
+.uu-editor-v4-tool-card {
+  padding: 18px;
+}
+
+.uu-editor-v4-tool-tip {
+  margin: -2px 0 12px;
+}
+
+.uu-qr-card-pro {
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.uu-editor-v4-tool-empty {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  text-align: center;
+}
+
+.uu-editor-v4-tool-empty strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.uu-editor-v4-raw-note {
+  padding: 0 0 12px;
+}
+
+.uu-editor-v4-raw-textarea {
+  min-height: 220px;
+}
+
+@media (max-width: 1080px) {
+  .uu-editor-v4-appearance-layout,
+  .uu-editor-v4-tools-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .uu-editor-theme-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .uu-editor-theme-preview span {
+    height: 54px;
+  }
+}

@@ -27,13 +27,13 @@ type MenuItemForm = {
   soldOut: boolean;
 };
 
-const THEME_OPTIONS: Array<{ value: ThemeType; label: string }> = [
-  { value: "dark", label: "深色經典" },
-  { value: "light", label: "簡約白" },
-  { value: "warm", label: "暖木咖啡" },
-  { value: "ocean", label: "海洋清新" },
-  { value: "forest", label: "森林自然" },
-  { value: "rose", label: "玫瑰奶茶" },
+const THEME_OPTIONS: Array<{ value: ThemeType; label: string; desc: string; accent: string; preview: [string, string, string] }> = [
+  { value: "dark", label: "深色經典", desc: "適合熱炒、宵夜、餐酒館。對比清楚、穩重耐看。", accent: "#6ea8ff", preview: ["#101723", "#172235", "#0d1420"] },
+  { value: "light", label: "簡約白", desc: "閱讀感最乾淨，適合一般餐廳與簡潔菜單。", accent: "#d6b267", preview: ["#f7f8fa", "#ffffff", "#eef2f7"] },
+  { value: "warm", label: "暖木咖啡", desc: "偏溫暖餐飲感，適合咖啡館、小吃、家常風格。", accent: "#d08a54", preview: ["#2d211a", "#412d21", "#221812"] },
+  { value: "ocean", label: "海洋清新", desc: "色調明亮清爽，適合海鮮、健康餐、早午餐。", accent: "#4da3ff", preview: ["#10202d", "#173247", "#0d1923"] },
+  { value: "forest", label: "森林自然", desc: "較有自然感，適合便當、蔬食、手作餐飲。", accent: "#6fb17a", preview: ["#142118", "#203126", "#101813"] },
+  { value: "rose", label: "玫瑰奶茶", desc: "較柔和有質感，適合甜點、飲料與輕食。", accent: "#d78aa4", preview: ["#2b1a21", "#3a222b", "#1f1418"] },
 ];
 
 function toFormItems(menuText: string): MenuItemForm[] {
@@ -117,6 +117,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const deskCodes = useMemo(() => parseDeskInput(deskInput), [deskInput]);
   const soldOutCount = formItems.filter((item) => item.soldOut).length;
   const activeCount = formItems.filter((item) => item.name.trim() && !item.soldOut).length;
+  const selectedTheme = THEME_OPTIONS.find((item) => item.value === theme) || THEME_OPTIONS[0];
 
   useEffect(() => {
     setMenuText(toMenuText(formItems));
@@ -241,6 +242,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
           <div className="uu-editor-v4-anchor-nav">
             <a href="#shop-info" className="uu-btn uu-btn-ghost">店家資訊</a>
             <a href="#menu-items" className="uu-btn uu-btn-ghost">菜單品項</a>
+            <a href="#appearance-settings" className="uu-btn uu-btn-ghost">外觀設定</a>
             <a href="#advanced-tools" className="uu-btn uu-btn-ghost">進階工具</a>
           </div>
           <div className="uu-form-actions uu-pro-editor-toolbar-actions">
@@ -320,38 +322,89 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             </div>
           </section>
 
-          <section className="uu-simple-section uu-editor-v4-section">
+          <section id="appearance-settings" className="uu-simple-section uu-editor-v4-section uu-editor-v4-appearance-section">
             <div className="uu-section-head">
               <div>
                 <h2>外觀設定</h2>
-                <p>這裡保留比較少改的設定，和主編輯區分開。</p>
+                <p>把風格選擇、Logo 與外觀說明集中整理，改完比較容易知道實際呈現方向。</p>
               </div>
             </div>
 
-            <div className="uu-form-grid-2">
-              <Field label="菜單風格">
-                <select className="uu-input" value={theme} onChange={(e) => setTheme(e.target.value as ThemeType)}>
-                  {THEME_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="說明"><div className="uu-inline-hint">目前使用逐列編輯模式，適合快速改菜名、價格、售完狀態。</div></Field>
-            </div>
+            <div className="uu-editor-v4-appearance-layout">
+              <div className="uu-editor-v4-appearance-main">
+                <Field label="菜單風格">
+                  <div className="uu-editor-theme-grid">
+                    {THEME_OPTIONS.map((option) => {
+                      const active = option.value === theme;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          className={`uu-editor-theme-card ${active ? "is-active" : ""}`}
+                          onClick={() => setTheme(option.value)}
+                        >
+                          <div className="uu-editor-theme-preview">
+                            {option.preview.map((color, index) => (
+                              <span key={`${option.value}-${index}`} style={{ background: color }} />
+                            ))}
+                          </div>
+                          <div className="uu-editor-theme-card-head">
+                            <strong>{option.label}</strong>
+                            {active ? <em>目前使用</em> : null}
+                          </div>
+                          <p>{option.desc}</p>
+                          <i style={{ background: option.accent }} />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </Field>
 
-            <div className="uu-logo-row">
-              <label className="uu-upload-box">
-                <input type="file" accept="image/*" onChange={handleLogoUpload} />
-                <span>上傳 Logo</span>
-              </label>
-              {logoDataUrl ? (
-                <div className="uu-logo-preview-wrap">
-                  <img src={logoDataUrl} alt="logo preview" className="uu-logo-preview" />
-                  <button type="button" className="uu-btn uu-btn-secondary" onClick={() => setLogoDataUrl("")}>移除 Logo</button>
+                <div className="uu-editor-v4-theme-note-card">
+                  <div className="uu-editor-v4-theme-note-head">
+                    <div>
+                      <span>目前選擇</span>
+                      <strong>{selectedTheme.label}</strong>
+                    </div>
+                    <div className="uu-editor-v4-theme-note-accent" style={{ background: selectedTheme.accent }} />
+                  </div>
+                  <p>{selectedTheme.desc}</p>
+                  <div className="uu-inline-hint">菜單公開頁的視覺會依照這個風格套用，想要更穩重就選深色經典，想要更易讀就選簡約白。</div>
                 </div>
-              ) : (
-                <div className="uu-inline-hint">建議用正方形圖片，顯示會比較整齊。</div>
-              )}
+              </div>
+
+              <div className="uu-editor-v4-appearance-side">
+                <section className="uu-editor-v4-asset-card">
+                  <div className="uu-section-head uu-section-head-tight">
+                    <div>
+                      <h3>Logo 設定</h3>
+                      <p>建議使用正方形圖片，客人頁面看起來會比較整齊。</p>
+                    </div>
+                  </div>
+                  <div className="uu-editor-v4-logo-panel">
+                    {logoDataUrl ? (
+                      <div className="uu-editor-v4-logo-preview-card">
+                        <img src={logoDataUrl} alt="logo preview" className="uu-editor-v4-logo-preview-large" />
+                        <div className="uu-editor-v4-logo-actions">
+                          <label className="uu-upload-box uu-upload-box-compact">
+                            <input type="file" accept="image/*" onChange={handleLogoUpload} />
+                            <span>更換 Logo</span>
+                          </label>
+                          <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => setLogoDataUrl("")}>移除 Logo</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="uu-editor-v4-logo-empty">
+                        <label className="uu-upload-box uu-full-width">
+                          <input type="file" accept="image/*" onChange={handleLogoUpload} />
+                          <span>上傳 Logo</span>
+                        </label>
+                        <div className="uu-inline-hint">沒有 Logo 也能正常顯示菜單，之後再補也可以。</div>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              </div>
             </div>
           </section>
 
@@ -359,16 +412,16 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>進階工具</h2>
-                <p>把不常用的工具收在最後，主編輯流程會更乾淨。</p>
+                <p>把較少用、偏分享或檢查用的工具集中到最後，避免干擾主要編輯流程。</p>
               </div>
             </div>
 
-            <div className="uu-collapsible-stack">
-              <div className="uu-editor-v4-advanced-card">
+            <div className="uu-editor-v4-tools-grid">
+              <div className="uu-editor-v4-advanced-card uu-editor-v4-tool-card">
                 <div className="uu-section-head uu-section-head-tight">
                   <div>
                     <h3>桌號 QR 工具</h3>
-                    <p>只保留手動輸入桌號，避免不明確的連號功能造成操作困惑。</p>
+                    <p>適合需要桌卡的店家。手動輸入桌號後，直接生成可分享的桌號網址與 QR。</p>
                   </div>
                 </div>
                 <Field label="手動輸入桌號（用空白、逗號或換行分隔）">
@@ -381,30 +434,37 @@ B1 B2
 VIP1"
                   />
                 </Field>
+                <div className="uu-editor-v4-tool-tip">只顯示前 8 組預覽，避免這區塊太長影響操作。</div>
                 <div className="uu-qr-grid">
                   {deskCodes.slice(0, 8).map((tableCode) => {
                     const tableUrl = `${publicUrl}?table=${encodeURIComponent(tableCode)}`;
                     return (
-                      <div key={tableCode} className="uu-qr-card">
+                      <div key={tableCode} className="uu-qr-card uu-qr-card-pro">
                         <div className="uu-qr-label">桌號 {tableCode}</div>
                         <QRCodeCanvas value={tableUrl} size={118} includeMargin level="H" />
                         <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => copyText(tableUrl, `已複製桌號 ${tableCode} 網址`)}>複製桌號網址</button>
                       </div>
                     );
                   })}
-                  {!deskCodes.length ? <div className="uu-inline-hint">輸入桌號後，這裡會顯示 QR。</div> : null}
+                  {!deskCodes.length ? (
+                    <div className="uu-editor-v4-tool-empty">
+                      <strong>尚未輸入桌號</strong>
+                      <p>有需要桌卡再輸入即可，沒有用到這個功能可以先略過。</p>
+                    </div>
+                  ) : null}
                 </div>
               </div>
 
-              <details className="uu-editor-v4-advanced-card uu-collapsible-section">
+              <details className="uu-editor-v4-advanced-card uu-collapsible-section uu-editor-v4-tool-card">
                 <summary className="uu-collapsible-head">
                   <div>
                     <h3>原始文字</h3>
-                    <p>系統實際儲存的內容，主要用來檢查格式。</p>
+                    <p>系統實際儲存的內容，主要用來檢查格式或除錯。</p>
                   </div>
                 </summary>
                 <div className="uu-collapsible-body">
-                  <textarea className="uu-textarea" value={menuText} readOnly />
+                  <div className="uu-editor-v4-raw-note">這區主要是檢查資料結構是否正常，平常編輯菜單大多不需要打開。</div>
+                  <textarea className="uu-textarea uu-editor-v4-raw-textarea" value={menuText} readOnly />
                 </div>
               </details>
             </div>
@@ -421,7 +481,7 @@ VIP1"
             </div>
             <div className="uu-editor-v4-summary-grid">
               <div className="uu-editor-v4-summary-item"><span>公開狀態</span><strong>{isPublished ? "上架中" : "已下架"}</strong></div>
-              <div className="uu-editor-v4-summary-item"><span>菜單風格</span><strong>{THEME_OPTIONS.find((item) => item.value === theme)?.label || "深色經典"}</strong></div>
+              <div className="uu-editor-v4-summary-item"><span>菜單風格</span><strong>{selectedTheme.label}</strong></div>
               <div className="uu-editor-v4-summary-item"><span>供應中</span><strong>{activeCount}</strong></div>
               <div className="uu-editor-v4-summary-item"><span>售完</span><strong>{soldOutCount}</strong></div>
             </div>
