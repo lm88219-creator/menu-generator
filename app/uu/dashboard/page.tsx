@@ -55,129 +55,109 @@ export default async function UUDashboardPage({
   return (
     <main className="uu-admin-shell">
       <div className="uu-admin-container uu-admin-container-narrow">
-        <section className="uu-panel uu-dashboard-hero-v2">
-          <div className="uu-dashboard-topbar">
+        <section className="uu-panel uu-pro-hero">
+          <div className="uu-pro-hero-top">
             <div>
               <div className="uu-kicker">UU MENU ADMIN</div>
               <h1 className="uu-admin-title uu-admin-title-sm">多店菜單控制台</h1>
-              <p className="uu-admin-copy">
-                以 10～50 家店為目標重新整理成清楚的管理後台：先搜尋，再快速編輯、拿公開網址、下載 QR。
-              </p>
+              <p className="uu-admin-copy">集中管理店家、快速搜尋、直接編輯、複製公開網址與下載 QR。</p>
             </div>
-            <div className="uu-form-actions uu-dashboard-topbar-actions">
+            <div className="uu-form-actions uu-pro-hero-actions">
               <Link href="/" className="uu-btn uu-btn-primary">新增菜單</Link>
               <LogoutButton />
             </div>
           </div>
 
-          <div className="uu-dashboard-stat-grid uu-dashboard-stat-grid-v2">
-            <div className="uu-dashboard-stat-card">
+          <div className="uu-pro-stat-grid">
+            <div className="uu-pro-stat-card">
               <span>全部菜單</span>
               <strong>{menus.length}</strong>
-              <small>目前管理中的店家數量</small>
             </div>
-            <div className="uu-dashboard-stat-card">
+            <div className="uu-pro-stat-card">
               <span>上架中</span>
               <strong>{publishedCount}</strong>
-              <small>客人現在可以直接看到</small>
             </div>
-            <div className="uu-dashboard-stat-card">
+            <div className="uu-pro-stat-card">
               <span>已下架</span>
               <strong>{hiddenCount}</strong>
-              <small>暫時不顯示的店家</small>
             </div>
-            <div className="uu-dashboard-stat-card is-accent">
+            <div className="uu-pro-stat-card uu-pro-stat-card-wide">
               <span>最後更新</span>
               <strong>{latestUpdate ? formatDateTime(latestUpdate) : "尚無資料"}</strong>
-              <small>方便你快速確認最近有沒有改過</small>
             </div>
           </div>
         </section>
 
-        <section className="uu-panel uu-dashboard-toolbar uu-dashboard-toolbar-v2">
+        <section className="uu-panel uu-pro-toolbar">
           <div className="uu-section-head uu-section-head-tight">
             <div>
               <h2>店家列表</h2>
-              <p>一排一間店，常用操作直接展開，避免再多點一層。</p>
+              <p>一眼看清楚店家、網址與操作。</p>
             </div>
             <div className="uu-chip">顯示 {filteredMenus.length} / {menus.length}</div>
           </div>
 
-          <form action="/uu/dashboard" method="GET" className="uu-dashboard-search-card uu-dashboard-search-card-v2">
-            <div className="uu-dashboard-search-main">
-              <input
-                className="uu-input uu-dashboard-search-input"
-                type="text"
-                name="q"
-                defaultValue={resolved?.q ?? ""}
-                placeholder="搜尋店名 / slug / 電話 / 地址"
-              />
-            </div>
-            <div className="uu-form-actions uu-dashboard-search-actions">
-              <button type="submit" className="uu-btn uu-btn-primary">搜尋</button>
-              <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">清除</Link>
-            </div>
+          <form action="/uu/dashboard" method="GET" className="uu-pro-searchbar">
+            <input
+              className="uu-input uu-pro-search-input"
+              type="text"
+              name="q"
+              defaultValue={resolved?.q ?? ""}
+              placeholder="搜尋店名 / slug / 電話 / 地址"
+            />
+            <button type="submit" className="uu-btn uu-btn-primary">搜尋</button>
+            <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">清除</Link>
           </form>
         </section>
 
-        <section className="uu-panel uu-store-list-panel uu-store-list-panel-v2">
+        <section className="uu-panel uu-pro-list-panel">
           {filteredMenus.length ? (
-            <div className="uu-store-list-upgraded uu-store-list-upgraded-v2">
+            <div className="uu-pro-store-list">
               {filteredMenus.map((menu, index) => {
                 const publicPath = `/uu/menu/${encodeURIComponent(menu.slug || menu.id)}`;
                 const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
-                return (
-                  <article key={menu.id} className="uu-store-row-card uu-store-row-card-v2">
-                    <div className="uu-store-row-main">
-                      <div className="uu-store-order-badge">#{index + 1}</div>
 
-                      <div className="uu-store-cell uu-store-cell-top">
-                        <div className="uu-store-logo uu-store-logo-table">
-                          {menu.logoDataUrl ? (
-                            <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} />
-                          ) : (
-                            <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>
-                          )}
+                return (
+                  <article key={menu.id} className="uu-pro-store-card">
+                    <div className="uu-pro-store-main">
+                      <div className="uu-pro-store-index">{String(index + 1).padStart(2, "0")}</div>
+
+                      <div className="uu-store-logo uu-pro-store-logo">
+                        {menu.logoDataUrl ? (
+                          <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} />
+                        ) : (
+                          <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>
+                        )}
+                      </div>
+
+                      <div className="uu-pro-store-content">
+                        <div className="uu-pro-store-head">
+                          <div>
+                            <div className="uu-pro-store-title-row">
+                              <h3 className="uu-store-name">{menu.restaurant || "未命名店家"}</h3>
+                              <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
+                                {menu.isPublished === false ? "已下架" : "上架中"}
+                              </span>
+                            </div>
+                            <div className="uu-pro-store-subline">
+                              <code className="uu-table-code">/{menu.slug || menu.id}</code>
+                              <span>{getThemeLabel(menu.theme)}</span>
+                              <span>{menu.phone || "未填電話"}</span>
+                            </div>
+                          </div>
+                          <div className="uu-pro-store-updated">更新 {formatDateTime(menu.updatedAt)}</div>
                         </div>
 
-                        <div className="uu-store-row-copy">
-                          <div className="uu-store-row-headline">
-                            <h3 className="uu-store-name">{menu.restaurant || "未命名店家"}</h3>
-                            <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
-                              {menu.isPublished === false ? "已下架" : "上架中"}
-                            </span>
-                          </div>
+                        <div className="uu-pro-store-address">{menu.address || "未填地址"}</div>
 
-                          <div className="uu-store-row-meta uu-store-row-meta-v2">
-                            <div>
-                              <span>slug</span>
-                              <code className="uu-table-code">{menu.slug || menu.id}</code>
-                            </div>
-                            <div>
-                              <span>主題</span>
-                              <strong>{getThemeLabel(menu.theme)}</strong>
-                            </div>
-                            <div>
-                              <span>電話</span>
-                              <strong>{menu.phone || "—"}</strong>
-                            </div>
-                            <div>
-                              <span>更新時間</span>
-                              <strong>{formatDateTime(menu.updatedAt)}</strong>
-                            </div>
-                          </div>
-
-                          <div className="uu-store-row-address">{menu.address || "未填地址"}</div>
-
-                          <div className="uu-store-public-link-box">
-                            <span>公開網址</span>
-                            <strong>{publicUrl}</strong>
-                          </div>
+                        <div className="uu-pro-link-card">
+                          <span>公開網址</span>
+                          <strong>{publicUrl}</strong>
                         </div>
                       </div>
                     </div>
 
-                    <div className="uu-store-row-actions uu-store-row-actions-v2">
+                    <div className="uu-pro-store-actions">
                       <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
                       <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">公開頁</Link>
                       <CopyUrlButton url={publicUrl} />
@@ -189,9 +169,9 @@ export default async function UUDashboardPage({
               })}
             </div>
           ) : (
-            <div className="uu-empty-state">
+            <div className="uu-empty-state uu-empty-state-pro">
               <h3>找不到符合條件的店家</h3>
-              <p>清除搜尋後再看一次，或先建立新菜單。</p>
+              <p>請清除搜尋條件，或先新增一份菜單。</p>
               <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">清除搜尋</Link>
             </div>
           )}

@@ -223,17 +223,19 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   return (
     <div className="uu-editor-simple">
       <section className="uu-panel uu-subpanel">
-        <div className="uu-sticky-toolbar uu-sticky-toolbar-clean uu-sticky-toolbar-v2">
-          <div>
-            <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
-            <p className="uu-admin-copy">把最常用的操作留在上方，其它設定往下收。</p>
-            <div className="uu-inline-stats">
+        <div className="uu-sticky-toolbar uu-pro-editor-toolbar">
+          <div className="uu-pro-editor-toolbar-main">
+            <div>
+              <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
+              <p className="uu-admin-copy">主要欄位固定在前面，往下才是外觀與進階工具。</p>
+            </div>
+            <div className="uu-inline-stats uu-inline-stats-pro">
               <span className="uu-chip">總品項 {formItems.length}</span>
               <span className="uu-chip">供應中 {activeCount}</span>
               <span className="uu-chip">售完 {soldOutCount}</span>
             </div>
           </div>
-          <div className="uu-form-actions">
+          <div className="uu-form-actions uu-pro-editor-toolbar-actions">
             <span className={`uu-status ${isPublished ? "is-on" : "is-off"}`}>{isPublished ? "上架中" : "已下架"}</span>
             {message ? <span className="uu-inline-hint is-success">{message}</span> : null}
             <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
@@ -245,7 +247,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>店家資訊</h2>
-                <p>欄位同寬、同節奏，不再擠在一起。</p>
+                <p>先填店家基本資訊，再往下處理品項。</p>
               </div>
               <label className="uu-switch-row">
                 <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
@@ -309,7 +311,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>菜單品項</h2>
-                <p>表格化排列，欄位位置固定，比較不會亂。</p>
+                <p>最常編輯的欄位固定成同一排，速度會比較快。</p>
               </div>
             </div>
 
@@ -337,14 +339,14 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   </div>
                 </article>
               ))}
-              <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => addItem()}>＋ 新增品項</button>
+              <button type="button" className="uu-btn uu-btn-secondary uu-full-width uu-add-item-btn" onClick={() => addItem()}>＋ 新增品項</button>
             </div>
           </section>
 
           <div className="uu-bottom-save-bar">
             <div>
               <strong>編輯完記得儲存</strong>
-              <p>這裡放一個底部儲存列，拉到下面也不用再滑回頂端。</p>
+              <p>拉到最下面也能直接儲存，不用再滑回上面。</p>
             </div>
             <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
           </div>
