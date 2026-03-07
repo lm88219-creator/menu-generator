@@ -208,6 +208,15 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
     }
   }
 
+  async function copyText(value: string, okText: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      pushMessage(okText);
+    } catch {
+      alert("複製失敗");
+    }
+  }
+
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -221,19 +230,25 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   return (
-    <div className="uu-editor-simple">
-      <section className="uu-panel uu-subpanel">
-        <div className="uu-sticky-toolbar uu-pro-editor-toolbar">
-          <div className="uu-pro-editor-toolbar-main">
-            <div>
-              <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
-              <p className="uu-admin-copy">主要欄位固定在前面，往下才是外觀與進階工具。</p>
-            </div>
-            <div className="uu-inline-stats uu-inline-stats-pro">
-              <span className="uu-chip">總品項 {formItems.length}</span>
-              <span className="uu-chip">供應中 {activeCount}</span>
-              <span className="uu-chip">售完 {soldOutCount}</span>
-            </div>
+    <div className="uu-editor-v4-shell">
+      <section className="uu-panel uu-editor-v4-topbar">
+        <div className="uu-editor-v4-topbar-main">
+          <div>
+            <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
+            <p className="uu-admin-copy">主要資訊放前面，常用操作固定在上方，減少來回滑動。</p>
+          </div>
+          <div className="uu-editor-v4-stats">
+            <span className="uu-chip">總品項 {formItems.length}</span>
+            <span className="uu-chip">供應中 {activeCount}</span>
+            <span className="uu-chip">售完 {soldOutCount}</span>
+          </div>
+        </div>
+
+        <div className="uu-editor-v4-topbar-side">
+          <div className="uu-editor-v4-anchor-nav">
+            <a href="#shop-info" className="uu-btn uu-btn-ghost">店家資訊</a>
+            <a href="#menu-items" className="uu-btn uu-btn-ghost">菜單品項</a>
+            <a href="#advanced-tools" className="uu-btn uu-btn-ghost">進階工具</a>
           </div>
           <div className="uu-form-actions uu-pro-editor-toolbar-actions">
             <span className={`uu-status ${isPublished ? "is-on" : "is-off"}`}>{isPublished ? "上架中" : "已下架"}</span>
@@ -241,78 +256,47 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
           </div>
         </div>
+      </section>
 
-        <div className="uu-editor-stack">
-          <section className="uu-simple-section">
+      <div className="uu-editor-v4-layout">
+        <div className="uu-editor-v4-main">
+          <section id="shop-info" className="uu-simple-section uu-editor-v4-section">
             <div className="uu-section-head">
               <div>
                 <h2>店家資訊</h2>
-                <p>先填店家基本資訊，再往下處理品項。</p>
+                <p>店名、網址、電話與地址集中在同一區塊，避免四處找欄位。</p>
               </div>
-              <label className="uu-switch-row">
+              <label className="uu-switch-row uu-editor-v4-publish-toggle">
                 <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
                 <span>公開顯示</span>
               </label>
             </div>
+
             <div className="uu-form-grid-2">
               <Field label="餐廳名稱"><input className="uu-input" value={restaurant} onChange={(e) => setRestaurant(e.target.value)} placeholder="例如：友愛熱炒" /></Field>
               <Field label="網址 slug"><input className="uu-input" value={slug} onChange={(e) => setSlug(normalizeSlug(e.target.value))} placeholder="例如：you-ai-re-chao" /></Field>
               <Field label="電話"><input className="uu-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="例如：0912-345-678" /></Field>
               <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>
             </div>
+
             <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
-            <div className="uu-preview-url-box uu-preview-url-box-v2">
+
+            <div className="uu-editor-v4-url-card">
               <div>
                 <span>公開網址</span>
                 <strong>{publicUrl}</strong>
               </div>
-              <button type="button" className="uu-btn uu-btn-secondary uu-btn-inline" onClick={async () => navigator.clipboard.writeText(publicUrl)}>複製公開網址</button>
+              <button type="button" className="uu-btn uu-btn-secondary uu-btn-inline" onClick={() => copyText(publicUrl, "已複製公開網址")}>複製公開網址</button>
             </div>
           </section>
 
-          <details className="uu-simple-section uu-collapsible-section">
-            <summary className="uu-collapsible-head">
-              <div>
-                <h2>外觀設定</h2>
-                <p>風格與 Logo 不常改，預設收起來。</p>
-              </div>
-            </summary>
-            <div className="uu-collapsible-body">
-              <div className="uu-form-grid-2">
-                <Field label="菜單風格">
-                  <select className="uu-input" value={theme} onChange={(e) => setTheme(e.target.value as ThemeType)}>
-                    {THEME_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </Field>
-                <Field label="說明">
-                  <div className="uu-inline-hint">目前是逐列編輯餐點，適合直接修改品項與價格。</div>
-                </Field>
-              </div>
-              <div className="uu-logo-row">
-                <label className="uu-upload-box">
-                  <input type="file" accept="image/*" onChange={handleLogoUpload} />
-                  <span>上傳 Logo</span>
-                </label>
-                {logoDataUrl ? (
-                  <div className="uu-logo-preview-wrap">
-                    <img src={logoDataUrl} alt="logo preview" className="uu-logo-preview" />
-                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => setLogoDataUrl("")}>移除 Logo</button>
-                  </div>
-                ) : (
-                  <div className="uu-inline-hint">建議用正方形圖片。</div>
-                )}
-              </div>
-            </div>
-          </details>
-
-          <section className="uu-simple-section">
+          <section id="menu-items" className="uu-simple-section uu-editor-v4-section">
             <div className="uu-section-head">
               <div>
                 <h2>菜單品項</h2>
-                <p>最常編輯的欄位固定成同一排，速度會比較快。</p>
+                <p>這裡是最常編輯的地方，所以直接做成固定欄位清單。</p>
               </div>
+              <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
             </div>
 
             <div className="uu-items-stack">
@@ -335,31 +319,59 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     <span>{item.soldOut ? "售完" : "供應中"}</span>
                   </label>
                   <div className="uu-row-actions">
-                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => duplicateItem(index)}>複製列</button><button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
+                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => duplicateItem(index)}>複製列</button>
+                    <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
                   </div>
                 </article>
               ))}
-              <button type="button" className="uu-btn uu-btn-secondary uu-full-width uu-add-item-btn" onClick={() => addItem()}>＋ 新增品項</button>
             </div>
           </section>
 
-          <div className="uu-bottom-save-bar">
-            <div>
-              <strong>編輯完記得儲存</strong>
-              <p>拉到最下面也能直接儲存，不用再滑回上面。</p>
+          <section className="uu-simple-section uu-editor-v4-section">
+            <div className="uu-section-head">
+              <div>
+                <h2>外觀設定</h2>
+                <p>這裡保留比較少改的設定，和主編輯區分開。</p>
+              </div>
             </div>
-            <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
-          </div>
 
-          <details className="uu-simple-section uu-collapsible-section">
-            <summary className="uu-collapsible-head">
+            <div className="uu-form-grid-2">
+              <Field label="菜單風格">
+                <select className="uu-input" value={theme} onChange={(e) => setTheme(e.target.value as ThemeType)}>
+                  {THEME_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="說明"><div className="uu-inline-hint">目前使用逐列編輯模式，適合快速改菜名、價格、售完狀態。</div></Field>
+            </div>
+
+            <div className="uu-logo-row">
+              <label className="uu-upload-box">
+                <input type="file" accept="image/*" onChange={handleLogoUpload} />
+                <span>上傳 Logo</span>
+              </label>
+              {logoDataUrl ? (
+                <div className="uu-logo-preview-wrap">
+                  <img src={logoDataUrl} alt="logo preview" className="uu-logo-preview" />
+                  <button type="button" className="uu-btn uu-btn-secondary" onClick={() => setLogoDataUrl("")}>移除 Logo</button>
+                </div>
+              ) : (
+                <div className="uu-inline-hint">建議用正方形圖片，顯示會比較整齊。</div>
+              )}
+            </div>
+          </section>
+
+          <section id="advanced-tools" className="uu-simple-section uu-editor-v4-section">
+            <div className="uu-section-head">
               <div>
                 <h2>進階工具</h2>
-                <p>桌號 QR 與原始文字先收起來，需要時再打開。</p>
+                <p>桌號 QR 和原始文字平常不常用，所以集中在最後。</p>
               </div>
-            </summary>
-            <div className="uu-collapsible-body uu-collapsible-stack">
-              <div>
+            </div>
+
+            <div className="uu-collapsible-stack">
+              <div className="uu-editor-v4-advanced-card">
                 <div className="uu-section-head uu-section-head-tight">
                   <div>
                     <h3>桌號 QR 工具</h3>
@@ -368,7 +380,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                 </div>
                 <div className="uu-form-grid-2">
                   <Field label="手動輸入桌號（用空白或逗號分隔）"><input className="uu-input" value={deskInput} onChange={(e) => setDeskInput(e.target.value)} placeholder="A1 A2 A3 B1" /></Field>
-                  <Field label="連號範圍（從幾號到幾號）"><div className="uu-inline-range"><input className="uu-input" value={deskStart} onChange={(e) => setDeskStart(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" /><span>到</span><input className="uu-input" value={deskEnd} onChange={(e) => setDeskEnd(e.target.value.replace(/[^0-9]/g, ""))} placeholder="12" /></div></Field>
+                  <Field label="連號範圍（從幾號到幾號)"><div className="uu-inline-range"><input className="uu-input" value={deskStart} onChange={(e) => setDeskStart(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" /><span>到</span><input className="uu-input" value={deskEnd} onChange={(e) => setDeskEnd(e.target.value.replace(/[^0-9]/g, ""))} placeholder="12" /></div></Field>
                 </div>
                 <div className="uu-qr-grid">
                   {deskCodes.slice(0, 8).map((tableCode) => {
@@ -377,26 +389,65 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                       <div key={tableCode} className="uu-qr-card">
                         <div className="uu-qr-label">桌號 {tableCode}</div>
                         <QRCodeCanvas value={tableUrl} size={118} includeMargin level="H" />
-                        <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={async () => navigator.clipboard.writeText(tableUrl)}>複製桌號網址</button>
+                        <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => copyText(tableUrl, `已複製桌號 ${tableCode} 網址`)}>複製桌號網址</button>
                       </div>
                     );
                   })}
                   {!deskCodes.length ? <div className="uu-inline-hint">輸入桌號後，這裡會顯示 QR。</div> : null}
                 </div>
               </div>
-              <div>
-                <div className="uu-section-head uu-section-head-tight">
+
+              <details className="uu-editor-v4-advanced-card uu-collapsible-section">
+                <summary className="uu-collapsible-head">
                   <div>
                     <h3>原始文字</h3>
-                    <p>系統實際儲存的內容，主要用來檢查。</p>
+                    <p>系統實際儲存的內容，主要用來檢查格式。</p>
                   </div>
+                </summary>
+                <div className="uu-collapsible-body">
+                  <textarea className="uu-textarea" value={menuText} readOnly />
                 </div>
-                <textarea className="uu-textarea" value={menuText} readOnly />
+              </details>
+            </div>
+          </section>
+        </div>
+
+        <aside className="uu-editor-v4-side">
+          <section className="uu-simple-section uu-editor-v4-side-card">
+            <div className="uu-section-head uu-section-head-tight">
+              <div>
+                <h3>操作摘要</h3>
+                <p>編輯時常用的資訊集中放右邊。</p>
               </div>
             </div>
-          </details>
-        </div>
-      </section>
+            <div className="uu-editor-v4-summary-grid">
+              <div className="uu-editor-v4-summary-item"><span>公開狀態</span><strong>{isPublished ? "上架中" : "已下架"}</strong></div>
+              <div className="uu-editor-v4-summary-item"><span>菜單風格</span><strong>{THEME_OPTIONS.find((item) => item.value === theme)?.label || "深色經典"}</strong></div>
+              <div className="uu-editor-v4-summary-item"><span>供應中</span><strong>{activeCount}</strong></div>
+              <div className="uu-editor-v4-summary-item"><span>售完</span><strong>{soldOutCount}</strong></div>
+            </div>
+          </section>
+
+          <section className="uu-simple-section uu-editor-v4-side-card">
+            <div className="uu-section-head uu-section-head-tight">
+              <div>
+                <h3>公開網址</h3>
+                <p>外部分享最常用。</p>
+              </div>
+            </div>
+            <div className="uu-editor-v4-side-url">{publicUrl}</div>
+            <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => copyText(publicUrl, "已複製公開網址")}>複製公開網址</button>
+          </section>
+
+          <div className="uu-bottom-save-bar uu-editor-v4-savebar">
+            <div>
+              <strong>完成後記得儲存</strong>
+              <p>這個按鈕會跟著頁面，不用一直滑到最上面。</p>
+            </div>
+            <button type="button" className="uu-btn uu-btn-primary uu-full-width" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

@@ -33,21 +33,23 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
 
   return (
     <main className="uu-admin-shell">
-      <div className="uu-admin-container uu-admin-container-narrow">
-        <section className="uu-panel uu-pro-edit-hero">
+      <div className="uu-admin-container uu-admin-container-narrow uu-editor-page-v4">
+        <section className="uu-panel uu-editor-page-hero">
           <div>
             <div className="uu-kicker">UU MENU EDITOR</div>
-            <h1 className="uu-admin-title uu-admin-title-sm">編輯菜單</h1>
-            <p className="uu-admin-copy">先處理店家資訊與品項，外觀與進階工具保留在下方。</p>
+            <h1 className="uu-dashboard-title">編輯菜單</h1>
+            <p className="uu-dashboard-copy">先整理店家資訊與品項，再視需要調整外觀和進階工具。</p>
           </div>
 
-          <div className="uu-pro-edit-summary">
+          <div className="uu-editor-page-meta">
             <span className="uu-chip">{menu.restaurant || "未命名店家"}</span>
-            <span className={`uu-chip ${menu.isPublished === false ? "" : "is-on"}`}>{menu.isPublished === false ? "已下架" : "上架中"}</span>
+            <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
+              {menu.isPublished === false ? "已下架" : "上架中"}
+            </span>
             <span className="uu-chip">品項 {itemCount}</span>
           </div>
 
-          <div className="uu-form-actions uu-pro-edit-actions">
+          <div className="uu-editor-page-actions">
             <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回後台</Link>
             <Link href={publicPath} target="_blank" className="uu-btn uu-btn-primary">查看公開頁</Link>
           </div>
