@@ -146,13 +146,20 @@ export default function EditMenuForm({
       },
       market: {
         name: "招牌米白",
-        pageBg: "linear-gradient(180deg, #f7f3ed 0%, #efe8dc 100%)",
+        pageBg: "linear-gradient(180deg,#f7f3ed 0%,#efe8dc 100%)",
         cardBg: "rgba(255,255,255,0.9)",
         cardBorder: "1px solid rgba(16,35,63,0.1)",
         text: "#10233f",
-        muted: "#6d7685",
+        subText: "#6d7685",
         accent: "#d53b2f",
-        previewBg: "linear-gradient(180deg, #f5f1ea 0%, #efe7db 100%)",
+        inputBg: "rgba(255,255,255,0.78)",
+        inputBorder: "1px solid rgba(16,35,63,0.12)",
+        buttonMainBg: "#10233f",
+        buttonMainText: "#fffaf5",
+        buttonGhostBg: "rgba(255,255,255,0.72)",
+        buttonGhostText: "#10233f",
+        previewBg: "linear-gradient(180deg,#f5f1ea 0%,#efe7db 100%)",
+        previewBorder: "1px solid rgba(16,35,63,0.08)",
       },
       rose: {
         name: "玫瑰奶茶風",
@@ -434,7 +441,7 @@ export default function EditMenuForm({
                 </div>
                 <div onClick={() => setTheme("market")} style={themeCardStyle("market")}>
                   <strong>招牌米白</strong>
-                  <span style={{ color: themeSurfaceMap.market.muted, fontSize: 13 }}>米白底、深藍字、紅色重點</span>
+                  <span style={{ color: currentTheme.subText, fontSize: 13 }}>米白底、深藍字、紅色重點</span>
                 </div>
 
                 <div onClick={() => setTheme("rose")} style={themeCardStyle("rose")}>
