@@ -209,8 +209,6 @@ export default async function UuMenuPage({
   const grouped = groupMenuItems(data.menuText || "");
   const table = String(query?.table ?? "").trim();
   const tokens = getThemeTokens(theme);
-  const itemCount = grouped.reduce((sum, group) => sum + group.items.length, 0);
-
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 26%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 55%, ${tokens.bgDeep} 100%)`,
     color: tokens.text,
@@ -250,7 +248,6 @@ export default async function UuMenuPage({
           <div className="uu-public-hero-top">
             <div className="uu-public-kicker">UU MENU</div>
             <div className="uu-public-hero-badges">
-              <span className="uu-public-badge-chip">手機菜單</span>
               {table ? <span className="uu-public-badge-chip is-table">桌號 {table}</span> : null}
             </div>
           </div>
@@ -260,28 +257,13 @@ export default async function UuMenuPage({
             <div className="uu-public-heading-block">
               <h1 style={{ color: tokens.title }}>{data.restaurant}</h1>
               <p style={{ color: tokens.muted }}>
-                菜單與價格以現場供應為準，手機閱讀更清楚，點餐時也更方便確認品項。
+                菜單與價格請以店內現場供應為準。
               </p>
             </div>
           </div>
 
-          <div className="uu-public-hero-meta">
-            <div className="uu-public-stat" style={infoCardStyle}>
-              <small>分類數</small>
-              <strong>{grouped.length}</strong>
-            </div>
-            <div className="uu-public-stat" style={infoCardStyle}>
-              <small>品項數</small>
-              <strong>{itemCount}</strong>
-            </div>
-            <div className="uu-public-stat" style={infoCardStyle}>
-              <small>目前狀態</small>
-              <strong>供應中</strong>
-            </div>
-          </div>
-
           <div className="uu-public-hero-note" style={{ background: tokens.badge, borderColor: tokens.border, color: tokens.text }}>
-            {table ? `目前桌號：${table}，可直接向店家確認本桌點餐內容。` : "可直接往下滑查看完整菜單與價格。"}
+            {table ? `目前桌號：${table}，可直接向店家確認本桌點餐內容。` : "向下滑動即可查看各分類菜單與價格。"}
           </div>
         </section>
 
