@@ -1193,3 +1193,96 @@ select {
   .uu-row-actions .uu-btn,.uu-table-actions .uu-btn,.uu-form-actions .uu-btn { width:100%; }
   .uu-logo-row,.uu-admin-topbar,.uu-sticky-toolbar-clean { align-items:stretch; }
 }
+
+/* 2026-03 final simplified admin polish */
+.uu-desktop-only { display:block; }
+.uu-mobile-only { display:none; }
+.uu-table-actions-main { align-items:center; }
+.uu-action-menu { position:relative; }
+.uu-action-menu summary { list-style:none; }
+.uu-action-menu summary::-webkit-details-marker { display:none; }
+.uu-action-menu[open] .uu-btn { border-color:rgba(96,165,250,.35); }
+.uu-action-popover {
+  position:absolute;
+  right:0;
+  top:calc(100% + 8px);
+  min-width:168px;
+  display:grid;
+  gap:8px;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid rgba(148,163,184,.14);
+  background:#111827;
+  box-shadow:0 18px 40px rgba(0,0,0,.28);
+  z-index:10;
+}
+.uu-action-popover .uu-btn { width:100%; justify-content:center; }
+.uu-btn-inline { width:max-content; margin-top:4px; }
+.uu-collapsible-section { padding:0; overflow:hidden; }
+.uu-collapsible-head {
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px;
+  list-style:none;
+}
+.uu-collapsible-head::-webkit-details-marker { display:none; }
+.uu-collapsible-head::after {
+  content:"展開";
+  color:#94a3b8;
+  font-size:13px;
+  font-weight:700;
+}
+.uu-collapsible-section[open] .uu-collapsible-head::after { content:"收起"; }
+.uu-collapsible-body { padding:0 18px 18px; border-top:1px solid rgba(148,163,184,.12); }
+.uu-collapsible-stack { display:grid; gap:20px; }
+.uu-mobile-store-list { display:grid; gap:12px; }
+.uu-mobile-store-card {
+  border:1px solid rgba(148,163,184,.14);
+  background:rgba(255,255,255,.03);
+  border-radius:18px;
+  padding:14px;
+  display:grid;
+  gap:14px;
+}
+.uu-mobile-store-head {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.uu-mobile-store-meta {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:10px;
+}
+.uu-mobile-store-meta div {
+  display:grid;
+  gap:4px;
+  min-width:0;
+}
+.uu-mobile-store-meta span {
+  color:#94a3b8;
+  font-size:12px;
+}
+.uu-mobile-store-meta strong, .uu-mobile-store-meta code {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+.uu-mobile-store-actions {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:8px;
+}
+.uu-preview-url-box { align-items:flex-start; }
+.uu-textarea { min-height:180px; }
+
+@media (max-width: 760px) {
+  .uu-desktop-only { display:none; }
+  .uu-mobile-only { display:block; }
+  .uu-mobile-store-head { flex-direction:column; }
+  .uu-mobile-store-meta,
+  .uu-mobile-store-actions { grid-template-columns:1fr; }
+  .uu-preview-url-box strong { overflow-wrap:anywhere; }
+}

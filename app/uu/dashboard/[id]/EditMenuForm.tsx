@@ -214,12 +214,11 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
         <div className="uu-sticky-toolbar uu-sticky-toolbar-clean">
           <div>
             <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
-            <p className="uu-admin-copy">上方固定操作，下面專心編輯內容。</p>
+            <p className="uu-admin-copy">把最常用的操作留在上方，其它設定往下收。</p>
           </div>
           <div className="uu-form-actions">
             <span className={`uu-status ${isPublished ? "is-on" : "is-off"}`}>{isPublished ? "上架中" : "已下架"}</span>
             {message ? <span className="uu-inline-hint is-success">{message}</span> : null}
-            <button type="button" className="uu-btn uu-btn-secondary" onClick={async () => navigator.clipboard.writeText(publicUrl)}>複製公開網址</button>
             <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
           </div>
         </div>
@@ -246,43 +245,46 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-preview-url-box">
               <span>公開網址</span>
               <strong>{publicUrl}</strong>
+              <button type="button" className="uu-btn uu-btn-secondary uu-btn-inline" onClick={async () => navigator.clipboard.writeText(publicUrl)}>複製公開網址</button>
             </div>
           </section>
 
-          <section className="uu-simple-section">
-            <div className="uu-section-head">
+          <details className="uu-simple-section uu-collapsible-section">
+            <summary className="uu-collapsible-head">
               <div>
-                <h2>風格與 Logo</h2>
-                <p>只留必要設定，避免畫面資訊太碎。</p>
+                <h2>外觀設定</h2>
+                <p>風格與 Logo 不常改，預設收起來。</p>
+              </div>
+            </summary>
+            <div className="uu-collapsible-body">
+              <div className="uu-form-grid-2">
+                <Field label="菜單風格">
+                  <select className="uu-input" value={theme} onChange={(e) => setTheme(e.target.value as ThemeType)}>
+                    {THEME_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="說明">
+                  <div className="uu-inline-hint">目前是逐列編輯餐點，適合直接修改品項與價格。</div>
+                </Field>
+              </div>
+              <div className="uu-logo-row">
+                <label className="uu-upload-box">
+                  <input type="file" accept="image/*" onChange={handleLogoUpload} />
+                  <span>上傳 Logo</span>
+                </label>
+                {logoDataUrl ? (
+                  <div className="uu-logo-preview-wrap">
+                    <img src={logoDataUrl} alt="logo preview" className="uu-logo-preview" />
+                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => setLogoDataUrl("")}>移除 Logo</button>
+                  </div>
+                ) : (
+                  <div className="uu-inline-hint">建議用正方形圖片。</div>
+                )}
               </div>
             </div>
-            <div className="uu-form-grid-2">
-              <Field label="菜單風格">
-                <select className="uu-input" value={theme} onChange={(e) => setTheme(e.target.value as ThemeType)}>
-                  {THEME_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="說明">
-                <div className="uu-inline-hint">目前是逐列編輯餐點，適合直接修改品項與價格。</div>
-              </Field>
-            </div>
-            <div className="uu-logo-row">
-              <label className="uu-upload-box">
-                <input type="file" accept="image/*" onChange={handleLogoUpload} />
-                <span>上傳 Logo</span>
-              </label>
-              {logoDataUrl ? (
-                <div className="uu-logo-preview-wrap">
-                  <img src={logoDataUrl} alt="logo preview" className="uu-logo-preview" />
-                  <button type="button" className="uu-btn uu-btn-secondary" onClick={() => setLogoDataUrl("")}>移除 Logo</button>
-                </div>
-              ) : (
-                <div className="uu-inline-hint">建議用正方形圖片。</div>
-              )}
-            </div>
-          </section>
+          </details>
 
           <section className="uu-simple-section">
             <div className="uu-section-head">
@@ -312,7 +314,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     <span>{item.soldOut ? "售完" : "供應中"}</span>
                   </label>
                   <div className="uu-row-actions">
-                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem(item.category)}>新增</button>
                     <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
                   </div>
                 </article>
@@ -321,41 +322,50 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             </div>
           </section>
 
-          <section className="uu-simple-section">
-            <div className="uu-section-head">
+          <details className="uu-simple-section uu-collapsible-section">
+            <summary className="uu-collapsible-head">
               <div>
-                <h2>桌號 QR 工具</h2>
-                <p>把輸入方式寫清楚，避免一頭霧水。</p>
+                <h2>進階工具</h2>
+                <p>桌號 QR 與原始文字先收起來，需要時再打開。</p>
               </div>
-            </div>
-            <div className="uu-form-grid-2">
-              <Field label="手動輸入桌號（用空白或逗號分隔）"><input className="uu-input" value={deskInput} onChange={(e) => setDeskInput(e.target.value)} placeholder="A1 A2 A3 B1" /></Field>
-              <Field label="連號範圍（從幾號到幾號）"><div className="uu-inline-range"><input className="uu-input" value={deskStart} onChange={(e) => setDeskStart(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" /><span>到</span><input className="uu-input" value={deskEnd} onChange={(e) => setDeskEnd(e.target.value.replace(/[^0-9]/g, ""))} placeholder="12" /></div></Field>
-            </div>
-            <div className="uu-qr-grid">
-              {deskCodes.slice(0, 8).map((tableCode) => {
-                const tableUrl = `${publicUrl}?table=${encodeURIComponent(tableCode)}`;
-                return (
-                  <div key={tableCode} className="uu-qr-card">
-                    <div className="uu-qr-label">桌號 {tableCode}</div>
-                    <QRCodeCanvas value={tableUrl} size={118} includeMargin level="H" />
-                    <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={async () => navigator.clipboard.writeText(tableUrl)}>複製桌號網址</button>
+            </summary>
+            <div className="uu-collapsible-body uu-collapsible-stack">
+              <div>
+                <div className="uu-section-head uu-section-head-tight">
+                  <div>
+                    <h3>桌號 QR 工具</h3>
+                    <p>手動輸入桌號，或設定連號範圍。</p>
                   </div>
-                );
-              })}
-              {!deskCodes.length ? <div className="uu-inline-hint">輸入桌號後，這裡會顯示 QR。</div> : null}
-            </div>
-          </section>
-
-          <section className="uu-simple-section">
-            <div className="uu-section-head">
+                </div>
+                <div className="uu-form-grid-2">
+                  <Field label="手動輸入桌號（用空白或逗號分隔）"><input className="uu-input" value={deskInput} onChange={(e) => setDeskInput(e.target.value)} placeholder="A1 A2 A3 B1" /></Field>
+                  <Field label="連號範圍（從幾號到幾號）"><div className="uu-inline-range"><input className="uu-input" value={deskStart} onChange={(e) => setDeskStart(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" /><span>到</span><input className="uu-input" value={deskEnd} onChange={(e) => setDeskEnd(e.target.value.replace(/[^0-9]/g, ""))} placeholder="12" /></div></Field>
+                </div>
+                <div className="uu-qr-grid">
+                  {deskCodes.slice(0, 8).map((tableCode) => {
+                    const tableUrl = `${publicUrl}?table=${encodeURIComponent(tableCode)}`;
+                    return (
+                      <div key={tableCode} className="uu-qr-card">
+                        <div className="uu-qr-label">桌號 {tableCode}</div>
+                        <QRCodeCanvas value={tableUrl} size={118} includeMargin level="H" />
+                        <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={async () => navigator.clipboard.writeText(tableUrl)}>複製桌號網址</button>
+                      </div>
+                    );
+                  })}
+                  {!deskCodes.length ? <div className="uu-inline-hint">輸入桌號後，這裡會顯示 QR。</div> : null}
+                </div>
+              </div>
               <div>
-                <h2>文字輸出</h2>
-                <p>這裡是系統實際儲存的內容，給你快速檢查用。</p>
+                <div className="uu-section-head uu-section-head-tight">
+                  <div>
+                    <h3>原始文字</h3>
+                    <p>系統實際儲存的內容，主要用來檢查。</p>
+                  </div>
+                </div>
+                <textarea className="uu-textarea" value={menuText} readOnly />
               </div>
             </div>
-            <textarea className="uu-textarea" value={menuText} readOnly />
-          </section>
+          </details>
         </div>
       </section>
     </div>

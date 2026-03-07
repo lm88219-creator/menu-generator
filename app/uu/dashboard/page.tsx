@@ -93,60 +93,105 @@ export default async function UUDashboardPage({
           </div>
 
           {filteredMenus.length ? (
-            <div className="uu-table-wrap">
-              <table className="uu-admin-table">
-                <thead>
-                  <tr>
-                    <th>店家</th>
-                    <th>slug</th>
-                    <th>主題</th>
-                    <th>電話</th>
-                    <th>更新時間</th>
-                    <th>狀態</th>
-                    <th className="is-actions">操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredMenus.map((menu) => {
-                    const publicPath = `/uu/menu/${encodeURIComponent(menu.slug || menu.id)}`;
-                    const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
-                    return (
-                      <tr key={menu.id}>
-                        <td>
-                          <div className="uu-store-cell">
-                            <div className="uu-store-logo uu-store-logo-table">
-                              {menu.logoDataUrl ? <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} /> : <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>}
+            <>
+              <div className="uu-table-wrap uu-desktop-only">
+                <table className="uu-admin-table">
+                  <thead>
+                    <tr>
+                      <th>店家</th>
+                      <th>slug</th>
+                      <th>主題</th>
+                      <th>電話</th>
+                      <th>更新時間</th>
+                      <th>狀態</th>
+                      <th className="is-actions">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredMenus.map((menu) => {
+                      const publicPath = `/uu/menu/${encodeURIComponent(menu.slug || menu.id)}`;
+                      const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
+                      return (
+                        <tr key={menu.id}>
+                          <td>
+                            <div className="uu-store-cell">
+                              <div className="uu-store-logo uu-store-logo-table">
+                                {menu.logoDataUrl ? <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} /> : <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>}
+                              </div>
+                              <div>
+                                <div className="uu-store-name">{menu.restaurant || "未命名店家"}</div>
+                                <div className="uu-table-sub">{menu.address || "未填地址"}</div>
+                              </div>
                             </div>
-                            <div>
-                              <div className="uu-store-name">{menu.restaurant || "未命名店家"}</div>
-                              <div className="uu-table-sub">{menu.address || "未填地址"}</div>
+                          </td>
+                          <td><code className="uu-table-code">{menu.slug || menu.id}</code></td>
+                          <td>{getThemeLabel(menu.theme)}</td>
+                          <td>{menu.phone || "—"}</td>
+                          <td>{formatDateTime(menu.updatedAt)}</td>
+                          <td>
+                            <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
+                              {menu.isPublished === false ? "已下架" : "上架中"}
+                            </span>
+                          </td>
+                          <td className="is-actions">
+                            <div className="uu-table-actions uu-table-actions-main">
+                              <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
+                              <details className="uu-action-menu">
+                                <summary className="uu-btn uu-btn-secondary">更多</summary>
+                                <div className="uu-action-popover">
+                                  <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">公開頁</Link>
+                                  <CopyUrlButton url={publicUrl} />
+                                  <DeskCardButton restaurant={menu.restaurant} publicUrl={publicPath} />
+                                  <DeleteMenuButton id={menu.id} />
+                                </div>
+                              </details>
                             </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="uu-mobile-store-list uu-mobile-only">
+                {filteredMenus.map((menu) => {
+                  const publicPath = `/uu/menu/${encodeURIComponent(menu.slug || menu.id)}`;
+                  const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
+                  return (
+                    <article key={menu.id} className="uu-mobile-store-card">
+                      <div className="uu-mobile-store-head">
+                        <div className="uu-store-cell">
+                          <div className="uu-store-logo uu-store-logo-table">
+                            {menu.logoDataUrl ? <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} /> : <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>}
                           </div>
-                        </td>
-                        <td><code className="uu-table-code">{menu.slug || menu.id}</code></td>
-                        <td>{getThemeLabel(menu.theme)}</td>
-                        <td>{menu.phone || "—"}</td>
-                        <td>{formatDateTime(menu.updatedAt)}</td>
-                        <td>
-                          <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
-                            {menu.isPublished === false ? "已下架" : "上架中"}
-                          </span>
-                        </td>
-                        <td className="is-actions">
-                          <div className="uu-table-actions">
-                            <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
-                            <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">公開頁</Link>
-                            <CopyUrlButton url={publicUrl} />
-                            <DeskCardButton restaurant={menu.restaurant} publicUrl={publicPath} />
-                            <DeleteMenuButton id={menu.id} />
+                          <div>
+                            <div className="uu-store-name">{menu.restaurant || "未命名店家"}</div>
+                            <div className="uu-table-sub">{menu.address || "未填地址"}</div>
                           </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+                        <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
+                          {menu.isPublished === false ? "已下架" : "上架中"}
+                        </span>
+                      </div>
+                      <div className="uu-mobile-store-meta">
+                        <div><span>slug</span><code className="uu-table-code">{menu.slug || menu.id}</code></div>
+                        <div><span>主題</span><strong>{getThemeLabel(menu.theme)}</strong></div>
+                        <div><span>電話</span><strong>{menu.phone || "—"}</strong></div>
+                        <div><span>更新</span><strong>{formatDateTime(menu.updatedAt)}</strong></div>
+                      </div>
+                      <div className="uu-mobile-store-actions">
+                        <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
+                        <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">公開頁</Link>
+                        <CopyUrlButton url={publicUrl} />
+                        <DeskCardButton restaurant={menu.restaurant} publicUrl={publicPath} />
+                        <DeleteMenuButton id={menu.id} />
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </>
           ) : (
             <div className="uu-empty-state">
               <h3>找不到符合條件的店家</h3>
