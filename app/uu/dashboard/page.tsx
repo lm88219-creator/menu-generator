@@ -154,7 +154,7 @@ export default async function UUDashboardPage({
             <div className="uu-dashboard-list-v7 uu-dashboard-list-v8">
               <div className="uu-dashboard-column-head-v7 uu-dashboard-column-head-v8" aria-hidden="true">
                 <span>店家列表</span>
-                <span>狀態與操作</span>
+                <span>快捷操作</span>
               </div>
 
               {filteredMenus.map((menu) => {
@@ -202,19 +202,8 @@ export default async function UUDashboardPage({
                       </div>
                     </div>
 
-                    <div className="uu-dashboard-row-actions-wrap-v8 uu-dashboard-row-actions-wrap-v9">
-                      <div className="uu-dashboard-row-contact-v7 uu-dashboard-row-contact-v8 uu-dashboard-status-panel-v8">
-                        <div className="uu-dashboard-info-item-v7 uu-dashboard-info-item-soft-v8">
-                          <span>公開頁狀態</span>
-                          <strong>{menu.isPublished === false ? "目前不顯示給客人" : "客人可直接開啟"}</strong>
-                        </div>
-                        <div className="uu-dashboard-info-item-v7 uu-dashboard-info-item-soft-v8">
-                          <span>主要操作</span>
-                          <strong>編輯、複製網址、桌卡都集中在下方</strong>
-                        </div>
-                      </div>
-
-                      <div className="uu-dashboard-row-actions-v7 uu-dashboard-row-actions-v8">
+                    <div className="uu-dashboard-row-actions-wrap-v8 uu-dashboard-row-actions-wrap-v9 uu-dashboard-row-actions-wrap-compact">
+                      <div className="uu-dashboard-row-actions-v7 uu-dashboard-row-actions-v8 uu-dashboard-row-actions-v10">
                         <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
                         <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">公開頁</Link>
                         <CopyUrlButton url={publicUrl} />

@@ -462,7 +462,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                 <span>公開網址</span>
                 <strong>{publicUrl}</strong>
               </div>
-              <button type="button" className="uu-btn uu-btn-secondary uu-btn-inline" onClick={() => copyText(publicUrl, "已複製公開網址")}>複製公開網址</button>
+              <div className="uu-editor-v4-url-card-note">公開頁連結已同步到頁面上方與快速工具，分享會更順手。</div>
             </div>
           </section>
 
@@ -546,7 +546,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                       <input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="熱炒" />
                     </Field>
                     <Field label="菜名">
-                      <input className="uu-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="炒螺肉" />
+                      <input className="uu-input uu-menu-item-name-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="炒螺肉" />
                     </Field>
                     <Field label="價格">
                       <div className="uu-price-input-wrap uu-price-input-wrap-pro">
@@ -598,30 +598,38 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   <div className="uu-editor-v4-theme-note-accent" style={{ background: selectedTheme.accent }} />
                 </div>
 
-                <div className="uu-editor-v4-theme-selector-card">
+                <div className="uu-editor-v4-theme-selector-card uu-editor-v4-theme-selector-card-pro">
                   <div className="uu-editor-v4-subhead">
                     <div>
                       <span>主題挑選</span>
-                      <strong>改成下拉選單，挑選更快也更乾淨</strong>
+                      <strong>用更精簡的下拉選單快速切換公開頁風格</strong>
+                    </div>
+                    <div className="uu-editor-theme-preview uu-editor-theme-preview-inline uu-editor-theme-preview-inline-pro">
+                      {selectedTheme.preview.map((color, index) => (
+                        <span key={`${selectedTheme.value}-${index}`} style={{ background: color }} />
+                      ))}
                     </div>
                   </div>
-                  <div className="uu-editor-v4-theme-select-wrap">
-                    <label className="uu-field">
+                  <div className="uu-editor-v4-theme-select-wrap uu-editor-v4-theme-select-wrap-pro">
+                    <label className="uu-field uu-field-theme-select-pro">
                       <span>選擇公開頁主題</span>
-                      <select className="uu-input uu-theme-select" value={theme} onChange={(e) => setTheme(e.target.value as ThemeType)}>
-                        {THEME_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </label>
-                    <div className="uu-editor-v4-theme-select-side">
-                      <div className="uu-editor-theme-preview uu-editor-theme-preview-inline">
-                        {selectedTheme.preview.map((color, index) => (
-                          <span key={`${selectedTheme.value}-${index}`} style={{ background: color }} />
-                        ))}
+                      <div className="uu-theme-select-shell">
+                        <select className="uu-input uu-theme-select uu-theme-select-pro" value={theme} onChange={(e) => setTheme(e.target.value as ThemeType)}>
+                          {THEME_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>{option.label}</option>
+                          ))}
+                        </select>
                       </div>
+                      <small>切換後，右側預覽會立即同步目前主題的色調、卡片層次與價格樣式。</small>
+                    </label>
+                    <div className="uu-editor-v4-theme-select-side uu-editor-v4-theme-select-side-pro">
                       <strong>{selectedTheme.label}</strong>
                       <p>{selectedTheme.desc}</p>
+                      <div className="uu-editor-v4-theme-select-tags">
+                        <span>公開頁同步</span>
+                        <span>價格色塊同步</span>
+                        <span>{logoDataUrl ? "Logo 已帶入" : "文字版更乾淨"}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -634,7 +642,13 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     </div>
                     <div className="uu-editor-v4-theme-note-accent" style={{ background: selectedTheme.accent }} />
                   </div>
-                  <div className="uu-editor-v4-public-preview uu-editor-v4-public-preview-pro" style={{ background: previewTokens.shell, color: previewTokens.text, borderColor: previewTokens.border }}>
+                  <div className="uu-editor-v4-public-preview-device">
+                    <div className="uu-editor-v4-public-preview-device-top">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                    <div className="uu-editor-v4-public-preview uu-editor-v4-public-preview-pro" style={{ background: previewTokens.shell, color: previewTokens.text, borderColor: previewTokens.border }}>
                     <div className="uu-editor-v4-public-preview-hero uu-editor-v4-public-preview-hero-themed" style={{ background: previewTokens.hero, borderColor: previewTokens.border }}>
                       <div className="uu-editor-v4-public-preview-brand-row">
                         <div className="uu-editor-v4-public-preview-badge" style={{ background: previewTokens.accentSoft, color: previewTokens.accent }}>UU MENU</div>
@@ -676,6 +690,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                         ) : null}
                       </div>
                     </div>
+                  </div>
                   </div>
                   <div className="uu-editor-v4-theme-checklist">
                     <div><strong>字體閱讀性</strong><span>主色與背景已一起調整，不容易看起來太花。</span></div>
@@ -834,7 +849,8 @@ VIP1"
                   </div>
                 </div>
 
-                <div className="uu-editor-v4-quick-actions">
+                <div className="uu-editor-v4-quick-actions uu-editor-v4-quick-actions-stacked">
+                  <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
                   <button type="button" className="uu-btn uu-btn-secondary" onClick={() => copyText(publicUrl, "已複製公開網址")}>複製公開網址</button>
                   <a className="uu-btn uu-btn-secondary" href={publicPath} target="_blank" rel="noreferrer">開啟客戶公開頁</a>
                   <button type="button" className="uu-btn uu-btn-secondary" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>回到頁面上方</button>
@@ -878,15 +894,14 @@ VIP1"
               </div>
             </div>
             <div className="uu-editor-v4-side-url">{publicUrl}</div>
-            <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => copyText(publicUrl, "已複製公開網址")}>複製公開網址</button>
+            <div className="uu-inline-hint">複製按鈕已移到頁面上方與快速工具區，常用操作會更集中。</div>
           </section>
 
-          <div className="uu-bottom-save-bar uu-editor-v4-savebar">
+          <div className="uu-bottom-save-bar uu-editor-v4-savebar uu-editor-v4-savebar-note">
             <div>
-              <strong>記得儲存變更</strong>
-              <p>右側固定儲存區，編輯到哪裡都能直接存。</p>
+              <strong>儲存按鈕已集中到快速工具區</strong>
+              <p>編輯流程會更乾淨，右側保留摘要資訊即可。</p>
             </div>
-            <button type="button" className="uu-btn uu-btn-primary uu-full-width" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
           </div>
         </aside>
       </div>

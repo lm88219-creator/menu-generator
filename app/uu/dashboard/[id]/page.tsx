@@ -4,6 +4,8 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { getMenu } from "@/lib/store";
 import EditMenuForm from "./EditMenuForm";
+import CopyUrlButton from "@/components/admin/CopyUrlButton";
+import { getConfiguredSiteUrl } from "@/lib/site";
 
 export default async function UUDashboardEditPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
@@ -25,6 +27,8 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
   }
 
   const publicPath = `/uu/menu/${encodeURIComponent(menu.slug || id)}`;
+  const baseUrl = getConfiguredSiteUrl();
+  const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
   const itemCount = String(menu.menuText || "")
     .split(/\n+/)
     .map((line) => line.trim())
@@ -50,6 +54,7 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
           <div className="uu-editor-page-actions">
             <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回後台</Link>
             <Link href={publicPath} target="_blank" className="uu-btn uu-btn-primary">打開公開頁</Link>
+            <CopyUrlButton url={publicUrl} />
           </div>
         </section>
 
