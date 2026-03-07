@@ -190,6 +190,10 @@ function formatPhoneHref(phone: string) {
   return `tel:${phone.replace(/\s+/g, "")}`;
 }
 
+function formatMapHref(address: string) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}
+
 const THEME_LABEL: Record<ThemeType, string> = {
   dark: "夜幕深色",
   light: "柔和淺色",
@@ -197,6 +201,15 @@ const THEME_LABEL: Record<ThemeType, string> = {
   ocean: "清爽海洋",
   forest: "森林自然",
   rose: "玫瑰雅緻",
+};
+
+const THEME_MOOD: Record<ThemeType, string> = {
+  dark: "低調俐落，適合夜間與深色風格店面。",
+  light: "乾淨明亮，適合簡潔清新的閱讀感。",
+  warm: "帶一點木質暖度，適合家常與熱炒類型。",
+  ocean: "清爽通透，適合海鮮與輕食系菜單。",
+  forest: "自然穩定，適合健康、鍋物與家常料理。",
+  rose: "柔和精緻，適合甜點、飲品與質感店型。",
 };
 
 function toSectionId(category: string, index: number) {
@@ -228,7 +241,9 @@ export default async function UuMenuPage({
   const categoryLinks = grouped.map((group, index) => ({
     label: group.category,
     id: toSectionId(group.category, index),
+    count: group.items.length,
   }));
+  const hasQuickActions = Boolean(data.phone || data.address);
 
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 26%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 55%, ${tokens.bgDeep} 100%)`,
@@ -257,10 +272,6 @@ export default async function UuMenuPage({
     boxShadow: tokens.shadow,
   };
 
-  const infoCardStyle: CSSProperties = {
-    background: tokens.surfaceSoft,
-    borderColor: tokens.border,
-  };
 
   return (
     <main className="uu-public-shell" style={shellStyle}>
@@ -279,7 +290,7 @@ export default async function UuMenuPage({
             <div className="uu-public-heading-block">
               <h1 style={{ color: tokens.title }}>{data.restaurant}</h1>
               <p style={{ color: tokens.muted }}>
-                菜單與價格以店內現場供應為準。
+                {THEME_MOOD[theme]} 菜單與價格請以店內現場供應為準。
               </p>
               {(data.hours || data.phone || data.address) && (
                 <div className="uu-public-inline-meta">
@@ -290,6 +301,31 @@ export default async function UuMenuPage({
               )}
             </div>
           </div>
+
+          {hasQuickActions ? (
+            <div className="uu-public-action-row">
+              {data.phone ? (
+                <a
+                  href={formatPhoneHref(data.phone)}
+                  className="uu-public-action-button is-primary"
+                  style={{ background: tokens.accentStrong, color: tokens.accentSoft, borderColor: tokens.accentStrong }}
+                >
+                  撥打電話
+                </a>
+              ) : null}
+              {data.address ? (
+                <a
+                  href={formatMapHref(data.address)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="uu-public-action-button"
+                  style={{ background: tokens.badge, color: tokens.text, borderColor: tokens.border }}
+                >
+                  查看位置
+                </a>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="uu-public-hero-note" style={{ background: tokens.badge, borderColor: tokens.border, color: tokens.text }}>
             {table ? `目前桌號：${table}，點餐前可先向店家確認本桌品項與供應狀況。` : "向下滑動即可查看分類與價格，實際供應請以現場為準。"}
@@ -322,20 +358,32 @@ export default async function UuMenuPage({
           </div>
 
           {categoryLinks.length > 1 ? (
-            <nav className="uu-public-category-nav" aria-label="菜單分類導覽">
-              {categoryLinks.map((link) => (
-                <a key={link.id} href={`#${link.id}`} className="uu-public-category-chip" style={{ background: tokens.badge, borderColor: tokens.border, color: tokens.text }}>
-                  {link.label}
-                </a>
-              ))}
-            </nav>
+            <div className="uu-public-nav-wrap">
+              <div className="uu-public-nav-head">
+                <span className="uu-public-section-kicker">快速分類</span>
+                <span className="uu-public-section-hint">點一下可直接跳到對應分類</span>
+              </div>
+              <nav className="uu-public-category-nav" aria-label="菜單分類導覽">
+                {categoryLinks.map((link) => (
+                  <a key={link.id} href={`#${link.id}`} className="uu-public-category-chip" style={{ background: tokens.badge, borderColor: tokens.border, color: tokens.text }}>
+                    <span>{link.label}</span>
+                    <em>{link.count} 項</em>
+                  </a>
+                ))}
+              </nav>
+            </div>
           ) : null}
 
           {grouped.map((group, index) => (
             <section key={group.category} id={categoryLinks[index]?.id} className="uu-public-section uu-public-section-refined">
-              <div className="uu-public-section-title uu-public-section-title-refined" style={{ color: tokens.accent, background: tokens.badge, borderColor: tokens.border }}>
-                <span className="uu-public-section-dot" />
-                {group.category}
+              <div className="uu-public-section-title-row">
+                <div className="uu-public-section-title uu-public-section-title-refined" style={{ color: tokens.accent, background: tokens.badge, borderColor: tokens.border }}>
+                  <span className="uu-public-section-dot" />
+                  {group.category}
+                </div>
+                <span className="uu-public-section-count" style={{ background: tokens.accentTint, color: tokens.accentStrong, borderColor: tokens.border }}>
+                  {group.items.length} 項
+                </span>
               </div>
 
               <div className="uu-public-item-list uu-public-item-list-refined">

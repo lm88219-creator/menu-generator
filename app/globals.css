@@ -5202,6 +5202,54 @@ select.uu-input:focus {
   font-weight: 700;
 }
 
+.uu-public-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.uu-public-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--uu-public-border);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.uu-public-action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.uu-public-action-button.is-primary {
+  box-shadow: 0 16px 26px color-mix(in srgb, var(--uu-public-accent) 28%, transparent);
+}
+
+.uu-public-nav-wrap {
+  margin: 0 0 22px;
+  padding: 16px;
+  border: 1px solid var(--uu-public-border);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--uu-public-surface-soft) 72%, transparent);
+}
+
+.uu-public-nav-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
 .uu-public-category-nav {
   display: flex;
   flex-wrap: wrap;
@@ -5212,7 +5260,8 @@ select.uu-input:focus {
 .uu-public-category-chip {
   display: inline-flex;
   align-items: center;
-  min-height: 38px;
+  gap: 8px;
+  min-height: 40px;
   padding: 0 14px;
   border-radius: 999px;
   border: 1px solid var(--uu-public-border);
@@ -5221,6 +5270,14 @@ select.uu-input:focus {
   font-weight: 800;
   letter-spacing: 0.01em;
   transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.uu-public-category-chip em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--uu-public-accent-strong);
+  opacity: 0.88;
 }
 
 .uu-public-category-chip:hover {
@@ -5310,6 +5367,27 @@ select.uu-input:focus {
 
 .uu-public-section-refined + .uu-public-section-refined {
   margin-top: 22px;
+}
+
+.uu-public-section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.uu-public-section-count {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--uu-public-border);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.03em;
 }
 
 .uu-public-section-title-refined {
@@ -5430,9 +5508,14 @@ select.uu-input:focus {
   }
 
   .uu-public-inline-meta span,
-  .uu-public-category-chip {
+  .uu-public-category-chip,
+  .uu-public-action-button {
     width: 100%;
     justify-content: center;
+  }
+
+  .uu-public-nav-head {
+    align-items: flex-start;
   }
 
   .uu-public-item-refined {
