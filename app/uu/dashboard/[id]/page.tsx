@@ -38,7 +38,7 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
           <div>
             <div className="uu-kicker">UU MENU EDITOR</div>
             <h1 className="uu-dashboard-title">編輯菜單</h1>
-            <p className="uu-dashboard-copy">先整理店家資訊與品項，再視需要調整外觀和進階工具。</p>
+            <p className="uu-dashboard-copy">把常用資訊、網址與儲存操作集中在前面，減少來回切換。</p>
           </div>
 
           <div className="uu-editor-page-meta">
@@ -46,12 +46,12 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
             <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
               {menu.isPublished === false ? "已下架" : "上架中"}
             </span>
-            <span className="uu-chip">品項 {itemCount}</span>
+            <span className="uu-chip">共 {itemCount} 個品項</span>
           </div>
 
           <div className="uu-editor-page-actions">
             <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回後台</Link>
-            <Link href={publicPath} target="_blank" className="uu-btn uu-btn-primary">查看公開頁</Link>
+            <Link href={publicPath} target="_blank" className="uu-btn uu-btn-primary">打開公開頁</Link>
           </div>
         </section>
 

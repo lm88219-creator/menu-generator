@@ -235,11 +235,11 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
         <div className="uu-editor-v4-topbar-main">
           <div>
             <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
-            <p className="uu-admin-copy">主要資訊放前面，常用操作固定在上方，減少來回滑動。</p>
+            <p className="uu-admin-copy">把店家資訊、網址與儲存控制固定在清楚的位置，編輯流程會更順。</p>
           </div>
           <div className="uu-editor-v4-stats">
-            <span className="uu-chip">總品項 {formItems.length}</span>
-            <span className="uu-chip">供應中 {activeCount}</span>
+            <span className="uu-chip">品項 {formItems.length}</span>
+            <span className="uu-chip">供應 {activeCount}</span>
             <span className="uu-chip">售完 {soldOutCount}</span>
           </div>
         </div>
@@ -432,7 +432,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head uu-section-head-tight">
               <div>
                 <h3>公開網址</h3>
-                <p>外部分享最常用。</p>
+                <p>分享或貼給店家時最常用。</p>
               </div>
             </div>
             <div className="uu-editor-v4-side-url">{publicUrl}</div>
@@ -441,8 +441,8 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
           <div className="uu-bottom-save-bar uu-editor-v4-savebar">
             <div>
-              <strong>完成後記得儲存</strong>
-              <p>這個按鈕會跟著頁面，不用一直滑到最上面。</p>
+              <strong>記得儲存變更</strong>
+              <p>右側固定儲存區，編輯到哪裡都能直接存。</p>
             </div>
             <button type="button" className="uu-btn uu-btn-primary uu-full-width" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
           </div>
