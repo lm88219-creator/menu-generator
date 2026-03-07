@@ -4,7 +4,25 @@ import { QRCodeCanvas } from "qrcode.react";
 import { useEffect, useMemo, useState } from "react";
 import { parseMenuText, normalizeSlug } from "@/lib/menu";
 
-export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market";
+export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+
+type ThemeConfig = {
+  name: string;
+  pageBg: string;
+  cardBg: string;
+  cardBorder: string;
+  text: string;
+  subText: string;
+  accent: string;
+  inputBg: string;
+  inputBorder: string;
+  buttonMainBg: string;
+  buttonMainText: string;
+  buttonGhostBg: string;
+  buttonGhostText: string;
+  previewBg: string;
+  previewBorder: string;
+};
 
 type InitialData = {
   restaurant: string;
@@ -30,7 +48,6 @@ type MenuItemForm = {
 const THEME_OPTIONS: Array<{ value: ThemeType; label: string; desc: string; accent: string; preview: [string, string, string] }> = [
   { value: "dark", label: "深色經典", desc: "適合熱炒、宵夜、餐酒館。對比清楚、穩重耐看。", accent: "#6ea8ff", preview: ["#101723", "#172235", "#0d1420"] },
   { value: "light", label: "簡約白", desc: "閱讀感最乾淨，適合一般餐廳與簡潔菜單。", accent: "#d6b267", preview: ["#f7f8fa", "#ffffff", "#eef2f7"] },
-  { value: "market", label: "招牌米白", desc: "像店面招牌菜單的米白暖底與紅色重點，適合熱炒、小吃、台味海鮮。", accent: "#c53a30", preview: ["#f6f1ea", "#fffaf5", "#ede3d8"] },
   { value: "warm", label: "暖木咖啡", desc: "偏溫暖餐飲感，適合咖啡館、小吃、家常風格。", accent: "#d08a54", preview: ["#2d211a", "#412d21", "#221812"] },
   { value: "ocean", label: "海洋清新", desc: "色調明亮清爽，適合海鮮、健康餐、早午餐。", accent: "#4da3ff", preview: ["#10202d", "#173247", "#0d1923"] },
   { value: "forest", label: "森林自然", desc: "較有自然感，適合便當、蔬食、手作餐飲。", accent: "#6fb17a", preview: ["#142118", "#203126", "#101813"] },
@@ -111,7 +128,6 @@ function getPreviewTokens(theme: ThemeType) {
   if (theme === "dark") return { shell: "#0d1420", panel: "rgba(17, 24, 39, 0.92)", soft: "rgba(143, 183, 255, 0.12)", border: "rgba(255,255,255,0.08)", accent: "#8fb7ff", text: "#eef4ff", muted: "#9baccc" };
   if (theme === "warm") return { shell: "#2a1f19", panel: "rgba(62, 43, 31, 0.92)", soft: "rgba(208, 138, 84, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#d08a54", text: "#fff5ea", muted: "#d7bca2" };
   if (theme === "ocean") return { shell: "#0e1b26", panel: "rgba(21, 42, 59, 0.92)", soft: "rgba(77, 163, 255, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#63b3ff", text: "#eef9ff", muted: "#a7c6dc" };
-  if (theme === "market") return { shell: "#f3ede5", panel: "rgba(255, 250, 245, 0.96)", soft: "rgba(197, 58, 48, 0.10)", border: "rgba(197, 58, 48, 0.18)", accent: "#c53a30", text: "#20344b", muted: "#6e7b8f" };
   if (theme === "forest") return { shell: "#101813", panel: "rgba(27, 40, 31, 0.94)", soft: "rgba(111, 177, 122, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#7bc68a", text: "#f0fff4", muted: "#b0cdb7" };
   if (theme === "rose") return { shell: "#1c1216", panel: "rgba(48, 29, 37, 0.94)", soft: "rgba(215, 138, 164, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#e3a0b6", text: "#fff2f6", muted: "#d8b2c1" };
   return { shell: "#f4f6fa", panel: "rgba(255, 255, 255, 0.96)", soft: "rgba(214, 178, 103, 0.18)", border: "rgba(15,23,42,0.08)", accent: "#c7922e", text: "#263244", muted: "#6f7c92" };
