@@ -7866,3 +7866,99 @@ select.uu-input:focus {
   margin-top: 12px;
   padding-top: 4px;
 }
+
+
+.uu-menu-editor-section-head-refined {
+  align-items: flex-start;
+}
+
+.uu-menu-item-row-head,
+.uu-menu-item-row-top,
+.uu-menu-item-mini-label {
+  display: none;
+}
+
+.uu-menu-editor-stack-refined {
+  gap: 10px;
+}
+
+.uu-menu-item-row-card-minimal {
+  padding: 10px 12px;
+  border-radius: 18px;
+}
+
+.uu-menu-item-row-grid-minimal {
+  grid-template-columns: minmax(110px, 0.82fr) minmax(200px, 1.45fr) minmax(100px, 0.72fr) minmax(170px, 1fr) 72px 74px;
+  gap: 8px;
+  align-items: center;
+}
+
+.uu-menu-item-row-grid-minimal > .uu-input,
+.uu-menu-item-row-grid-minimal > .uu-price-input-wrap,
+.uu-menu-item-row-grid-minimal .uu-menu-item-toggle-cell,
+.uu-menu-item-row-grid-minimal .uu-menu-item-delete-cell {
+  min-width: 0;
+}
+
+.uu-menu-item-row-grid-minimal .uu-input,
+.uu-menu-item-row-grid-minimal .uu-price-input-wrap {
+  min-height: 38px;
+}
+
+.uu-menu-item-row-grid-minimal .uu-menu-item-mini-field,
+.uu-menu-item-toggle-cell-minimal,
+.uu-menu-item-delete-cell-minimal {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.uu-menu-item-toggle-cell-minimal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uu-menu-item-toggle-cell-minimal input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+.uu-menu-item-delete-cell-minimal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uu-menu-item-delete-cell-minimal .uu-btn-icon-only {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 10px;
+}
+
+@media (max-width: 1180px) {
+  .uu-menu-item-row-grid-minimal {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .uu-menu-item-row-card-minimal {
+    padding: 10px;
+  }
+
+  .uu-menu-item-row-grid-minimal {
+    grid-template-columns: 1fr;
+  }
+
+  .uu-menu-item-toggle-cell-minimal,
+  .uu-menu-item-delete-cell-minimal {
+    justify-content: flex-start;
+  }
+
+  .uu-menu-item-delete-cell-minimal .uu-btn-icon-only {
+    width: auto;
+    min-width: 88px;
+  }
+}
