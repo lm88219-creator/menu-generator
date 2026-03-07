@@ -2,7 +2,6 @@
 
 import { QRCodeCanvas } from "qrcode.react";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { parseMenuText, normalizeSlug } from "@/lib/menu";
 
 export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
@@ -96,7 +95,6 @@ function parseDeskInput(input: string) {
 }
 
 export default function EditMenuForm({ id, initialData }: { id: string; initialData: InitialData }) {
-  const router = useRouter();
   const [restaurant, setRestaurant] = useState(initialData.restaurant);
   const [phone, setPhone] = useState(initialData.phone);
   const [address, setAddress] = useState(initialData.address);
@@ -118,10 +116,23 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const soldOutCount = formItems.filter((item) => item.soldOut).length;
   const activeCount = formItems.filter((item) => item.name.trim() && !item.soldOut).length;
   const selectedTheme = THEME_OPTIONS.find((item) => item.value === theme) || THEME_OPTIONS[0];
+  const deskStorageKey = `uu-desk-codes:${id}`;
 
   useEffect(() => {
     setMenuText(toMenuText(formItems));
   }, [formItems]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = window.localStorage.getItem(deskStorageKey);
+    if (saved) setDeskInput(saved);
+  }, [deskStorageKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (deskInput.trim()) window.localStorage.setItem(deskStorageKey, deskInput);
+    else window.localStorage.removeItem(deskStorageKey);
+  }, [deskInput, deskStorageKey]);
 
   function pushMessage(text: string) {
     setMessage(text);
@@ -194,7 +205,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
       if (data?.data?.slug) setSlug(data.data.slug);
       setMenuText(finalMenuText);
       pushMessage("已成功儲存");
-      router.refresh();
     } catch {
       alert("更新失敗");
     } finally {
@@ -434,7 +444,18 @@ B1 B2
 VIP1"
                   />
                 </Field>
-                <div className="uu-editor-v4-tool-tip">只顯示前 8 組預覽，避免這區塊太長影響操作。</div>
+                <div className="uu-editor-v4-tool-toolbar">
+                  <div className="uu-editor-v4-tool-tip">桌號內容會暫存在這台電腦，儲存菜單後也不會消失。</div>
+                  <div className="uu-editor-v4-tool-actions">
+                    <span className="uu-chip">目前 {deskCodes.length} 組</span>
+                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => setDeskInput("")}>清空桌號</button>
+                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => copyText(deskCodes.join(", "), "已複製桌號清單") } disabled={!deskCodes.length}>複製桌號清單</button>
+                  </div>
+                </div>
+                <div className="uu-editor-v4-qr-preview-head">
+                  <strong>桌號 QR 預覽</strong>
+                  <span>只顯示前 8 組，避免頁面太長。</span>
+                </div>
                 <div className="uu-qr-grid">
                   {deskCodes.slice(0, 8).map((tableCode) => {
                     const tableUrl = `${publicUrl}?table=${encodeURIComponent(tableCode)}`;
