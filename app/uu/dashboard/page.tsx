@@ -56,7 +56,7 @@ export default async function UUDashboardPage({
             <div className="uu-kicker">UU MENU ADMIN</div>
             <h1 className="uu-admin-title">多店菜單控制台</h1>
             <p className="uu-admin-copy">
-              現在由你統一幫店家建立、編輯與維護菜單。整個後台改成深色專業介面，長時間操作比較不傷眼，也更方便你管理多家店。
+              由你統一幫店家建立、編輯與維護菜單。深色專業後台設計，長時間操作更舒適，也更方便管理多家店。
             </p>
             <div className="uu-form-actions">
               <Link href="/" className="uu-btn uu-btn-primary">建立新菜單</Link>
@@ -137,9 +137,9 @@ export default async function UUDashboardPage({
                     </div>
                     <div className="uu-card-actions">
                       <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
-                      <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">查看公開頁</Link>
                       <CopyUrlButton url={publicUrl} />
                       <DeskCardButton restaurant={menu.restaurant} publicUrl={publicPath} />
+                      <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">查看公開頁</Link>
                       <DeleteMenuButton id={menu.id} />
                     </div>
                   </article>

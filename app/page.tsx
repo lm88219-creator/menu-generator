@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 
 function getPublicBaseUrl() {
@@ -27,7 +27,8 @@ export default function Home() {
   const [address, setAddress] = useState("");
   const [hours, setHours] = useState("");
   const [menu, setMenu] = useState("");
-  const [theme, setTheme] = useState<ThemeType>("dark");
+  const [theme, setTheme] = useState<ThemeType>("warm");
+  const [isMobile, setIsMobile] = useState(false);
   const [logoDataUrl, setLogoDataUrl] = useState("");
   const [customSlug, setCustomSlug] = useState("");
 
@@ -134,6 +135,13 @@ export default function Home() {
 
   const currentTheme = themeMap[theme];
 
+  useEffect(() => {
+    const apply = () => setIsMobile(window.innerWidth < 900);
+    apply();
+    window.addEventListener("resize", apply);
+    return () => window.removeEventListener("resize", apply);
+  }, []);
+
   async function generateMenu() {
     if (!restaurant.trim()) {
       alert("請輸入餐廳名稱");
@@ -188,7 +196,7 @@ export default function Home() {
     setPhone("0912-345-678");
     setAddress("嘉義市西區友愛路100號");
     setHours("17:00 - 01:00");
-    setTheme("dark");
+    setTheme("warm");
     setCustomSlug("");
     setMenu(`鵝肉
 鹽水鵝肉 200
@@ -210,7 +218,7 @@ export default function Home() {
     setAddress("");
     setHours("");
     setMenu("");
-    setTheme("dark");
+    setTheme("warm");
     setLogoDataUrl("");
     setCustomSlug("");
     setQrText("");
@@ -556,7 +564,7 @@ y += 150;
     padding: "12px 18px",
     borderRadius: 14,
     border: currentTheme.inputBorder,
-    background: currentTheme.buttonGhostBg,
+    background: theme === "dark" ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.72)",
     color: currentTheme.buttonGhostText,
     cursor: "pointer",
     fontSize: 15,
@@ -567,7 +575,7 @@ y += 150;
     padding: "12px 18px",
     borderRadius: 14,
     border: "none",
-    background: currentTheme.buttonMainBg,
+    background: theme === "warm" ? "linear-gradient(180deg, #8b5e34, #6f4623)" : "linear-gradient(180deg, #2563eb, #1d4ed8)",
     color: currentTheme.buttonMainText,
     cursor: "pointer",
     fontSize: 15,
@@ -575,25 +583,30 @@ y += 150;
     boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
   };
 
+  const accentMap: Record<ThemeType, string> = {
+    dark: "#f4d58d",
+    light: "#cbd5e1",
+    warm: "#8b5e34",
+    ocean: "#118ab2",
+    forest: "#2f6b3f",
+    rose: "#b35c7a",
+  };
+
   const themeCardStyle = (value: ThemeType): React.CSSProperties => ({
-    borderRadius: 18,
-    padding: 16,
-    border:
-      theme === value
-        ? `2px solid ${currentTheme.accent}`
-        : currentTheme.inputBorder,
-    background:
-      value === "dark"
-        ? "linear-gradient(180deg,#202020 0%,#090909 100%)"
-        : value === "light"
-        ? "linear-gradient(180deg,#ffffff 0%,#f0f0f0 100%)"
-        : "linear-gradient(180deg,#f8efe3 0%,#e7d2b8 100%)",
-    color: value === "dark" ? "#fff" : value === "light" ? "#111" : value === "warm" ? "#4e3426" : value === "ocean" ? "#0f3550" : value === "forest" ? "#233b2c" : "#5a3141",
+    borderRadius: 20,
+    padding: 18,
+    border: theme === value ? "1px solid rgba(96,165,250,0.45)" : "1px solid rgba(148,163,184,0.16)",
+    background: theme === value
+      ? "linear-gradient(180deg, rgba(30,41,59,0.96), rgba(15,23,42,0.94))"
+      : "linear-gradient(180deg, rgba(17,24,39,0.94), rgba(10,15,28,0.94))",
+    color: "#eef3ff",
     cursor: "pointer",
-    minHeight: 108,
+    minHeight: 116,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    position: "relative",
+    boxShadow: theme === value ? "0 16px 30px rgba(15,23,42,0.28)" : "none",
   });
 
   return (
@@ -611,8 +624,9 @@ y += 150;
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1.2fr 0.8fr",
+            gridTemplateColumns: isMobile ? "1fr" : "1.2fr 0.8fr",
             gap: 24,
+            alignItems: "start",
           }}
         >
           <div
@@ -638,22 +652,27 @@ y += 150;
                     : "rgba(0,0,0,0.05)",
                 fontSize: 13,
                 color: currentTheme.subText,
+                letterSpacing: "0.1em",
+                fontWeight: 700,
               }}
             >
-              商業級 QR 菜單生成器
+              UU MENU
             </div>
 
-            <h1 style={{ fontSize: 42, margin: "16px 0 0" }}>30 秒生成餐廳數位菜單</h1>
+            <h1 style={{ fontSize: isMobile ? 34 : 42, margin: "16px 0 0", lineHeight: 1.08 }}>QR 菜單生成器</h1>
 
             <p
               style={{
-                marginTop: 10,
+                marginTop: 12,
                 color: currentTheme.subText,
                 fontSize: 16,
                 lineHeight: 1.8,
+                maxWidth: 640,
               }}
             >
-              輸入餐廳資訊、上傳 Logo、選擇風格，立即產生可公開分享的菜單網址與 QR Code。
+              為餐廳快速建立 QR Code 菜單
+              <br />
+              一分鐘生成可分享的線上菜單
             </p>
 
             <div style={{ marginTop: 28 }}>
@@ -678,7 +697,7 @@ y += 150;
               style={{
                 marginTop: 18,
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                 gap: 14,
               }}
             >
@@ -869,39 +888,34 @@ y += 150;
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+                  gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
                   gap: 12,
                 }}
               >
-                <div onClick={() => setTheme("dark")} style={themeCardStyle("dark")}>
-                  <div style={{ fontWeight: 700 }}>黑色餐廳風</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>質感、夜店、燈箱感</div>
-                </div>
-
-                <div onClick={() => setTheme("light")} style={themeCardStyle("light")}>
-                  <div style={{ fontWeight: 700 }}>簡約白色</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>乾淨、清楚、百搭</div>
-                </div>
-
-                <div onClick={() => setTheme("warm")} style={themeCardStyle("warm")}>
-                  <div style={{ fontWeight: 700 }}>溫暖咖啡風</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>木質、餐館、溫暖感</div>
-                </div>
-
-                <div onClick={() => setTheme("ocean")} style={themeCardStyle("ocean")}>
-                  <div style={{ fontWeight: 700 }}>海洋清新風</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>清爽、海味、明亮感</div>
-                </div>
-
-                <div onClick={() => setTheme("forest")} style={themeCardStyle("forest")}>
-                  <div style={{ fontWeight: 700 }}>森林自然風</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>自然、手作、健康感</div>
-                </div>
-
-                <div onClick={() => setTheme("rose")} style={themeCardStyle("rose")}>
-                  <div style={{ fontWeight: 700 }}>玫瑰奶茶風</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>柔和、甜點、質感感</div>
-                </div>
+                {([
+                  ["dark", "黑色餐廳風", "質感、夜店、燈箱感"],
+                  ["light", "簡約白色", "乾淨、清楚、百搭"],
+                  ["warm", "溫暖咖啡風", "木質、餐館、溫暖感"],
+                  ["ocean", "海洋清新風", "清爽、海味、明亮感"],
+                  ["forest", "森林自然風", "自然、手作、健康感"],
+                  ["rose", "玫瑰奶茶風", "柔和、甜點、質感感"],
+                ] as const).map(([value, title, desc]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setTheme(value)}
+                    style={{ ...themeCardStyle(value), border: "none" }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ width: 10, height: 34, borderRadius: 999, background: accentMap[value], display: "inline-block" }} />
+                        <div style={{ fontWeight: 800, fontSize: 16 }}>{title}</div>
+                      </div>
+                      {theme === value ? <span style={{ fontSize: 12, color: "#93c5fd", fontWeight: 700 }}>已選擇</span> : null}
+                    </div>
+                    <div style={{ fontSize: 13, opacity: 0.76, marginTop: 14, textAlign: "left" }}>{desc}</div>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -937,7 +951,7 @@ y += 150;
               </button>
 
               <button onClick={fillExample} style={ghostButtonStyle}>
-                填入範例
+                填入範例菜單
               </button>
 
               <button onClick={clearAll} style={ghostButtonStyle}>
@@ -954,12 +968,12 @@ y += 150;
               background: currentTheme.cardBg,
               backdropFilter: "blur(12px)",
               boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-              position: "sticky",
+              position: isMobile ? "static" : "sticky",
               top: 20,
               height: "fit-content",
             }}
           >
-            <div style={{ fontSize: 14, color: currentTheme.subText, marginBottom: 8 }}>
+            <div style={{ fontSize: 14, color: currentTheme.subText, marginBottom: 12 }}>
               即時預覽
             </div>
 
@@ -978,7 +992,9 @@ y += 150;
                     ? "1px solid rgba(255,255,255,0.08)"
                     : "1px solid rgba(0,0,0,0.08)",
                 color: theme === "dark" ? "#fff" : theme === "light" ? "#111" : theme === "warm" ? "#4e3426" : theme === "ocean" ? "#0f3550" : theme === "forest" ? "#233b2c" : "#5a3141",
-                minHeight: 580,
+                minHeight: isMobile ? "auto" : 580,
+                maxWidth: 420,
+                margin: "0 auto",
               }}
             >
               <div style={{ textAlign: "center" }}>
@@ -1132,7 +1148,7 @@ y += 150;
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "0.9fr 1.1fr",
+                gridTemplateColumns: isMobile ? "1fr" : "0.9fr 1.1fr",
                 gap: 24,
                 alignItems: "center",
               }}
@@ -1232,20 +1248,22 @@ y += 150;
                     分享 FB
                   </button>
                   <a
-  href="/uu/dashboard"
-  style={{
-    display: "inline-block",
-    marginTop: 10,
-    padding: "10px 18px",
-    borderRadius: 12,
-    background: "#eee",
-    color: "#333",
-    textDecoration: "none",
-    fontWeight: 600,
-  }}
->
-  返回後台
-</a>
+                    href="/uu/dashboard"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "12px 18px",
+                      borderRadius: 14,
+                      background: theme === "dark" ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.72)",
+                      color: currentTheme.buttonGhostText,
+                      textDecoration: "none",
+                      fontWeight: 700,
+                      border: currentTheme.inputBorder,
+                    }}
+                  >
+                    返回後台
+                  </a>
                 </div>
               </div>
             </div>

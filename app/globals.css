@@ -81,8 +81,8 @@ select {
 .uu-admin-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-  gap: 20px;
-  padding: 28px;
+  gap: 22px;
+  padding: 32px;
   margin-bottom: 24px;
 }
 
@@ -107,7 +107,7 @@ select {
 .uu-admin-copy,
 .uu-section-head p,
 .uu-login-card p {
-  margin: 12px 0 0;
+  margin: 14px 0 0;
   color: #97a4bf;
   line-height: 1.8;
   font-size: 15px;
@@ -300,9 +300,9 @@ select {
 }
 
 .uu-btn-primary {
-  background: linear-gradient(180deg, #3b82f6, #2563eb);
+  background: linear-gradient(180deg, #2563eb, #1d4ed8);
   color: #fff;
-  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.28);
+  box-shadow: 0 14px 28px rgba(29, 78, 216, 0.24);
 }
 
 .uu-btn-secondary {
@@ -407,6 +407,9 @@ select {
 
 .uu-store-card {
   padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .uu-store-top {
@@ -480,6 +483,12 @@ select {
 
 .uu-card-actions {
   margin-top: 16px;
+}
+
+.uu-mobile-preview-switch {
+  display: none;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .uu-empty-state {
@@ -576,9 +585,23 @@ select {
 
 .uu-theme-card {
   text-align: left;
-  padding: 16px;
+  padding: 18px;
   cursor: pointer;
   color: #d7e3fb;
+  background: linear-gradient(180deg, rgba(17,24,39,0.96), rgba(10,15,28,0.96));
+}
+
+.uu-theme-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.uu-theme-accent {
+  width: 10px;
+  height: 34px;
+  border-radius: 999px;
+  flex-shrink: 0;
 }
 
 .uu-theme-card strong {
@@ -588,16 +611,23 @@ select {
 
 .uu-theme-card span {
   display: block;
-  margin-top: 8px;
+  margin-top: 10px;
   color: #90a0bb;
+  font-size: 13px;
+}
+
+.uu-theme-card em {
+  margin-left: auto;
+  font-style: normal;
   font-size: 12px;
-  text-transform: uppercase;
+  color: #93c5fd;
+  font-weight: 800;
 }
 
 .uu-theme-card.is-active {
   border-color: rgba(96, 165, 250, 0.5);
   box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.26);
-  background: rgba(37, 99, 235, 0.14);
+  background: linear-gradient(180deg, rgba(30,41,59,0.96), rgba(15,23,42,0.96));
 }
 
 .uu-upload-box {
@@ -641,6 +671,11 @@ select {
 
 .uu-preview-shell {
   padding: 22px;
+}
+
+.uu-menu-preview {
+  max-width: 420px;
+  margin: 0 auto;
 }
 
 .uu-preview-head {
@@ -967,6 +1002,10 @@ select {
 }
 
 @media (max-width: 760px) {
+  .uu-mobile-preview-switch {
+    display: flex;
+  }
+
   .uu-admin-shell,
   .uu-public-shell {
     padding-inline: 12px;
@@ -1016,6 +1055,22 @@ select {
   .uu-menu-item,
   .uu-qr-sheet {
     flex-direction: column;
+  }
+
+  .uu-editor-layout.is-edit-active .uu-preview-panel {
+    display: none;
+  }
+
+  .uu-editor-layout.is-preview-active .uu-editor-main-panel {
+    display: none;
+  }
+
+  .uu-admin-hero .uu-form-actions {
+    margin-top: 8px;
+  }
+
+  .uu-store-card {
+    padding: 16px;
   }
 
   .uu-public-item-price,

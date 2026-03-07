@@ -27,13 +27,13 @@ type MenuItemForm = {
   soldOut: boolean;
 };
 
-const THEME_OPTIONS: Array<{ value: ThemeType; label: string }> = [
-  { value: "dark", label: "深色經典" },
-  { value: "light", label: "簡約白" },
-  { value: "warm", label: "暖木咖啡" },
-  { value: "ocean", label: "海洋清新" },
-  { value: "forest", label: "森林自然" },
-  { value: "rose", label: "玫瑰奶茶" },
+const THEME_OPTIONS: Array<{ value: ThemeType; label: string; desc: string; accent: string }> = [
+  { value: "dark", label: "黑色餐廳風", desc: "質感、夜店、燈箱感", accent: "#f4d58d" },
+  { value: "light", label: "簡約白色", desc: "乾淨、清楚、百搭", accent: "#cbd5e1" },
+  { value: "warm", label: "溫暖咖啡風", desc: "木質、餐館、溫暖感", accent: "#8b5e34" },
+  { value: "ocean", label: "海洋清新風", desc: "清爽、海味、明亮感", accent: "#118ab2" },
+  { value: "forest", label: "森林自然風", desc: "自然、手作、健康感", accent: "#2f6b3f" },
+  { value: "rose", label: "玫瑰奶茶風", desc: "柔和、甜點、質感感", accent: "#b35c7a" },
 ];
 
 function toFormItems(menuText: string): MenuItemForm[] {
@@ -118,6 +118,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const [deskInput, setDeskInput] = useState("A1 A2 A3 A4");
   const [deskStart, setDeskStart] = useState("1");
   const [deskEnd, setDeskEnd] = useState("12");
+  const [mobileView, setMobileView] = useState<"edit" | "preview">("edit");
 
   const safeSlug = normalizeSlug(slug || restaurant) || id;
   const publicPath = `/uu/menu/${safeSlug}`;
@@ -221,7 +222,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   return (
-    <div className="uu-editor-layout">
+    <>
+    <div className="uu-mobile-preview-switch">
+      <button type="button" className={`uu-tab-btn ${mobileView === "edit" ? "is-active" : ""}`} onClick={() => setMobileView("edit")}>編輯</button>
+      <button type="button" className={`uu-tab-btn ${mobileView === "preview" ? "is-active" : ""}`} onClick={() => setMobileView("preview")}>預覽</button>
+    </div>
+    <div className={`uu-editor-layout ${mobileView === "preview" ? "is-preview-active" : "is-edit-active"}`}>
       <section className="uu-panel uu-editor-main-panel">
         <div className="uu-sticky-toolbar">
           <div className="uu-form-actions">
@@ -267,8 +273,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-theme-grid">
               {THEME_OPTIONS.map((option) => (
                 <button key={option.value} type="button" className={`uu-theme-card ${theme === option.value ? "is-active" : ""}`} onClick={() => setTheme(option.value)}>
-                  <strong>{option.label}</strong>
-                  <span>{option.value}</span>
+                  <div className="uu-theme-card-top">
+                    <span className="uu-theme-accent" style={{ background: option.accent }} />
+                    <strong>{option.label}</strong>
+                    {theme === option.value ? <em>已選擇</em> : null}
+                  </div>
+                  <span>{option.desc}</span>
                 </button>
               ))}
             </div>
@@ -398,6 +408,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
         </div>
       </aside>
     </div>
+    </>
   );
 }
 
