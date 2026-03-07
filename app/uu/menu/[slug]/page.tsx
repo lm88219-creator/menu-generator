@@ -190,6 +190,22 @@ function formatPhoneHref(phone: string) {
   return `tel:${phone.replace(/\s+/g, "")}`;
 }
 
+const THEME_LABEL: Record<ThemeType, string> = {
+  dark: "夜幕深色",
+  light: "柔和淺色",
+  warm: "暖金木質",
+  ocean: "清爽海洋",
+  forest: "森林自然",
+  rose: "玫瑰雅緻",
+};
+
+function toSectionId(category: string, index: number) {
+  return `section-${index}-${category}`
+    .toLowerCase()
+    .replace(/[^a-z0-9一-龥]+/g, "-")
+    .replace(/^-+|-+$/g, "") || `section-${index}`;
+}
+
 export default async function UuMenuPage({
   params,
   searchParams,
@@ -209,6 +225,10 @@ export default async function UuMenuPage({
   const grouped = groupMenuItems(data.menuText || "");
   const table = String(query?.table ?? "").trim();
   const tokens = getThemeTokens(theme);
+  const categoryLinks = grouped.map((group, index) => ({
+    label: group.category,
+    id: toSectionId(group.category, index),
+  }));
 
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 26%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 55%, ${tokens.bgDeep} 100%)`,
@@ -249,6 +269,7 @@ export default async function UuMenuPage({
           <div className="uu-public-hero-top">
             <div className="uu-public-kicker">UU MENU</div>
             <div className="uu-public-hero-badges">
+              <span className="uu-public-badge-chip">{THEME_LABEL[theme]}</span>
               {table ? <span className="uu-public-badge-chip is-table">桌號 {table}</span> : null}
             </div>
           </div>
@@ -260,11 +281,18 @@ export default async function UuMenuPage({
               <p style={{ color: tokens.muted }}>
                 菜單與價格以店內現場供應為準。
               </p>
+              {(data.hours || data.phone || data.address) && (
+                <div className="uu-public-inline-meta">
+                  {data.hours ? <span>營業時間｜{data.hours}</span> : null}
+                  {data.phone ? <span>電話｜{data.phone}</span> : null}
+                  {data.address ? <span>地址｜{data.address}</span> : null}
+                </div>
+              )}
             </div>
           </div>
 
           <div className="uu-public-hero-note" style={{ background: tokens.badge, borderColor: tokens.border, color: tokens.text }}>
-            {table ? `目前桌號：${table}，可直接向店家確認本桌點餐內容。` : "向下滑動即可查看各分類菜單與價格。"}
+            {table ? `目前桌號：${table}，點餐前可先向店家確認本桌品項與供應狀況。` : "向下滑動即可查看分類與價格，實際供應請以現場為準。"}
           </div>
         </section>
 
@@ -288,12 +316,23 @@ export default async function UuMenuPage({
         <section className="uu-public-card uu-public-menu-card" style={cardStyle}>
           <div className="uu-public-section-head">
             <div>
+              <span className="uu-public-section-kicker">精選菜單</span>
               <h2>菜單</h2>
             </div>
           </div>
 
-          {grouped.map((group) => (
-            <section key={group.category} className="uu-public-section uu-public-section-refined">
+          {categoryLinks.length > 1 ? (
+            <nav className="uu-public-category-nav" aria-label="菜單分類導覽">
+              {categoryLinks.map((link) => (
+                <a key={link.id} href={`#${link.id}`} className="uu-public-category-chip" style={{ background: tokens.badge, borderColor: tokens.border, color: tokens.text }}>
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+          ) : null}
+
+          {grouped.map((group, index) => (
+            <section key={group.category} id={categoryLinks[index]?.id} className="uu-public-section uu-public-section-refined">
               <div className="uu-public-section-title uu-public-section-title-refined" style={{ color: tokens.accent, background: tokens.badge, borderColor: tokens.border }}>
                 <span className="uu-public-section-dot" />
                 {group.category}
