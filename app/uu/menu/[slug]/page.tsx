@@ -194,22 +194,12 @@ function formatMapHref(address: string) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 }
 
-const THEME_LABEL: Record<ThemeType, string> = {
+const THEME_LABEL: Partial<Record<ThemeType, string>> = {
   dark: "夜幕深色",
-  light: "柔和淺色",
   warm: "暖金木質",
   ocean: "清爽海洋",
   forest: "森林自然",
   rose: "玫瑰雅緻",
-};
-
-const THEME_MOOD: Record<ThemeType, string> = {
-  dark: "沉穩俐落的深色質感。",
-  light: "乾淨清爽、閱讀舒服。",
-  warm: "溫潤暖色，帶點木質餐館感。",
-  ocean: "清透明亮，帶有海洋感。",
-  forest: "自然柔和，耐看不膩。",
-  rose: "細緻柔和，氛圍更雅緻。",
 };
 
 function toSectionId(category: string, index: number) {
@@ -245,6 +235,7 @@ export default async function UuMenuPage({
     id: toSectionId(group.category, index),
   }));
   const hasMeta = Boolean(data.hours || data.phone || data.address);
+  const themeLabel = THEME_LABEL[theme];
 
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 28%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 56%, ${tokens.bgDeep} 100%)`,
@@ -279,10 +270,10 @@ export default async function UuMenuPage({
       <div className="uu-public-container uu-public-container-refined">
         <section className="uu-public-hero uu-public-hero-refined" style={cardStyle}>
           <div className="uu-public-hero-top">
-            <div className="uu-public-kicker">UU MENU</div>
             <div className="uu-public-hero-badges">
-              <span className="uu-public-badge-chip">{THEME_LABEL[theme]}</span>
+              {themeLabel ? <span className="uu-public-badge-chip">{themeLabel}</span> : null}
               {table ? <span className="uu-public-badge-chip is-table">桌號 {table}</span> : null}
+              <span className="uu-public-kicker">UU MENU</span>
             </div>
           </div>
 
@@ -290,7 +281,6 @@ export default async function UuMenuPage({
             {data.logoDataUrl ? <img src={data.logoDataUrl} alt={`${data.restaurant} logo`} className="uu-public-logo" /> : null}
             <div className="uu-public-heading-block">
               <h1 style={{ color: tokens.title }}>{data.restaurant}</h1>
-              <p style={{ color: tokens.muted }}>{THEME_MOOD[theme]}</p>
               {hasMeta ? (
                 <div className="uu-public-inline-meta">
                   {data.hours ? <span>營業時間｜{data.hours}</span> : null}
@@ -322,18 +312,6 @@ export default async function UuMenuPage({
               <h2>菜單</h2>
             </div>
           </div>
-
-          {categoryLinks.length > 1 ? (
-            <div className="uu-public-nav-wrap">
-              <nav className="uu-public-category-nav" aria-label="菜單分類導覽">
-                {categoryLinks.map((link) => (
-                  <a key={link.id} href={`#${link.id}`} className="uu-public-category-chip" style={{ background: tokens.badge, borderColor: tokens.border, color: tokens.text }}>
-                    <span>{link.label}</span>
-                  </a>
-                ))}
-              </nav>
-            </div>
-          ) : null}
 
           {grouped.length ? (
             grouped.map((group, index) => (
