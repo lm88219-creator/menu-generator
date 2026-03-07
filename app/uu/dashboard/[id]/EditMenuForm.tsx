@@ -430,10 +430,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                 </div>
 
                 <div className="uu-editor-v4-address-row uu-editor-v4-address-row-refined">
-                  <div className="uu-editor-v4-address-card">
-                    <div className="uu-editor-v4-address-card-head">
-                      <span>地址</span>
-                      <small>公開頁與導航會優先使用這裡的資訊</small>
+                  <label className="uu-editor-v4-address-card uu-editor-v4-address-card-unified">
+                    <div className="uu-editor-v4-address-card-head uu-editor-v4-address-card-head-unified">
+                      <div>
+                        <span>地址</span>
+                        <small>公開頁與導航會優先使用這裡的資訊</small>
+                      </div>
                     </div>
                     <input
                       className="uu-input uu-editor-v4-address-input"
@@ -441,7 +443,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="例如：嘉義市西區友愛路100號"
                     />
-                  </div>
+                  </label>
                 </div>
               </div>
 
@@ -465,9 +467,8 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head uu-editor-v4-section-head-pro">
               <div>
                 <h2>菜單品項</h2>
-                <p>把分類、菜名、價格與供應狀態集中成更直覺的卡片，編輯時更整齊、掃一眼就知道哪裡要改。</p>
+                <p>把分類、菜名、價格與供應狀態整理成更乾淨的單列編輯區，桌機與手機都更好掃視。</p>
               </div>
-              <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
             </div>
 
             <div className="uu-menu-editor-slimbar uu-menu-editor-slimbar-minimal">
@@ -522,7 +523,8 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               ))}
             </div>
 
-            <div className="uu-menu-editor-savebar-inline uu-menu-editor-savebar-inline-right">
+            <div className="uu-menu-editor-savebar-inline uu-menu-editor-savebar-inline-right uu-menu-editor-actionbar">
+              <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
               <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>
                 {saving ? "儲存中..." : "儲存變更"}
               </button>
