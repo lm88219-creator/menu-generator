@@ -6034,3 +6034,246 @@ select.uu-input:focus {
     padding: 20px;
   }
 }
+
+
+/* v19 public mobile optimization */
+.uu-public-mobile-nav {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .uu-public-shell {
+    padding: 12px 10px 28px;
+  }
+
+  .uu-public-container-refined {
+    gap: 12px;
+  }
+
+  .uu-public-hero-refined,
+  .uu-public-menu-card,
+  .uu-public-empty-card {
+    border-radius: 22px;
+  }
+
+  .uu-public-hero-refined {
+    padding: 16px;
+    text-align: left;
+  }
+
+  .uu-public-hero-top {
+    margin-bottom: 4px;
+  }
+
+  .uu-public-hero-main {
+    display: grid;
+    grid-template-columns: 68px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .uu-public-logo {
+    width: 68px;
+    height: 68px;
+    margin: 0;
+    border-radius: 20px;
+    padding: 8px;
+  }
+
+  .uu-public-heading-block h1 {
+    font-size: clamp(26px, 8vw, 34px);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+  }
+
+  .uu-public-inline-meta {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .uu-public-inline-meta span,
+  .uu-public-inline-link,
+  .uu-public-table-pill {
+    width: 100%;
+    min-height: 40px;
+    justify-content: flex-start;
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .uu-public-table-pill {
+    margin-top: 14px;
+  }
+
+  .uu-public-menu-card {
+    padding: 16px;
+  }
+
+  .uu-public-mobile-nav {
+    display: block;
+    margin: 0 0 14px;
+  }
+
+  .uu-public-mobile-nav-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .uu-public-mobile-nav-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .uu-public-mobile-nav-chip {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--uu-public-border);
+    background: color-mix(in srgb, var(--uu-public-badge) 82%, white 18%);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    scroll-snap-align: start;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+
+  .uu-public-section-head.is-menu-head {
+    margin-bottom: 14px;
+  }
+
+  .uu-public-section-kicker {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  .uu-public-section-head h2 {
+    margin-top: 6px;
+    font-size: 24px;
+  }
+
+  .uu-public-section-refined + .uu-public-section-refined {
+    margin-top: 16px;
+  }
+
+  .uu-public-section-title-row {
+    margin-bottom: 10px;
+  }
+
+  .uu-public-section-title-refined {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  .uu-public-section-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .uu-public-item-list-refined {
+    gap: 10px;
+  }
+
+  .uu-public-item-refined {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 12px;
+    padding: 14px 14px 14px 16px;
+    border-radius: 18px;
+  }
+
+  .uu-public-item-refined::before {
+    inset: 12px auto 12px 8px;
+    width: 3px;
+  }
+
+  .uu-public-item-copy {
+    padding-left: 2px;
+  }
+
+  .uu-public-item-refined strong {
+    display: block;
+    font-size: 16px;
+    line-height: 1.35;
+  }
+
+  .uu-public-item-refined p {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .uu-public-item-price-refined {
+    min-width: auto;
+    min-height: 38px;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: 15px;
+    align-self: start;
+  }
+
+  .uu-public-soldout-pill {
+    margin-top: 8px;
+  }
+
+  .uu-public-menu-footnote {
+    margin-top: 16px;
+    padding-top: 12px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 420px) {
+  .uu-public-shell {
+    padding-inline: 8px;
+  }
+
+  .uu-public-hero-refined,
+  .uu-public-menu-card,
+  .uu-public-empty-card {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .uu-public-hero-main {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .uu-public-logo {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    padding: 7px;
+  }
+
+  .uu-public-heading-block h1 {
+    font-size: 24px;
+  }
+
+  .uu-public-item-refined {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .uu-public-item-price-refined {
+    justify-self: flex-start;
+  }
+}

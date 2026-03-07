@@ -297,6 +297,23 @@ export default async function UuMenuPage({
         </section>
 
         <section className="uu-public-card uu-public-menu-card" style={cardStyle}>
+          {categoryLinks.length > 1 ? (
+            <div className="uu-public-mobile-nav" aria-label="菜單分類導覽">
+              <div className="uu-public-mobile-nav-scroll">
+                {categoryLinks.map((link) => (
+                  <a
+                    key={link.id}
+                    href={`#${link.id}`}
+                    className="uu-public-mobile-nav-chip"
+                    style={{ borderColor: tokens.border, color: tokens.accentStrong }}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           <div className="uu-public-section-head is-menu-head">
             <div>
               <span className="uu-public-section-kicker">精選內容</span>
