@@ -194,14 +194,6 @@ function formatMapHref(address: string) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 }
 
-const THEME_LABEL: Partial<Record<ThemeType, string>> = {
-  dark: "夜幕深色",
-  warm: "暖金木質",
-  ocean: "清爽海洋",
-  forest: "森林自然",
-  rose: "玫瑰雅緻",
-};
-
 function toSectionId(category: string, index: number) {
   return (
     `section-${index}-${category}`
@@ -235,7 +227,6 @@ export default async function UuMenuPage({
     id: toSectionId(group.category, index),
   }));
   const hasMeta = Boolean(data.hours || data.phone || data.address);
-  const themeLabel = THEME_LABEL[theme];
 
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 28%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 56%, ${tokens.bgDeep} 100%)`,
@@ -271,9 +262,8 @@ export default async function UuMenuPage({
         <section className="uu-public-hero uu-public-hero-refined" style={cardStyle}>
           <div className="uu-public-hero-top">
             <div className="uu-public-hero-badges">
-              {themeLabel ? <span className="uu-public-badge-chip">{themeLabel}</span> : null}
-              {table ? <span className="uu-public-badge-chip is-table">桌號 {table}</span> : null}
               <span className="uu-public-kicker">UU MENU</span>
+              {table ? <span className="uu-public-badge-chip is-table">桌號 {table}</span> : null}
             </div>
           </div>
 
@@ -309,7 +299,11 @@ export default async function UuMenuPage({
         <section className="uu-public-card uu-public-menu-card" style={cardStyle}>
           <div className="uu-public-section-head is-menu-head">
             <div>
+              <span className="uu-public-section-kicker">精選內容</span>
               <h2>菜單</h2>
+            </div>
+            <div className="uu-public-section-count" style={{ background: tokens.badge, borderColor: tokens.border, color: tokens.accentStrong }}>
+              共 {grouped.reduce((total, group) => total + group.items.length, 0)} 項
             </div>
           </div>
 
@@ -320,6 +314,9 @@ export default async function UuMenuPage({
                   <div className="uu-public-section-title uu-public-section-title-refined" style={{ color: tokens.accentStrong, background: tokens.badge, borderColor: tokens.border }}>
                     <span className="uu-public-section-dot" />
                     {group.category}
+                  </div>
+                  <div className="uu-public-section-count" style={{ background: tokens.surfaceSoft, borderColor: tokens.border, color: tokens.muted }}>
+                    {group.items.length} 項
                   </div>
                 </div>
 
