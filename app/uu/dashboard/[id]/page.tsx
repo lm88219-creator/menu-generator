@@ -13,7 +13,7 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
   if (!menu) {
     return (
       <main className="uu-admin-shell">
-        <div className="uu-admin-container">
+        <div className="uu-admin-container uu-admin-container-narrow">
           <section className="uu-panel uu-empty-state">
             <h2>找不到這份菜單</h2>
             <p>這份菜單可能已經被刪除，或是網址 ID 不存在。</p>
@@ -28,15 +28,15 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
 
   return (
     <main className="uu-admin-shell">
-      <div className="uu-admin-container">
-        <section className="uu-admin-subhero uu-admin-subhero-simple uu-admin-subhero-sticky">
+      <div className="uu-admin-container uu-admin-container-narrow">
+        <section className="uu-panel uu-admin-topbar uu-admin-topbar-edit">
           <div>
             <div className="uu-kicker">UU MENU EDITOR</div>
-            <h1 className="uu-admin-title">編輯菜單</h1>
-            <p className="uu-admin-copy">已改成簡單型後台：保留最常用的編輯功能。</p>
+            <h1 className="uu-admin-title uu-admin-title-sm">編輯菜單</h1>
+            <p className="uu-admin-copy">把常用操作固定在上方，下面專心改資料。</p>
           </div>
           <div className="uu-form-actions">
-            <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回後台</Link>
+            <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回列表</Link>
             <Link href={publicPath} target="_blank" className="uu-btn uu-btn-primary">查看公開頁</Link>
           </div>
         </section>

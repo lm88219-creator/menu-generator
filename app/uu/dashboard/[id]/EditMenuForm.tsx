@@ -211,16 +211,13 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   return (
     <div className="uu-editor-simple">
       <section className="uu-panel uu-subpanel">
-        <div className="uu-simple-toolbar uu-simple-toolbar-sticky">
+        <div className="uu-sticky-toolbar uu-sticky-toolbar-clean">
           <div>
-            <h2 className="uu-simple-title">基本資料</h2>
-            <p className="uu-admin-copy">後台改成單欄編輯，直接改資料就好，不再放預覽區。</p>
+            <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
+            <p className="uu-admin-copy">上方固定操作，下面專心編輯內容。</p>
           </div>
-          <div className="uu-toolbar-actions">
-            <label className="uu-switch-row uu-switch-row-toolbar">
-              <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
-              <span>{isPublished ? "上架中" : "已下架"}</span>
-            </label>
+          <div className="uu-form-actions">
+            <span className={`uu-status ${isPublished ? "is-on" : "is-off"}`}>{isPublished ? "上架中" : "已下架"}</span>
             {message ? <span className="uu-inline-hint is-success">{message}</span> : null}
             <button type="button" className="uu-btn uu-btn-secondary" onClick={async () => navigator.clipboard.writeText(publicUrl)}>複製公開網址</button>
             <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
@@ -232,8 +229,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>店家資訊</h2>
-                <p>只保留常用欄位，畫面更簡單。</p>
+                <p>欄位同寬、同節奏，不再擠在一起。</p>
               </div>
+              <label className="uu-switch-row">
+                <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
+                <span>公開顯示</span>
+              </label>
             </div>
             <div className="uu-form-grid-2">
               <Field label="餐廳名稱"><input className="uu-input" value={restaurant} onChange={(e) => setRestaurant(e.target.value)} placeholder="例如：友愛熱炒" /></Field>
@@ -242,11 +243,9 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>
             </div>
             <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
-            <div className="uu-form-stack-gap">
-              <div className="uu-preview-url-box">
-                <small>公開網址</small>
-                <strong>{publicUrl}</strong>
-              </div>
+            <div className="uu-preview-url-box">
+              <span>公開網址</span>
+              <strong>{publicUrl}</strong>
             </div>
           </section>
 
@@ -254,7 +253,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>風格與 Logo</h2>
-                <p>簡化成下拉選單，不再用大面積風格卡片。</p>
+                <p>只留必要設定，避免畫面資訊太碎。</p>
               </div>
             </div>
             <div className="uu-form-grid-2">
@@ -264,6 +263,9 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
+              </Field>
+              <Field label="說明">
+                <div className="uu-inline-hint">目前是逐列編輯餐點，適合直接修改品項與價格。</div>
               </Field>
             </div>
             <div className="uu-logo-row">
@@ -286,28 +288,32 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>菜單品項</h2>
-                <p>直接一列一列新增，後台更直覺。</p>
+                <p>表格化排列，欄位位置固定，比較不會亂。</p>
               </div>
             </div>
 
             <div className="uu-items-stack">
+              <div className="uu-item-table-header">
+                <span>分類</span>
+                <span>菜名</span>
+                <span>價格</span>
+                <span>備註</span>
+                <span>狀態</span>
+                <span className="is-actions">操作</span>
+              </div>
               {formItems.map((item, index) => (
-                <article key={`${index}-${item.category}-${item.name}`} className="uu-item-card uu-item-card-simple">
-                  <div className="uu-item-grid-simple">
-                    <Field label="分類"><input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="例如：熱炒" /></Field>
-                    <Field label="菜名"><input className="uu-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="例如：炒螺肉" /></Field>
-                    <Field label="價格"><input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="例如：120" /></Field>
-                    <Field label="備註"><input className="uu-input" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="例如：小辣 / 限量供應" /></Field>
-                  </div>
-                  <div className="uu-item-footer">
-                    <label className="uu-switch-row">
-                      <input type="checkbox" checked={item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: e.target.checked })} />
-                      <span>{item.soldOut ? "已售完" : "供應中"}</span>
-                    </label>
-                    <div className="uu-form-actions">
-                      <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem(item.category)}>新增同分類</button>
-                      <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
-                    </div>
+                <article key={`${index}-${item.category}-${item.name}`} className="uu-item-row">
+                  <input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="熱炒" />
+                  <input className="uu-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="炒螺肉" />
+                  <input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="120" />
+                  <input className="uu-input" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="小辣 / 限量" />
+                  <label className="uu-switch-row uu-switch-cell">
+                    <input type="checkbox" checked={item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: e.target.checked })} />
+                    <span>{item.soldOut ? "售完" : "供應中"}</span>
+                  </label>
+                  <div className="uu-row-actions">
+                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem(item.category)}>新增</button>
+                    <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
                   </div>
                 </article>
               ))}
@@ -319,27 +325,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>桌號 QR 工具</h2>
-                <p>保留實用功能，但版面縮小更整齊。</p>
+                <p>把輸入方式寫清楚，避免一頭霧水。</p>
               </div>
             </div>
-            <div className="uu-form-grid-2 uu-qr-tools-grid">
-              <Field label="手動桌號（可用空白或逗號分隔）">
-                <input className="uu-input" value={deskInput} onChange={(e) => setDeskInput(e.target.value)} placeholder="例如：A1 A2 A3 B1" />
-              </Field>
-              <Field label="快速產生連號桌號">
-                <div className="uu-inline-range uu-inline-range-clarified">
-                  <div className="uu-range-field">
-                    <small>從</small>
-                    <input className="uu-input" value={deskStart} onChange={(e) => setDeskStart(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" />
-                  </div>
-                  <span>到</span>
-                  <div className="uu-range-field">
-                    <small>到</small>
-                    <input className="uu-input" value={deskEnd} onChange={(e) => setDeskEnd(e.target.value.replace(/[^0-9]/g, ""))} placeholder="12" />
-                  </div>
-                </div>
-                <div className="uu-inline-hint">會自動產生 {deskStart || "1"} 到 {deskEnd || "12"} 的桌號 QR。</div>
-              </Field>
+            <div className="uu-form-grid-2">
+              <Field label="手動輸入桌號（用空白或逗號分隔）"><input className="uu-input" value={deskInput} onChange={(e) => setDeskInput(e.target.value)} placeholder="A1 A2 A3 B1" /></Field>
+              <Field label="連號範圍（從幾號到幾號）"><div className="uu-inline-range"><input className="uu-input" value={deskStart} onChange={(e) => setDeskStart(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" /><span>到</span><input className="uu-input" value={deskEnd} onChange={(e) => setDeskEnd(e.target.value.replace(/[^0-9]/g, ""))} placeholder="12" /></div></Field>
             </div>
             <div className="uu-qr-grid">
               {deskCodes.slice(0, 8).map((tableCode) => {
@@ -360,7 +351,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>文字輸出</h2>
-                <p>這裡是系統儲存用內容，方便你快速確認。</p>
+                <p>這裡是系統實際儲存的內容，給你快速檢查用。</p>
               </div>
             </div>
             <textarea className="uu-textarea" value={menuText} readOnly />
