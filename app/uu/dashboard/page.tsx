@@ -56,7 +56,7 @@ export default async function UUDashboardPage({
             <div className="uu-kicker">UU MENU ADMIN</div>
             <h1 className="uu-admin-title">多店菜單控制台</h1>
             <p className="uu-admin-copy">
-              由你統一幫店家建立、編輯與維護菜單。深色專業後台設計，長時間操作更舒適，也更方便管理多家店。
+              由你統一管理店家菜單、網址與 QR，版面改成更俐落的一列式工作台。
             </p>
             <div className="uu-form-actions">
               <Link href="/" className="uu-btn uu-btn-primary">建立新菜單</Link>
@@ -101,7 +101,7 @@ export default async function UUDashboardPage({
           <div className="uu-section-head">
             <div>
               <h2>店家列表</h2>
-              <p>每家店都能直接編輯、查看公開頁、下載 QR，並看到最後更新時間。</p>
+              <p>用一排一張的方式顯示店家，方便快速掃讀、編輯與下載 QR。</p>
             </div>
             <div className="uu-chip">共 {filteredMenus.length} 間</div>
           </div>
@@ -130,8 +130,7 @@ export default async function UUDashboardPage({
                         <div className="uu-store-meta-grid">
                           <div><span>主題</span><strong>{getThemeLabel(menu.theme)}</strong></div>
                           <div><span>最後更新</span><strong>{formatDateTime(menu.updatedAt)}</strong></div>
-                          <div><span>聯絡資訊</span><strong>{menu.phone || "未填寫"}</strong></div>
-                          <div><span>公開網址</span><strong className="uu-url-ellipsis">{publicUrl}</strong></div>
+                          <div><span>電話</span><strong>{menu.phone || "未填寫"}</strong></div>
                         </div>
                       </div>
                     </div>
@@ -139,8 +138,7 @@ export default async function UUDashboardPage({
                       <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
                       <CopyUrlButton url={publicUrl} />
                       <DeskCardButton restaurant={menu.restaurant} publicUrl={publicPath} />
-                      <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">查看公開頁</Link>
-                      <DeleteMenuButton id={menu.id} />
+                                            <DeleteMenuButton id={menu.id} />
                     </div>
                   </article>
                 );

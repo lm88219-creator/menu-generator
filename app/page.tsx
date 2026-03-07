@@ -550,8 +550,8 @@ y += 150;
 
   const inputStyle: React.CSSProperties = {
     width: "100%",
-    padding: "14px 16px",
-    borderRadius: 14,
+    padding: "12px 14px",
+    borderRadius: 12,
     border: currentTheme.inputBorder,
     background: currentTheme.inputBg,
     color: currentTheme.text,
@@ -561,8 +561,8 @@ y += 150;
   };
 
   const ghostButtonStyle: React.CSSProperties = {
-    padding: "12px 18px",
-    borderRadius: 14,
+    padding: "10px 16px",
+    borderRadius: 12,
     border: currentTheme.inputBorder,
     background: theme === "dark" ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.72)",
     color: currentTheme.buttonGhostText,
@@ -572,8 +572,8 @@ y += 150;
   };
 
   const mainButtonStyle: React.CSSProperties = {
-    padding: "12px 18px",
-    borderRadius: 14,
+    padding: "10px 16px",
+    borderRadius: 12,
     border: "none",
     background: theme === "warm" ? "linear-gradient(180deg, #8b5e34, #6f4623)" : "linear-gradient(180deg, #2563eb, #1d4ed8)",
     color: currentTheme.buttonMainText,
@@ -584,29 +584,36 @@ y += 150;
   };
 
   const accentMap: Record<ThemeType, string> = {
-    dark: "#f4d58d",
-    light: "#cbd5e1",
-    warm: "#8b5e34",
-    ocean: "#118ab2",
-    forest: "#2f6b3f",
-    rose: "#b35c7a",
+    dark: "#d4a95d",
+    light: "#a8b2c2",
+    warm: "#9b6b43",
+    ocean: "#53a8c9",
+    forest: "#5e9468",
+    rose: "#c78a9f",
+  };
+
+  const themeSurfaceMap: Record<ThemeType, { bg: string; text: string; muted: string; border: string }> = {
+    dark: { bg: "#23262d", text: "#f4efe7", muted: "#b8a99a", border: "rgba(212,169,93,0.22)" },
+    light: { bg: "#f4f4f2", text: "#2f343a", muted: "#69727d", border: "rgba(168,178,194,0.34)" },
+    warm: { bg: "#f1e2d4", text: "#4a3326", muted: "#7b6756", border: "rgba(155,107,67,0.22)" },
+    ocean: { bg: "#e2f3f8", text: "#214d63", muted: "#5d7f90", border: "rgba(83,168,201,0.26)" },
+    forest: { bg: "#e7f1e5", text: "#274332", muted: "#667a6c", border: "rgba(94,148,104,0.26)" },
+    rose: { bg: "#f7e7eb", text: "#623d49", muted: "#8d6b76", border: "rgba(199,138,159,0.28)" },
   };
 
   const themeCardStyle = (value: ThemeType): React.CSSProperties => ({
-    borderRadius: 20,
-    padding: 18,
-    border: theme === value ? "1px solid rgba(96,165,250,0.45)" : "1px solid rgba(148,163,184,0.16)",
-    background: theme === value
-      ? "linear-gradient(180deg, rgba(30,41,59,0.96), rgba(15,23,42,0.94))"
-      : "linear-gradient(180deg, rgba(17,24,39,0.94), rgba(10,15,28,0.94))",
-    color: "#eef3ff",
+    borderRadius: 18,
+    padding: 16,
+    border: theme === value ? `1px solid ${themeSurfaceMap[value].border}` : "1px solid rgba(0,0,0,0.06)",
+    background: themeSurfaceMap[value].bg,
+    color: themeSurfaceMap[value].text,
     cursor: "pointer",
-    minHeight: 116,
+    minHeight: 104,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
     position: "relative",
-    boxShadow: theme === value ? "0 16px 30px rgba(15,23,42,0.28)" : "none",
+    boxShadow: theme === value ? "0 10px 24px rgba(0,0,0,0.08)" : "none",
   });
 
   return (
@@ -624,15 +631,15 @@ y += 150;
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1.2fr 0.8fr",
-            gap: 24,
+            gridTemplateColumns: isMobile ? "1fr" : "1.12fr 0.88fr",
+            gap: 18,
             alignItems: "start",
           }}
         >
           <div
             style={{
-              borderRadius: 30,
-              padding: 32,
+              borderRadius: 24,
+              padding: 24,
               border: currentTheme.cardBorder,
               background: currentTheme.cardBg,
               backdropFilter: "blur(12px)",
@@ -675,7 +682,7 @@ y += 150;
               一分鐘生成可分享的線上菜單
             </p>
 
-            <div style={{ marginTop: 28 }}>
+            <div style={{ marginTop: 18 }}>
               <div style={{ marginBottom: 8, fontWeight: 700 }}>餐廳名稱</div>
               <input
   value={restaurant}
@@ -695,7 +702,7 @@ y += 150;
 
             <div
               style={{
-                marginTop: 18,
+                marginTop: 14,
                 display: "grid",
                 gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                 gap: 14,
@@ -722,7 +729,7 @@ y += 150;
               </div>
             </div>
 
-            <div style={{ marginTop: 18 }}>
+            <div style={{ marginTop: 14 }}>
               <div style={{ marginBottom: 8, fontWeight: 700 }}>地址</div>
               <input
                 value={address}
@@ -733,7 +740,7 @@ y += 150;
             </div>
 
 
-            <div style={{ marginTop: 18 }}>
+            <div style={{ marginTop: 14 }}>
               <div style={{ marginBottom: 8, fontWeight: 700 }}>自訂網址代稱</div>
               <input
   value={customSlug}
@@ -767,116 +774,73 @@ y += 150;
               </div>
             </div>
 
-            <div style={{ marginTop: 22 }}>
+            <div style={{ marginTop: 18 }}>
               <div style={{ marginBottom: 10, fontWeight: 700 }}>餐廳 Logo</div>
-
               <div
                 style={{
-                  borderRadius: 18,
+                  borderRadius: 16,
                   border: currentTheme.inputBorder,
                   background: currentTheme.inputBg,
-                  padding: 16,
+                  padding: 14,
                 }}
               >
                 <label
-  style={{
-    display: "block",
-    borderRadius: 16,
-    border: "2px dashed rgba(0,0,0,0.15)",
-    padding: "24px",
-    textAlign: "center",
-    cursor: "pointer",
-    background: "rgba(255,255,255,0.5)",
-  }}
->
-  <input
-    type="file"
-    accept="image/*"
-    onChange={handleLogoUpload}
-    style={{ display: "none" }}
-  />
-
-  {logoDataUrl ? (
-    <div
-  style={{
-    width: 88,
-    height: 88,
-    borderRadius: "50%",
-    background: "#fff",
-    margin: "0 auto",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
-    border: "1px solid rgba(0,0,0,0.06)",
-    overflow: "hidden",
-    padding: 10,
-  }}
->
-  <img
-    src={logoDataUrl}
-    alt="logo"
-    style={{
-      width: "100%",
-      height: "100%",
-      objectFit: "contain",
-      objectPosition: "center",
-      display: "block",
-    }}
-  />
-</div>
-  ) : (
-    <div>
-      <div style={{ fontWeight: 600 }}>點擊上傳餐廳 Logo</div>
-      <div style={{ fontSize: 12, opacity: 0.6 }}>
-        PNG / JPG 建議方形圖片
-      </div>
-    </div>
-  )}
-</label>
-
-                {logoDataUrl && (
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: 44,
+                    padding: "10px 16px",
+                    borderRadius: 12,
+                    border: currentTheme.inputBorder,
+                    background: theme === "dark" ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.72)",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                  }}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    style={{ display: "none" }}
+                  />
+                  上傳 Logo
+                </label>
+                {logoDataUrl ? (
                   <div
                     style={{
-                      marginTop: 14,
+                      marginTop: 12,
                       display: "flex",
-                      alignItems: "center",
-                      gap: 14,
-                      flexWrap: "wrap",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      gap: 10,
                     }}
                   >
                     <div
-  style={{
-    width: 92,
-    height: 92,
-    borderRadius: "50%",
-    margin: "0 auto 14px",
-    background: "#fff",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0 8px 24px rgba(0,0,0,0.14)",
-    border: "1px solid rgba(0,0,0,0.06)",
-    overflow: "hidden",
-    padding: 10,
-  }}
->
-  <img
-    src={logoDataUrl}
-    alt="logo preview"
-    style={{
-      width: "100%",
-      height: "100%",
-      objectFit: "contain",
-      objectPosition: "center",
-      display: "block",
-    }}
-  />
-</div>
-
-                    <button onClick={removeLogo} style={ghostButtonStyle}>
-                      移除 Logo
-                    </button>
+                      style={{
+                        width: 64,
+                        height: 64,
+                        borderRadius: 16,
+                        background: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "1px solid rgba(0,0,0,0.06)",
+                        overflow: "hidden",
+                        padding: 8,
+                      }}
+                    >
+                      <img
+                        src={logoDataUrl}
+                        alt="logo preview"
+                        style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", display: "block" }}
+                      />
+                    </div>
+                    <button onClick={removeLogo} style={ghostButtonStyle}>移除 Logo</button>
+                  </div>
+                ) : (
+                  <div style={{ marginTop: 10, fontSize: 12, color: currentTheme.subText }}>
+                    PNG / JPG，建議使用方形圖片
                   </div>
                 )}
               </div>
@@ -904,29 +868,29 @@ y += 150;
                     key={value}
                     type="button"
                     onClick={() => setTheme(value)}
-                    style={{ ...themeCardStyle(value), border: "none" }}
+                    style={themeCardStyle(value)}
                   >
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <span style={{ width: 10, height: 34, borderRadius: 999, background: accentMap[value], display: "inline-block" }} />
-                        <div style={{ fontWeight: 800, fontSize: 16 }}>{title}</div>
+                        <span style={{ width: 6, height: 30, borderRadius: 999, background: accentMap[value], display: "inline-block" }} />
+                        <div style={{ fontWeight: 800, fontSize: 15 }}>{title}</div>
                       </div>
-                      {theme === value ? <span style={{ fontSize: 12, color: "#93c5fd", fontWeight: 700 }}>已選擇</span> : null}
+                      {theme === value ? <span style={{ fontSize: 12, color: themeSurfaceMap[value].muted, fontWeight: 700 }}>已選</span> : null}
                     </div>
-                    <div style={{ fontSize: 13, opacity: 0.76, marginTop: 14, textAlign: "left" }}>{desc}</div>
+                    <div style={{ fontSize: 13, color: themeSurfaceMap[value].muted, marginTop: 10, textAlign: "left" }}>{desc}</div>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div style={{ marginTop: 22 }}>
+            <div style={{ marginTop: 18 }}>
               <div style={{ marginBottom: 8, fontWeight: 700 }}>菜單內容</div>
 
               <textarea
                 rows={12}
                 value={menu}
                 onChange={(e) => setMenu(e.target.value)}
-                style={{ ...inputStyle, resize: "vertical", lineHeight: 1.7 }}
+                style={{ ...inputStyle, resize: "vertical", lineHeight: 1.7, minHeight: 220 }}
                 placeholder={`例如：
 鵝肉
 鹽水鵝肉 200
@@ -940,7 +904,7 @@ y += 150;
 
             <div
               style={{
-                marginTop: 24,
+                marginTop: 18,
                 display: "flex",
                 gap: 10,
                 flexWrap: "wrap",
@@ -962,8 +926,8 @@ y += 150;
 
           <div
             style={{
-              borderRadius: 30,
-              padding: 28,
+              borderRadius: 24,
+              padding: 18,
               border: currentTheme.cardBorder,
               background: currentTheme.cardBg,
               backdropFilter: "blur(12px)",
@@ -973,10 +937,6 @@ y += 150;
               height: "fit-content",
             }}
           >
-            <div style={{ fontSize: 14, color: currentTheme.subText, marginBottom: 12 }}>
-              即時預覽
-            </div>
-
             <div
               style={{
                 borderRadius: 24,
@@ -992,8 +952,8 @@ y += 150;
                     ? "1px solid rgba(255,255,255,0.08)"
                     : "1px solid rgba(0,0,0,0.08)",
                 color: theme === "dark" ? "#fff" : theme === "light" ? "#111" : theme === "warm" ? "#4e3426" : theme === "ocean" ? "#0f3550" : theme === "forest" ? "#233b2c" : "#5a3141",
-                minHeight: isMobile ? "auto" : 580,
-                maxWidth: 420,
+                minHeight: isMobile ? "auto" : 520,
+                maxWidth: 390,
                 margin: "0 auto",
               }}
             >
@@ -1137,8 +1097,8 @@ y += 150;
           <div
             style={{
               marginTop: 26,
-              borderRadius: 30,
-              padding: 32,
+              borderRadius: 24,
+              padding: 24,
               border: currentTheme.cardBorder,
               background: currentTheme.cardBg,
               backdropFilter: "blur(12px)",

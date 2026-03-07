@@ -33,7 +33,7 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
           <div>
             <div className="uu-kicker">UU MENU EDITOR</div>
             <h1 className="uu-admin-title">編輯菜單</h1>
-            <p className="uu-admin-copy">左邊專心編輯內容，右邊即時看客人掃 QR 看到的樣子。這一版已整理成比較像正式 SaaS 的深色編輯介面。</p>
+            <p className="uu-admin-copy">左邊專心編輯，右邊看預覽；整體間距與表單尺寸都再收斂一版，操作會更俐落。</p>
           </div>
           <div className="uu-form-actions">
             <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回後台</Link>

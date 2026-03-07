@@ -373,10 +373,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
       <aside className="uu-preview-panel">
         <div className="uu-preview-shell">
           <div className="uu-preview-head">
-            <div>
-              <div className="uu-kicker is-dark">客人看到的菜單</div>
-              <h2>{restaurant || "未命名店家"}</h2>
-            </div>
+            <div className="uu-chip is-light">{THEME_OPTIONS.find((option) => option.value === theme)?.label}</div>
             <div className="uu-chip is-light">{isPublished ? "上架中" : "已下架"}</div>
           </div>
           <div className={`uu-menu-preview theme-${theme}`}>
