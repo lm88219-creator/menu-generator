@@ -209,6 +209,7 @@ export default async function UuMenuPage({
   const grouped = groupMenuItems(data.menuText || "");
   const table = String(query?.table ?? "").trim();
   const tokens = getThemeTokens(theme);
+
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 26%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 55%, ${tokens.bgDeep} 100%)`,
     color: tokens.text,
@@ -257,7 +258,7 @@ export default async function UuMenuPage({
             <div className="uu-public-heading-block">
               <h1 style={{ color: tokens.title }}>{data.restaurant}</h1>
               <p style={{ color: tokens.muted }}>
-                菜單與價格請以店內現場供應為準。
+                菜單與價格以店內現場供應為準。
               </p>
             </div>
           </div>
@@ -287,10 +288,8 @@ export default async function UuMenuPage({
         <section className="uu-public-card uu-public-menu-card" style={cardStyle}>
           <div className="uu-public-section-head">
             <div>
-              <span className="uu-public-section-kicker">完整菜單</span>
-              <h2>今天想吃什麼</h2>
+              <h2>菜單</h2>
             </div>
-            <div className="uu-public-section-hint">共 {itemCount} 項</div>
           </div>
 
           {grouped.map((group) => (
