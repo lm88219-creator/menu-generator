@@ -19,19 +19,7 @@ export default function LogoutButton() {
   }
 
   return (
-    <button
-      onClick={handleLogout}
-      style={{
-        padding: "12px 16px",
-        borderRadius: 14,
-        border: "1px solid rgba(255,255,255,0.12)",
-        background: "rgba(255,255,255,0.06)",
-        color: "#fff",
-        fontWeight: 700,
-        cursor: "pointer",
-      }}
-      disabled={loading}
-    >
+    <button onClick={handleLogout} className="uu-btn uu-btn-secondary" disabled={loading}>
       {loading ? "登出中..." : "登出"}
     </button>
   );

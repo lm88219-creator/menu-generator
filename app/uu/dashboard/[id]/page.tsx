@@ -29,14 +29,14 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
   return (
     <main className="uu-admin-shell">
       <div className="uu-admin-container uu-admin-container-narrow">
-        <section className="uu-panel uu-admin-topbar uu-admin-topbar-edit">
+        <section className="uu-panel uu-admin-topbar uu-admin-topbar-edit uu-edit-page-hero">
           <div>
             <div className="uu-kicker">UU MENU EDITOR</div>
             <h1 className="uu-admin-title uu-admin-title-sm">編輯菜單</h1>
-            <p className="uu-admin-copy">把常用操作固定在上方，下面專心改資料。</p>
+            <p className="uu-admin-copy">常用操作留在上面，下面專心編輯店家資料、菜單內容、Logo 與 QR 工具。</p>
           </div>
           <div className="uu-form-actions">
-            <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回列表</Link>
+            <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回後台</Link>
             <Link href={publicPath} target="_blank" className="uu-btn uu-btn-primary">查看公開頁</Link>
           </div>
         </section>
