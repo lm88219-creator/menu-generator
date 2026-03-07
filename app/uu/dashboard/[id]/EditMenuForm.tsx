@@ -287,16 +287,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
     ]);
   }
 
-  function duplicateItem(index: number) {
-    setFormItems((current) => {
-      const target = current[index];
-      if (!target) return current;
-      const next = [...current];
-      next.splice(index + 1, 0, createFormItem({ ...target }));
-      return next;
-    });
-  }
-
   function removeItem(index: number) {
     setFormItems((current) => {
       const next = current.filter((_, itemIndex) => itemIndex !== index);
@@ -439,8 +429,19 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>
                 </div>
 
-                <div className="uu-editor-v4-address-row">
-                  <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
+                <div className="uu-editor-v4-address-row uu-editor-v4-address-row-refined">
+                  <div className="uu-editor-v4-address-card">
+                    <div className="uu-editor-v4-address-card-head">
+                      <span>地址</span>
+                      <small>公開頁與導航會優先使用這裡的資訊</small>
+                    </div>
+                    <input
+                      className="uu-input uu-editor-v4-address-input"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="例如：嘉義市西區友愛路100號"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -469,71 +470,59 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
             </div>
 
-            <div className="uu-menu-editor-slimbar">
+            <div className="uu-menu-editor-slimbar uu-menu-editor-slimbar-minimal">
               <div className="uu-menu-editor-slimbar-copy">
                 <strong>{activeCount} 項供應中</strong>
-                <span>{soldOutCount ? `${soldOutCount} 項售完，記得同步檢查供應狀態。` : "目前沒有標記售完的品項。"}</span>
-              </div>
-              <div className="uu-menu-editor-category-pills uu-menu-editor-category-pills-simple">
-                {categorySummary.length ? categorySummary.map((category) => (
-                  <span key={category.name} className="uu-menu-editor-category-pill uu-menu-editor-category-pill-static">
-                    <strong>{category.name}</strong>
-                    <span>{category.count}</span>
-                  </span>
-                )) : (
-                  <span className="uu-menu-editor-empty-pill">新增第一個品項後會顯示分類摘要</span>
-                )}
+                <span>{categorySummary.length ? `${categorySummary.length} 個分類已整理完成` : "新增第一個品項後會自動整理分類"}</span>
               </div>
             </div>
 
-            <div className="uu-items-stack uu-menu-editor-stack">
+            <div className="uu-menu-item-row-head">
+              <span>分類</span>
+              <span>菜名</span>
+              <span>價格</span>
+              <span>備註</span>
+              <span>供應中</span>
+              <span>刪除</span>
+            </div>
+
+            <div className="uu-items-stack uu-menu-editor-stack uu-menu-editor-stack-minimal">
               {formItems.map((item, index) => (
-                <article key={item.uid} className="uu-menu-item-card uu-menu-item-card-simple uu-menu-item-card-pro">
-                  <div className="uu-menu-item-card-head uu-menu-item-card-head-simple">
-                    <div className="uu-menu-item-card-title-wrap">
-                      <span className="uu-menu-item-index">{String(index + 1).padStart(2, "0")}</span>
-                      <div className="uu-menu-item-card-title-copy">
-                        <strong>{item.name.trim() || "未命名品項"}</strong>
-                        <small>{item.price.trim() ? `$${item.price.trim()}` : "未填價格"}</small>
-                      </div>
-                    </div>
-                    <div className="uu-menu-item-card-tools">
-                      <label className={`uu-menu-item-status ${item.soldOut ? "is-off" : "is-on"}`}>
-                        <input type="checkbox" checked={item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: e.target.checked })} />
-                        <span>{item.soldOut ? "售完" : "供應中"}</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="uu-menu-item-grid uu-menu-item-grid-simple uu-menu-item-grid-pro">
-                    <Field label="分類">
-                      <input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="熱炒" />
-                    </Field>
-                    <Field label="菜名">
-                      <input className="uu-input uu-menu-item-name-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="炒螺肉" />
-                    </Field>
-                    <Field label="價格">
-                      <div className="uu-price-input-wrap uu-price-input-wrap-pro">
+                <article key={item.uid} className="uu-menu-item-row-card">
+                  <div className="uu-menu-item-row-grid">
+                    <label className="uu-menu-item-mini-field">
+                      <span className="uu-menu-item-mini-label">分類</span>
+                      <input className="uu-input uu-input-compact" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="熱炒" />
+                    </label>
+                    <label className="uu-menu-item-mini-field">
+                      <span className="uu-menu-item-mini-label">菜名</span>
+                      <input className="uu-input uu-input-compact uu-menu-item-name-input-minimal" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="炒螺肉" />
+                    </label>
+                    <label className="uu-menu-item-mini-field">
+                      <span className="uu-menu-item-mini-label">價格</span>
+                      <div className="uu-price-input-wrap uu-price-input-wrap-pro uu-price-input-wrap-compact">
                         <span>$</span>
-                        <input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="120" />
+                        <input className="uu-input uu-input-compact" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="120" />
                       </div>
-                    </Field>
-                    <Field label="備註">
-                      <input className="uu-input" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="小辣 / 限量" />
-                    </Field>
-                  </div>
-
-                  <div className="uu-menu-item-footerline uu-menu-item-footerline-simple">
-                    <div className="uu-menu-item-actions uu-menu-item-actions-simple uu-menu-item-actions-compact">
-                      <button type="button" className="uu-btn uu-btn-secondary" onClick={() => duplicateItem(index)}>複製</button>
-                      <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
+                    </label>
+                    <label className="uu-menu-item-mini-field">
+                      <span className="uu-menu-item-mini-label">備註</span>
+                      <input className="uu-input uu-input-compact" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="小辣 / 限量" />
+                    </label>
+                    <label className="uu-menu-item-toggle-cell">
+                      <span className="uu-menu-item-mini-label">供應中</span>
+                      <input type="checkbox" checked={!item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: !e.target.checked })} />
+                    </label>
+                    <div className="uu-menu-item-delete-cell">
+                      <span className="uu-menu-item-mini-label">刪除</span>
+                      <button type="button" className="uu-btn uu-btn-danger uu-btn-icon-only" onClick={() => removeItem(index)}>刪除</button>
                     </div>
                   </div>
                 </article>
               ))}
             </div>
 
-            <div className="uu-menu-editor-savebar-inline">
+            <div className="uu-menu-editor-savebar-inline uu-menu-editor-savebar-inline-right">
               <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>
                 {saving ? "儲存中..." : "儲存變更"}
               </button>
