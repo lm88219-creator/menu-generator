@@ -211,12 +211,16 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   return (
     <div className="uu-editor-simple">
       <section className="uu-panel uu-subpanel">
-        <div className="uu-simple-toolbar">
+        <div className="uu-simple-toolbar uu-simple-toolbar-sticky">
           <div>
             <h2 className="uu-simple-title">基本資料</h2>
             <p className="uu-admin-copy">後台改成單欄編輯，直接改資料就好，不再放預覽區。</p>
           </div>
-          <div className="uu-form-actions">
+          <div className="uu-toolbar-actions">
+            <label className="uu-switch-row uu-switch-row-toolbar">
+              <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
+              <span>{isPublished ? "上架中" : "已下架"}</span>
+            </label>
             {message ? <span className="uu-inline-hint is-success">{message}</span> : null}
             <button type="button" className="uu-btn uu-btn-secondary" onClick={async () => navigator.clipboard.writeText(publicUrl)}>複製公開網址</button>
             <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
@@ -230,10 +234,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                 <h2>店家資訊</h2>
                 <p>只保留常用欄位，畫面更簡單。</p>
               </div>
-              <label className="uu-switch-row">
-                <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
-                <span>{isPublished ? "上架中" : "已下架"}</span>
-              </label>
             </div>
             <div className="uu-form-grid-2">
               <Field label="餐廳名稱"><input className="uu-input" value={restaurant} onChange={(e) => setRestaurant(e.target.value)} placeholder="例如：友愛熱炒" /></Field>
@@ -242,7 +242,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>
             </div>
             <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
-            <div className="uu-preview-url-box">公開網址：<strong>{publicUrl}</strong></div>
+            <div className="uu-form-stack-gap">
+              <div className="uu-preview-url-box">
+                <small>公開網址</small>
+                <strong>{publicUrl}</strong>
+              </div>
+            </div>
           </section>
 
           <section className="uu-simple-section">
@@ -259,9 +264,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
-              </Field>
-              <Field label="目前輸出格式">
-                <div className="uu-inline-hint">一列一項，適合你平常快速編輯。</div>
               </Field>
             </div>
             <div className="uu-logo-row">
@@ -320,9 +322,24 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                 <p>保留實用功能，但版面縮小更整齊。</p>
               </div>
             </div>
-            <div className="uu-form-grid-2">
-              <Field label="手動桌號（可用空白或逗號分隔）"><input className="uu-input" value={deskInput} onChange={(e) => setDeskInput(e.target.value)} placeholder="A1 A2 A3 B1" /></Field>
-              <Field label="快速產生連號"><div className="uu-inline-range"><input className="uu-input" value={deskStart} onChange={(e) => setDeskStart(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" /><span>到</span><input className="uu-input" value={deskEnd} onChange={(e) => setDeskEnd(e.target.value.replace(/[^0-9]/g, ""))} placeholder="12" /></div></Field>
+            <div className="uu-form-grid-2 uu-qr-tools-grid">
+              <Field label="手動桌號（可用空白或逗號分隔）">
+                <input className="uu-input" value={deskInput} onChange={(e) => setDeskInput(e.target.value)} placeholder="例如：A1 A2 A3 B1" />
+              </Field>
+              <Field label="快速產生連號桌號">
+                <div className="uu-inline-range uu-inline-range-clarified">
+                  <div className="uu-range-field">
+                    <small>從</small>
+                    <input className="uu-input" value={deskStart} onChange={(e) => setDeskStart(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" />
+                  </div>
+                  <span>到</span>
+                  <div className="uu-range-field">
+                    <small>到</small>
+                    <input className="uu-input" value={deskEnd} onChange={(e) => setDeskEnd(e.target.value.replace(/[^0-9]/g, ""))} placeholder="12" />
+                  </div>
+                </div>
+                <div className="uu-inline-hint">會自動產生 {deskStart || "1"} 到 {deskEnd || "12"} 的桌號 QR。</div>
+              </Field>
             </div>
             <div className="uu-qr-grid">
               {deskCodes.slice(0, 8).map((tableCode) => {

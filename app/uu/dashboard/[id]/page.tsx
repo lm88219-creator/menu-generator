@@ -29,7 +29,7 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
   return (
     <main className="uu-admin-shell">
       <div className="uu-admin-container">
-        <section className="uu-admin-subhero uu-admin-subhero-simple">
+        <section className="uu-admin-subhero uu-admin-subhero-simple uu-admin-subhero-sticky">
           <div>
             <div className="uu-kicker">UU MENU EDITOR</div>
             <h1 className="uu-admin-title">編輯菜單</h1>

@@ -113,33 +113,33 @@ export default async function UUDashboardPage({
                 const publicPath = `/uu/menu/${encodeURIComponent(menu.slug || menu.id)}`;
                 const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
                 return (
-                  <article key={menu.id} className="uu-store-card">
-                    <div className="uu-store-top">
-                      <div className="uu-store-logo">
-                        {menu.logoDataUrl ? <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} /> : <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>}
-                      </div>
-                      <div className="uu-store-main">
-                        <div className="uu-store-head-row">
-                          <div>
-                            <h3>{menu.restaurant || "未命名店家"}</h3>
-                            <div className="uu-store-sub">slug：{menu.slug || menu.id}</div>
-                          </div>
-                          <div className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
-                            {menu.isPublished === false ? "已下架" : "上架中"}
-                          </div>
-                        </div>
-                        <div className="uu-store-meta-grid">
-                          <div><span>主題</span><strong>{getThemeLabel(menu.theme)}</strong></div>
-                          <div><span>最後更新</span><strong>{formatDateTime(menu.updatedAt)}</strong></div>
-                          <div><span>電話</span><strong>{menu.phone || "未填寫"}</strong></div>
-                        </div>
+                  <article key={menu.id} className="uu-store-card uu-store-card-clean">
+                    <div className="uu-store-status-wrap">
+                      <div className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
+                        {menu.isPublished === false ? "已下架" : "上架中"}
                       </div>
                     </div>
-                    <div className="uu-card-actions">
+                    <div className="uu-store-main-row">
+                      <div className="uu-store-identity">
+                        <div className="uu-store-logo">
+                          {menu.logoDataUrl ? <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} /> : <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>}
+                        </div>
+                        <div className="uu-store-title-block">
+                          <h3>{menu.restaurant || "未命名店家"}</h3>
+                          <div className="uu-store-sub">slug：{menu.slug || menu.id}</div>
+                        </div>
+                      </div>
+                      <div className="uu-store-meta-grid">
+                        <div><span>主題</span><strong>{getThemeLabel(menu.theme)}</strong></div>
+                        <div><span>最後更新</span><strong>{formatDateTime(menu.updatedAt)}</strong></div>
+                        <div><span>電話</span><strong>{menu.phone || "未填寫"}</strong></div>
+                      </div>
+                    </div>
+                    <div className="uu-card-actions uu-card-actions-end">
                       <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
                       <CopyUrlButton url={publicUrl} />
                       <DeskCardButton restaurant={menu.restaurant} publicUrl={publicPath} />
-                                            <DeleteMenuButton id={menu.id} />
+                      <DeleteMenuButton id={menu.id} />
                     </div>
                   </article>
                 );
