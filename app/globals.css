@@ -7557,3 +7557,74 @@ select.uu-input:focus {
     grid-template-columns: 1fr;
   }
 }
+
+
+.uu-editor-v4-layout-mainonly {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.uu-menu-editor-slimbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+.uu-menu-editor-slimbar-copy {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(19, 28, 44, 0.94), rgba(10, 16, 27, 0.98));
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  display: grid;
+  gap: 6px;
+}
+
+.uu-menu-editor-slimbar-copy strong {
+  font-size: 15px;
+  color: #f4f7fc;
+}
+
+.uu-menu-editor-slimbar-copy span {
+  color: #94a4bb;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.uu-menu-editor-category-pills-simple .uu-menu-editor-category-pill span {
+  min-width: 24px;
+  text-align: center;
+}
+
+.uu-menu-item-card-pro .uu-menu-item-card-head {
+  justify-content: space-between;
+}
+
+.uu-menu-item-grid-pro {
+  grid-template-columns: minmax(110px, 0.8fr) minmax(150px, 1fr) minmax(90px, 0.55fr) minmax(140px, 0.9fr);
+}
+
+.uu-menu-item-grid-pro .uu-field {
+  padding: 8px 10px;
+}
+
+.uu-menu-item-grid-pro .uu-input,
+.uu-menu-item-grid-pro .uu-price-input-wrap {
+  min-height: 38px;
+}
+
+.uu-menu-item-name-input {
+  font-size: 13px;
+}
+
+.uu-menu-item-footerline-simple {
+  justify-content: flex-end;
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+@media (max-width: 860px) {
+  .uu-menu-editor-slimbar {
+    grid-template-columns: 1fr;
+  }
+}
