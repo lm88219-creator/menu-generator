@@ -276,7 +276,7 @@ export default async function UuMenuPage({
             </div>
             <div className="uu-public-stat" style={infoCardStyle}>
               <small>目前狀態</small>
-              <strong>{data.isPublished === false ? "未公開" : "供應中"}</strong>
+              <strong>供應中</strong>
             </div>
           </div>
 
