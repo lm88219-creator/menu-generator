@@ -5966,3 +5966,71 @@ select.uu-input:focus {
     min-width: 84px;
   }
 }
+
+
+/* v18 public palette refinement */
+.uu-public-hero-refined,
+.uu-public-contact-card,
+.uu-public-menu-card,
+.uu-public-empty-card {
+  box-shadow: var(--uu-public-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.uu-public-hero-refined {
+  padding: 28px;
+  background:
+    radial-gradient(circle at top right, var(--uu-public-accent-tint-strong), transparent 34%),
+    linear-gradient(180deg, color-mix(in srgb, var(--uu-public-surface) 92%, white 8%), var(--uu-public-surface));
+}
+
+.uu-public-menu-card {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--uu-public-surface) 96%, white 4%), var(--uu-public-surface));
+}
+
+.uu-public-kicker {
+  padding: 8px 14px;
+  background: color-mix(in srgb, var(--uu-public-accent-tint) 70%, var(--uu-public-surface-soft));
+  color: var(--uu-public-accent-strong);
+  border-color: color-mix(in srgb, var(--uu-public-accent) 20%, var(--uu-public-border));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.uu-public-inline-meta span,
+.uu-public-inline-link,
+.uu-public-table-pill,
+.uu-public-section-title-refined {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.uu-public-section-title-refined {
+  min-height: 42px;
+  padding: 0 16px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--uu-public-badge) 80%, white 20%), var(--uu-public-badge));
+}
+
+.uu-public-item-refined {
+  border-color: color-mix(in srgb, var(--uu-public-border) 86%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--uu-public-surface-soft) 88%, white 12%), var(--uu-public-surface-soft));
+}
+
+.uu-public-item-refined::before {
+  inset: 14px auto 14px 10px;
+  width: 4px;
+  background: linear-gradient(180deg, var(--uu-public-accent), color-mix(in srgb, var(--uu-public-accent) 20%, transparent));
+}
+
+.uu-public-item-price-refined {
+  border: 1px solid color-mix(in srgb, var(--uu-public-accent) 14%, var(--uu-public-border));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--uu-public-price-bg) 88%, white 12%), var(--uu-public-price-bg));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+@media (max-width: 640px) {
+  .uu-public-hero-refined,
+  .uu-public-menu-card,
+  .uu-public-empty-card {
+    padding: 20px;
+  }
+}
