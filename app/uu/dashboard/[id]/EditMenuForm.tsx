@@ -427,7 +427,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
         </div>
       </section>
 
-      <div className="uu-editor-v4-layout">
+      <div className="uu-editor-v4-layout uu-editor-v4-layout-single">
         <div className="uu-editor-v4-main">
           <section id="shop-info" className="uu-simple-section uu-editor-v4-section uu-editor-v4-shop-section">
             <div className="uu-section-head uu-editor-v4-section-head-pro">
@@ -471,20 +471,13 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               </aside>
             </div>
 
-            <div className="uu-editor-v4-url-card uu-editor-v4-url-card-pro">
-              <div>
-                <span>公開網址</span>
-                <strong>{publicUrl}</strong>
-              </div>
-              <div className="uu-editor-v4-url-card-note">公開頁連結已同步到頁面上方與快速工具，分享會更順手。</div>
-            </div>
           </section>
 
           <section id="menu-items" className="uu-simple-section uu-editor-v4-section uu-editor-v4-menu-section">
             <div className="uu-section-head uu-editor-v4-section-head-pro uu-menu-editor-section-head-refined">
               <div>
                 <h2>菜單品項</h2>
-                <p>把常用欄位集中成更乾淨的單列卡片，分類、菜名、價格與供應狀態會更好掃視。</p>
+                <p>把品項整理成更俐落的單列編輯格式，分類、菜名、價格與備註能更快完成。</p>
               </div>
               <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
             </div>
@@ -492,7 +485,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-menu-editor-slimbar uu-menu-editor-slimbar-refined">
               <div className="uu-menu-editor-slimbar-copy">
                 <strong>{activeCount} 項供應中</strong>
-                <span>{categorySummary.length ? `${categorySummary.length} 個分類已整理完成` : "新增第一個品項後，這裡會自動整理分類"}</span>
+                <span>{categorySummary.length ? `已整理 ${categorySummary.length} 個分類` : "新增第一個品項後，這裡會自動整理分類"}</span>
               </div>
               <div className="uu-menu-editor-category-tags">
                 {categorySummary.length ? categorySummary.slice(0, 6).map((category) => (
@@ -850,41 +843,6 @@ VIP1"
               </section>            </div>
           </section>
         </div>
-
-        <aside className="uu-editor-v4-side">
-          <section className="uu-simple-section uu-editor-v4-side-card">
-            <div className="uu-section-head uu-section-head-tight">
-              <div>
-                <h3>操作摘要</h3>
-                <p>編輯時常用的資訊集中放右邊。</p>
-              </div>
-            </div>
-            <div className="uu-editor-v4-summary-grid">
-              <div className="uu-editor-v4-summary-item"><span>公開狀態</span><strong>{isPublished ? "上架中" : "已下架"}</strong></div>
-              <div className="uu-editor-v4-summary-item"><span>菜單風格</span><strong>{selectedTheme.label}</strong></div>
-              <div className="uu-editor-v4-summary-item"><span>供應中</span><strong>{activeCount}</strong></div>
-              <div className="uu-editor-v4-summary-item"><span>售完</span><strong>{soldOutCount}</strong></div>
-            </div>
-          </section>
-
-          <section className="uu-simple-section uu-editor-v4-side-card">
-            <div className="uu-section-head uu-section-head-tight">
-              <div>
-                <h3>公開網址</h3>
-                <p>分享或貼給店家時最常用。</p>
-              </div>
-            </div>
-            <div className="uu-editor-v4-side-url">{publicUrl}</div>
-            <div className="uu-inline-hint">複製按鈕已移到頁面上方與快速工具區，常用操作會更集中。</div>
-          </section>
-
-          <div className="uu-bottom-save-bar uu-editor-v4-savebar uu-editor-v4-savebar-note">
-            <div>
-              <strong>儲存按鈕已集中到快速工具區</strong>
-              <p>編輯流程會更乾淨，右側保留摘要資訊即可。</p>
-            </div>
-          </div>
-        </aside>
       </div>
     </div>
   );

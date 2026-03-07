@@ -7782,3 +7782,87 @@ select.uu-input:focus {
     width: 100%;
   }
 }
+
+
+.uu-editor-v4-layout-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.uu-editor-v4-shop-grid {
+  align-items: stretch;
+}
+
+.uu-editor-v4-shop-maincard {
+  display: grid;
+  gap: 14px;
+}
+
+.uu-editor-v4-shop-maincard > .uu-field:last-child {
+  margin-top: 0;
+}
+
+.uu-editor-v4-shop-maincard .uu-field > span,
+.uu-editor-v4-shop-form-note-field > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+}
+
+.uu-editor-v4-shop-maincard .uu-field input,
+.uu-editor-v4-shop-form-note-field input {
+  min-height: 46px;
+}
+
+.uu-editor-v4-shop-maincard .uu-field {
+  gap: 8px;
+}
+
+.uu-menu-editor-section-head-refined {
+  margin-bottom: 2px;
+}
+
+.uu-menu-editor-slimbar-refined {
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.02));
+}
+
+.uu-menu-item-row-card {
+  padding: 12px 14px;
+  border-radius: 18px;
+}
+
+.uu-menu-item-row-top {
+  margin-bottom: 10px;
+}
+
+.uu-menu-item-row-grid {
+  align-items: end;
+  column-gap: 10px;
+}
+
+.uu-menu-item-mini-field,
+.uu-menu-item-toggle-cell,
+.uu-menu-item-delete-cell {
+  min-width: 0;
+}
+
+.uu-menu-item-mini-label {
+  margin-bottom: 5px;
+}
+
+.uu-menu-item-row-grid .uu-input,
+.uu-menu-item-row-grid .uu-price-input-wrap {
+  min-height: 40px;
+}
+
+.uu-menu-item-name-input-minimal {
+  font-size: 14px;
+  letter-spacing: 0.01em;
+}
+
+.uu-menu-editor-actionbar {
+  margin-top: 12px;
+  padding-top: 4px;
+}
