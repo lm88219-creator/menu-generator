@@ -94,6 +94,15 @@ function parseDeskInput(input: string) {
   );
 }
 
+function getPreviewTokens(theme: ThemeType) {
+  if (theme === "dark") return { shell: "#0d1420", panel: "rgba(17, 24, 39, 0.92)", soft: "rgba(143, 183, 255, 0.12)", border: "rgba(255,255,255,0.08)", accent: "#8fb7ff", text: "#eef4ff", muted: "#9baccc" };
+  if (theme === "warm") return { shell: "#2a1f19", panel: "rgba(62, 43, 31, 0.92)", soft: "rgba(208, 138, 84, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#d08a54", text: "#fff5ea", muted: "#d7bca2" };
+  if (theme === "ocean") return { shell: "#0e1b26", panel: "rgba(21, 42, 59, 0.92)", soft: "rgba(77, 163, 255, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#63b3ff", text: "#eef9ff", muted: "#a7c6dc" };
+  if (theme === "forest") return { shell: "#101813", panel: "rgba(27, 40, 31, 0.94)", soft: "rgba(111, 177, 122, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#7bc68a", text: "#f0fff4", muted: "#b0cdb7" };
+  if (theme === "rose") return { shell: "#1c1216", panel: "rgba(48, 29, 37, 0.94)", soft: "rgba(215, 138, 164, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#e3a0b6", text: "#fff2f6", muted: "#d8b2c1" };
+  return { shell: "#f4f6fa", panel: "rgba(255, 255, 255, 0.96)", soft: "rgba(214, 178, 103, 0.18)", border: "rgba(15,23,42,0.08)", accent: "#c7922e", text: "#263244", muted: "#6f7c92" };
+}
+
 export default function EditMenuForm({ id, initialData }: { id: string; initialData: InitialData }) {
   const [restaurant, setRestaurant] = useState(initialData.restaurant);
   const [phone, setPhone] = useState(initialData.phone);
@@ -108,6 +117,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [deskInput, setDeskInput] = useState("");
+  const [selectedDesk, setSelectedDesk] = useState("");
 
   const safeSlug = normalizeSlug(slug || restaurant) || id;
   const publicPath = `/uu/menu/${safeSlug}`;
@@ -116,7 +126,9 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const soldOutCount = formItems.filter((item) => item.soldOut).length;
   const activeCount = formItems.filter((item) => item.name.trim() && !item.soldOut).length;
   const selectedTheme = THEME_OPTIONS.find((item) => item.value === theme) || THEME_OPTIONS[0];
+  const previewTokens = getPreviewTokens(theme);
   const deskStorageKey = `uu-desk-codes:${id}`;
+  const selectedDeskUrl = selectedDesk ? `${publicUrl}?table=${encodeURIComponent(selectedDesk)}` : "";
 
   useEffect(() => {
     setMenuText(toMenuText(formItems));
@@ -133,6 +145,16 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
     if (deskInput.trim()) window.localStorage.setItem(deskStorageKey, deskInput);
     else window.localStorage.removeItem(deskStorageKey);
   }, [deskInput, deskStorageKey]);
+
+  useEffect(() => {
+    if (!deskCodes.length) {
+      setSelectedDesk("");
+      return;
+    }
+    if (!selectedDesk || !deskCodes.includes(selectedDesk)) {
+      setSelectedDesk(deskCodes[0]);
+    }
+  }, [deskCodes, selectedDesk]);
 
   function pushMessage(text: string) {
     setMessage(text);
@@ -342,6 +364,14 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
             <div className="uu-editor-v4-appearance-layout">
               <div className="uu-editor-v4-appearance-main">
+                <div className="uu-editor-v4-appearance-overview">
+                  <div className="uu-editor-v4-appearance-intro">
+                    <span className="uu-chip">目前主題：{selectedTheme.label}</span>
+                    <p>{selectedTheme.desc}</p>
+                  </div>
+                  <div className="uu-editor-v4-theme-note-accent" style={{ background: selectedTheme.accent }} />
+                </div>
+
                 <Field label="菜單風格">
                   <div className="uu-editor-theme-grid">
                     {THEME_OPTIONS.map((option) => {
@@ -373,13 +403,34 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                 <div className="uu-editor-v4-theme-note-card">
                   <div className="uu-editor-v4-theme-note-head">
                     <div>
-                      <span>目前選擇</span>
+                      <span>客戶公開頁預覽</span>
                       <strong>{selectedTheme.label}</strong>
                     </div>
                     <div className="uu-editor-v4-theme-note-accent" style={{ background: selectedTheme.accent }} />
                   </div>
-                  <p>{selectedTheme.desc}</p>
-                  <div className="uu-inline-hint">菜單公開頁的視覺會依照這個風格套用，想要更穩重就選深色經典，想要更易讀就選簡約白。</div>
+                  <div className="uu-editor-v4-public-preview" style={{ background: previewTokens.shell, color: previewTokens.text, borderColor: previewTokens.border }}>
+                    <div className="uu-editor-v4-public-preview-hero" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
+                      <div className="uu-editor-v4-public-preview-badge" style={{ background: previewTokens.soft, color: previewTokens.accent }}>UU MENU</div>
+                      <strong>{restaurant || "未命名店家"}</strong>
+                      <span style={{ color: previewTokens.muted }}>{hours || "每日營業 11:00 - 20:00"}</span>
+                    </div>
+                    <div className="uu-editor-v4-public-preview-list">
+                      <div className="uu-editor-v4-public-preview-item" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
+                        <div>
+                          <strong>招牌炒飯</strong>
+                          <span style={{ color: previewTokens.muted }}>人氣推薦</span>
+                        </div>
+                        <b style={{ color: previewTokens.accent }}>$90</b>
+                      </div>
+                      <div className="uu-editor-v4-public-preview-item" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
+                        <div>
+                          <strong>宮保雞丁</strong>
+                          <span style={{ color: previewTokens.muted }}>微辣</span>
+                        </div>
+                        <b style={{ color: previewTokens.accent }}>$160</b>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -414,6 +465,21 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     )}
                   </div>
                 </section>
+
+                <section className="uu-editor-v4-asset-card uu-editor-v4-appearance-tips">
+                  <div className="uu-section-head uu-section-head-tight">
+                    <div>
+                      <h3>建議搭配</h3>
+                      <p>快速判斷目前外觀會不會符合店家氣質。</p>
+                    </div>
+                  </div>
+                  <div className="uu-editor-v4-tip-list">
+                    <div><strong>深色經典</strong><span>熱炒、宵夜、酒吧</span></div>
+                    <div><strong>簡約白</strong><span>一般餐廳、字多的菜單</span></div>
+                    <div><strong>暖木咖啡</strong><span>咖啡店、家常餐飲</span></div>
+                    <div><strong>海洋 / 森林 / 玫瑰</strong><span>需要更鮮明品牌感時使用</span></div>
+                  </div>
+                </section>
               </div>
             </div>
           </section>
@@ -427,52 +493,85 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             </div>
 
             <div className="uu-editor-v4-tools-grid">
-              <div className="uu-editor-v4-advanced-card uu-editor-v4-tool-card">
+              <div className="uu-editor-v4-advanced-card uu-editor-v4-tool-card uu-editor-v4-desk-tool-card">
                 <div className="uu-section-head uu-section-head-tight">
                   <div>
                     <h3>桌號 QR 工具</h3>
-                    <p>適合需要桌卡的店家。手動輸入桌號後，直接生成可分享的桌號網址與 QR。</p>
+                    <p>把桌號輸入、桌號清單與 QR 預覽拆開，操作會更直覺也比較不亂。</p>
                   </div>
                 </div>
-                <Field label="手動輸入桌號（用空白、逗號或換行分隔）">
-                  <textarea
-                    className="uu-textarea uu-desk-input-area"
-                    value={deskInput}
-                    onChange={(e) => setDeskInput(e.target.value)}
-                    placeholder="例如：A1 A2 A3
+
+                <div className="uu-editor-v4-desk-tool-layout">
+                  <div className="uu-editor-v4-desk-tool-main">
+                    <Field label="手動輸入桌號（用空白、逗號或換行分隔）">
+                      <textarea
+                        className="uu-textarea uu-desk-input-area"
+                        value={deskInput}
+                        onChange={(e) => setDeskInput(e.target.value)}
+                        placeholder="例如：A1 A2 A3
 B1 B2
 VIP1"
-                  />
-                </Field>
-                <div className="uu-editor-v4-tool-toolbar">
-                  <div className="uu-editor-v4-tool-tip">桌號內容會暫存在這台電腦，儲存菜單後也不會消失。</div>
-                  <div className="uu-editor-v4-tool-actions">
-                    <span className="uu-chip">目前 {deskCodes.length} 組</span>
-                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => setDeskInput("")}>清空桌號</button>
-                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => copyText(deskCodes.join(", "), "已複製桌號清單") } disabled={!deskCodes.length}>複製桌號清單</button>
-                  </div>
-                </div>
-                <div className="uu-editor-v4-qr-preview-head">
-                  <strong>桌號 QR 預覽</strong>
-                  <span>只顯示前 8 組，避免頁面太長。</span>
-                </div>
-                <div className="uu-qr-grid">
-                  {deskCodes.slice(0, 8).map((tableCode) => {
-                    const tableUrl = `${publicUrl}?table=${encodeURIComponent(tableCode)}`;
-                    return (
-                      <div key={tableCode} className="uu-qr-card uu-qr-card-pro">
-                        <div className="uu-qr-label">桌號 {tableCode}</div>
-                        <QRCodeCanvas value={tableUrl} size={118} includeMargin level="H" />
-                        <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => copyText(tableUrl, `已複製桌號 ${tableCode} 網址`)}>複製桌號網址</button>
+                      />
+                    </Field>
+                    <div className="uu-editor-v4-tool-toolbar">
+                      <div className="uu-editor-v4-tool-tip">桌號內容會暫存在這台電腦，儲存菜單後也不會消失。</div>
+                      <div className="uu-editor-v4-tool-actions">
+                        <span className="uu-chip">共 {deskCodes.length} 組</span>
+                        <button type="button" className="uu-btn uu-btn-secondary" onClick={() => setDeskInput("")}>清空桌號</button>
+                        <button type="button" className="uu-btn uu-btn-secondary" onClick={() => copyText(deskCodes.join(", "), "已複製桌號清單") } disabled={!deskCodes.length}>複製桌號清單</button>
                       </div>
-                    );
-                  })}
-                  {!deskCodes.length ? (
-                    <div className="uu-editor-v4-tool-empty">
-                      <strong>尚未輸入桌號</strong>
-                      <p>有需要桌卡再輸入即可，沒有用到這個功能可以先略過。</p>
                     </div>
-                  ) : null}
+
+                    <div className="uu-editor-v4-desk-list-panel">
+                      <div className="uu-editor-v4-qr-preview-head">
+                        <strong>桌號清單</strong>
+                        <span>點一下桌號即可切換右側 QR 預覽。</span>
+                      </div>
+                      {deskCodes.length ? (
+                        <div className="uu-editor-v4-desk-chip-grid">
+                          {deskCodes.map((tableCode) => (
+                            <button
+                              key={tableCode}
+                              type="button"
+                              className={`uu-editor-v4-desk-chip ${selectedDesk === tableCode ? "is-active" : ""}`}
+                              onClick={() => setSelectedDesk(tableCode)}
+                            >
+                              {tableCode}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="uu-editor-v4-tool-empty">
+                          <strong>尚未輸入桌號</strong>
+                          <p>有需要桌卡再輸入即可，沒有用到這個功能可以先略過。</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <aside className="uu-editor-v4-desk-tool-preview">
+                    <div className="uu-editor-v4-qr-preview-head">
+                      <strong>目前預覽</strong>
+                      <span>{selectedDesk ? `桌號 ${selectedDesk}` : "請先輸入桌號"}</span>
+                    </div>
+                    <div className="uu-editor-v4-desk-preview-card">
+                      {selectedDesk ? (
+                        <>
+                          <div className="uu-editor-v4-desk-preview-table">桌號 {selectedDesk}</div>
+                          <QRCodeCanvas value={selectedDeskUrl} size={178} includeMargin level="H" />
+                          <div className="uu-editor-v4-desk-preview-url">{selectedDeskUrl}</div>
+                          <div className="uu-editor-v4-desk-preview-actions">
+                            <button type="button" className="uu-btn uu-btn-primary uu-full-width" onClick={() => copyText(selectedDeskUrl, `已複製桌號 ${selectedDesk} 網址`)}>複製目前桌號網址</button>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="uu-editor-v4-tool-empty">
+                          <strong>尚未選擇桌號</strong>
+                          <p>輸入桌號後，右側會顯示單一桌號的 QR 預覽，方便你逐個檢查與複製。</p>
+                        </div>
+                      )}
+                    </div>
+                  </aside>
                 </div>
               </div>
 
@@ -485,6 +584,12 @@ VIP1"
                 </summary>
                 <div className="uu-collapsible-body">
                   <div className="uu-editor-v4-raw-note">這區主要是檢查資料結構是否正常，平常編輯菜單大多不需要打開。</div>
+                  <div className="uu-editor-v4-tool-toolbar uu-editor-v4-raw-toolbar">
+                    <div className="uu-editor-v4-tool-tip">需要備份或比對內容時，可以直接複製整份原始文字。</div>
+                    <div className="uu-editor-v4-tool-actions">
+                      <button type="button" className="uu-btn uu-btn-secondary" onClick={() => copyText(menuText, "已複製原始文字")}>複製原始文字</button>
+                    </div>
+                  </div>
                   <textarea className="uu-textarea uu-editor-v4-raw-textarea" value={menuText} readOnly />
                 </div>
               </details>

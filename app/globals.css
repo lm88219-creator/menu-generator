@@ -4741,3 +4741,245 @@ select.uu-input:focus {
     flex-direction: column;
   }
 }
+
+/* v11 editor appearance/tools refinement */
+.uu-editor-v4-appearance-overview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+}
+
+.uu-editor-v4-appearance-intro {
+  display: grid;
+  gap: 10px;
+}
+
+.uu-editor-v4-appearance-intro p,
+.uu-editor-v4-tip-list span,
+.uu-editor-v4-desk-preview-url {
+  margin: 0;
+  color: #98a6ba;
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+.uu-editor-v4-public-preview {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.uu-editor-v4-public-preview-hero,
+.uu-editor-v4-public-preview-item,
+.uu-editor-v4-desk-preview-card,
+.uu-editor-v4-desk-list-panel {
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 18px;
+}
+
+.uu-editor-v4-public-preview-hero {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+
+.uu-editor-v4-public-preview-hero strong,
+.uu-editor-v4-public-preview-item strong,
+.uu-editor-v4-tip-list strong,
+.uu-editor-v4-desk-preview-table {
+  font-weight: 800;
+}
+
+.uu-editor-v4-public-preview-badge {
+  width: max-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.uu-editor-v4-public-preview-list {
+  display: grid;
+  gap: 10px;
+}
+
+.uu-editor-v4-public-preview-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.uu-editor-v4-public-preview-item > div,
+.uu-editor-v4-tip-list div {
+  display: grid;
+  gap: 4px;
+}
+
+.uu-editor-v4-public-preview-item b {
+  font-size: 18px;
+}
+
+.uu-editor-v4-appearance-tips,
+.uu-editor-v4-desk-tool-card {
+  background: linear-gradient(180deg, rgba(14, 18, 25, 0.98), rgba(9, 12, 17, 0.98));
+}
+
+.uu-editor-v4-tip-list {
+  display: grid;
+  gap: 14px;
+}
+
+.uu-editor-v4-tip-list div {
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.uu-editor-v4-tip-list div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.uu-editor-v4-desk-tool-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 18px;
+  align-items: start;
+}
+
+.uu-editor-v4-desk-tool-main,
+.uu-editor-v4-desk-tool-preview,
+.uu-editor-v4-desk-preview-actions {
+  display: grid;
+  gap: 14px;
+}
+
+.uu-editor-v4-tool-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.uu-editor-v4-tool-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.uu-editor-v4-desk-list-panel {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.uu-editor-v4-qr-preview-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.uu-editor-v4-qr-preview-head strong {
+  font-size: 15px;
+}
+
+.uu-editor-v4-qr-preview-head span {
+  color: #8f9ab1;
+  font-size: 12px;
+}
+
+.uu-editor-v4-desk-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.uu-editor-v4-desk-chip {
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e6edf8;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.uu-editor-v4-desk-chip.is-active {
+  border-color: rgba(110, 168, 255, 0.46);
+  background: rgba(110, 168, 255, 0.12);
+  color: #f3f7ff;
+  box-shadow: inset 0 0 0 1px rgba(110, 168, 255, 0.14);
+}
+
+.uu-editor-v4-desk-preview-card {
+  min-height: 100%;
+  padding: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.02));
+  display: grid;
+  place-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.uu-editor-v4-desk-preview-table {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(110, 168, 255, 0.12);
+  color: #dfeaff;
+}
+
+.uu-editor-v4-desk-preview-url {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  overflow-wrap: anywhere;
+}
+
+.uu-editor-v4-raw-toolbar {
+  margin-bottom: 12px;
+}
+
+@media (max-width: 1080px) {
+  .uu-editor-v4-desk-tool-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .uu-editor-v4-appearance-overview,
+  .uu-editor-v4-tool-toolbar,
+  .uu-editor-v4-qr-preview-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .uu-editor-v4-tool-actions {
+    width: 100%;
+  }
+
+  .uu-editor-v4-tool-actions .uu-btn,
+  .uu-editor-v4-desk-chip {
+    width: 100%;
+  }
+
+  .uu-editor-v4-public-preview-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
