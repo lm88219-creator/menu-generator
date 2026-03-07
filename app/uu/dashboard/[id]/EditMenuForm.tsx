@@ -107,12 +107,102 @@ function parseDeskInput(input: string) {
 }
 
 function getPreviewTokens(theme: ThemeType) {
-  if (theme === "dark") return { shell: "linear-gradient(180deg, #0b1019 0%, #111a28 100%)", panel: "rgba(15, 22, 34, 0.92)", soft: "rgba(143, 183, 255, 0.12)", border: "rgba(255,255,255,0.08)", accent: "#8fb7ff", accentSoft: "rgba(143,183,255,0.16)", title: "#f4f8ff", text: "#eef4ff", muted: "#9baccc", hero: "linear-gradient(135deg, rgba(143,183,255,0.18), rgba(12,18,29,0.08))", priceBg: "rgba(143,183,255,0.12)" };
-  if (theme === "warm") return { shell: "linear-gradient(180deg, #241913 0%, #33241b 100%)", panel: "rgba(62, 43, 31, 0.92)", soft: "rgba(208, 138, 84, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#d08a54", accentSoft: "rgba(208,138,84,0.18)", title: "#fff5ea", text: "#fff5ea", muted: "#d7bca2", hero: "linear-gradient(135deg, rgba(208,138,84,0.2), rgba(67,45,31,0.12))", priceBg: "rgba(255,237,219,0.1)" };
-  if (theme === "ocean") return { shell: "linear-gradient(180deg, #091823 0%, #112536 100%)", panel: "rgba(19, 39, 55, 0.94)", soft: "rgba(77, 163, 255, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#6cc2ff", accentSoft: "rgba(108,194,255,0.16)", title: "#eef9ff", text: "#eef9ff", muted: "#a7c6dc", hero: "linear-gradient(135deg, rgba(108,194,255,0.2), rgba(11,25,35,0.1))", priceBg: "rgba(108,194,255,0.12)" };
-  if (theme === "forest") return { shell: "linear-gradient(180deg, #0d1510 0%, #172219 100%)", panel: "rgba(25, 38, 29, 0.94)", soft: "rgba(111, 177, 122, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#89d197", accentSoft: "rgba(137,209,151,0.16)", title: "#f0fff4", text: "#f0fff4", muted: "#b0cdb7", hero: "linear-gradient(135deg, rgba(137,209,151,0.18), rgba(15,24,18,0.12))", priceBg: "rgba(137,209,151,0.12)" };
-  if (theme === "rose") return { shell: "linear-gradient(180deg, #170f13 0%, #24161c 100%)", panel: "rgba(47, 29, 36, 0.94)", soft: "rgba(215, 138, 164, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#e3a0b6", accentSoft: "rgba(227,160,182,0.16)", title: "#fff2f6", text: "#fff2f6", muted: "#d8b2c1", hero: "linear-gradient(135deg, rgba(227,160,182,0.2), rgba(36,22,28,0.12))", priceBg: "rgba(227,160,182,0.12)" };
-  return { shell: "linear-gradient(180deg, #f7f8fb 0%, #edf1f6 100%)", panel: "rgba(255, 255, 255, 0.96)", soft: "rgba(214, 178, 103, 0.18)", border: "rgba(15,23,42,0.08)", accent: "#c7922e", accentSoft: "rgba(199,146,46,0.16)", title: "#263244", text: "#263244", muted: "#6f7c92", hero: "linear-gradient(135deg, rgba(199,146,46,0.16), rgba(255,255,255,0.72))", priceBg: "rgba(199,146,46,0.12)" };
+  if (theme === "dark") return {
+    shell: "linear-gradient(180deg, #0a1018 0%, #111927 100%)",
+    panel: "rgba(16, 23, 35, 0.92)",
+    soft: "rgba(143, 183, 255, 0.12)",
+    border: "rgba(255,255,255,0.08)",
+    accent: "#8fb7ff",
+    accentSoft: "rgba(143,183,255,0.16)",
+    title: "#f4f8ff",
+    text: "#eef4ff",
+    muted: "#9baccc",
+    hero: "linear-gradient(135deg, rgba(143,183,255,0.2), rgba(10,16,24,0.1))",
+    priceBg: "rgba(143,183,255,0.12)",
+    surface: "rgba(7, 11, 18, 0.66)",
+    section: "#d6e4ff",
+    line: "rgba(255,255,255,0.06)",
+  };
+  if (theme === "warm") return {
+    shell: "linear-gradient(180deg, #211812 0%, #32241a 100%)",
+    panel: "rgba(65, 46, 33, 0.92)",
+    soft: "rgba(208, 138, 84, 0.16)",
+    border: "rgba(255,255,255,0.08)",
+    accent: "#d9a06e",
+    accentSoft: "rgba(217,160,110,0.16)",
+    title: "#fff6ee",
+    text: "#fff4ea",
+    muted: "#dcc0a8",
+    hero: "linear-gradient(135deg, rgba(217,160,110,0.22), rgba(62,43,31,0.12))",
+    priceBg: "rgba(255,237,219,0.1)",
+    surface: "rgba(38, 26, 18, 0.6)",
+    section: "#ffe1c3",
+    line: "rgba(255,255,255,0.06)",
+  };
+  if (theme === "ocean") return {
+    shell: "linear-gradient(180deg, #081721 0%, #102838 100%)",
+    panel: "rgba(17, 41, 58, 0.94)",
+    soft: "rgba(91, 193, 255, 0.16)",
+    border: "rgba(255,255,255,0.08)",
+    accent: "#76d1ff",
+    accentSoft: "rgba(118,209,255,0.16)",
+    title: "#effaff",
+    text: "#eef9ff",
+    muted: "#acd0df",
+    hero: "linear-gradient(135deg, rgba(118,209,255,0.22), rgba(11,28,40,0.12))",
+    priceBg: "rgba(118,209,255,0.12)",
+    surface: "rgba(8, 20, 30, 0.58)",
+    section: "#dff6ff",
+    line: "rgba(255,255,255,0.06)",
+  };
+  if (theme === "forest") return {
+    shell: "linear-gradient(180deg, #0d1510 0%, #19251b 100%)",
+    panel: "rgba(25, 39, 29, 0.94)",
+    soft: "rgba(137, 209, 151, 0.15)",
+    border: "rgba(255,255,255,0.08)",
+    accent: "#9bdfaa",
+    accentSoft: "rgba(155,223,170,0.16)",
+    title: "#f1fff4",
+    text: "#f0fff4",
+    muted: "#b4cfba",
+    hero: "linear-gradient(135deg, rgba(155,223,170,0.2), rgba(14,24,17,0.12))",
+    priceBg: "rgba(155,223,170,0.12)",
+    surface: "rgba(11, 20, 13, 0.56)",
+    section: "#dff8e5",
+    line: "rgba(255,255,255,0.06)",
+  };
+  if (theme === "rose") return {
+    shell: "linear-gradient(180deg, #171015 0%, #251820 100%)",
+    panel: "rgba(49, 31, 38, 0.94)",
+    soft: "rgba(227, 160, 182, 0.16)",
+    border: "rgba(255,255,255,0.08)",
+    accent: "#f0b2c7",
+    accentSoft: "rgba(240,178,199,0.16)",
+    title: "#fff4f8",
+    text: "#fff2f6",
+    muted: "#dfb8c7",
+    hero: "linear-gradient(135deg, rgba(240,178,199,0.22), rgba(38,24,31,0.12))",
+    priceBg: "rgba(240,178,199,0.12)",
+    surface: "rgba(28, 17, 22, 0.56)",
+    section: "#ffe2eb",
+    line: "rgba(255,255,255,0.06)",
+  };
+  return {
+    shell: "linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%)",
+    panel: "rgba(255, 255, 255, 0.96)",
+    soft: "rgba(211, 177, 107, 0.18)",
+    border: "rgba(15,23,42,0.08)",
+    accent: "#c7922e",
+    accentSoft: "rgba(199,146,46,0.14)",
+    title: "#243244",
+    text: "#263244",
+    muted: "#728097",
+    hero: "linear-gradient(135deg, rgba(199,146,46,0.16), rgba(255,255,255,0.82))",
+    priceBg: "rgba(199,146,46,0.12)",
+    surface: "rgba(245, 247, 250, 0.92)",
+    section: "#866225",
+    line: "rgba(15,23,42,0.07)",
+  };
 }
 
 export default function EditMenuForm({ id, initialData }: { id: string; initialData: InitialData }) {
@@ -149,6 +239,9 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }, [formItems]);
   const selectedTheme = THEME_OPTIONS.find((item) => item.value === theme) || THEME_OPTIONS[0];
   const previewTokens = getPreviewTokens(theme);
+  const previewItems = formItems.filter((item) => item.name.trim()).slice(0, 4);
+  const previewCategory = categorySummary[0]?.name || "主廚推薦";
+  const previewSubtitle = address || phone || hours || "今日精選菜單";
   const deskStorageKey = `uu-desk-codes:${id}`;
   const selectedDeskUrl = selectedDesk ? `${publicUrl}?table=${encodeURIComponent(selectedDesk)}` : "";
 
@@ -326,28 +419,45 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
       <div className="uu-editor-v4-layout">
         <div className="uu-editor-v4-main">
-          <section id="shop-info" className="uu-simple-section uu-editor-v4-section">
-            <div className="uu-section-head">
+          <section id="shop-info" className="uu-simple-section uu-editor-v4-section uu-editor-v4-shop-section">
+            <div className="uu-section-head uu-editor-v4-section-head-pro">
               <div>
                 <h2>店家資訊</h2>
-                <p>店名、網址、電話與地址集中在同一區塊，避免四處找欄位。</p>
+                <p>把公開頁會用到的品牌資訊整理成清楚欄位，店名、網址與聯絡方式更容易一次確認。</p>
               </div>
-              <label className="uu-switch-row uu-editor-v4-publish-toggle">
+              <label className="uu-switch-row uu-editor-v4-publish-toggle uu-editor-v4-publish-toggle-pro">
                 <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
-                <span>公開顯示</span>
+                <span>{isPublished ? "公開顯示中" : "目前下架"}</span>
               </label>
             </div>
 
-            <div className="uu-form-grid-2">
-              <Field label="餐廳名稱"><input className="uu-input" value={restaurant} onChange={(e) => setRestaurant(e.target.value)} placeholder="例如：友愛熱炒" /></Field>
-              <Field label="網址 slug"><input className="uu-input" value={slug} onChange={(e) => setSlug(normalizeSlug(e.target.value))} placeholder="例如：you-ai-re-chao" /></Field>
-              <Field label="電話"><input className="uu-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="例如：0912-345-678" /></Field>
-              <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>
+            <div className="uu-editor-v4-shop-grid">
+              <div className="uu-editor-v4-shop-maincard">
+                <div className="uu-form-grid-2 uu-editor-v4-shop-formgrid">
+                  <Field label="餐廳名稱"><input className="uu-input" value={restaurant} onChange={(e) => setRestaurant(e.target.value)} placeholder="例如：友愛熱炒" /></Field>
+                  <Field label="網址 slug"><input className="uu-input" value={slug} onChange={(e) => setSlug(normalizeSlug(e.target.value))} placeholder="例如：you-ai-re-chao" /></Field>
+                  <Field label="電話"><input className="uu-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="例如：0912-345-678" /></Field>
+                  <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>
+                </div>
+
+                <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
+              </div>
+
+              <aside className="uu-editor-v4-shop-sidecard">
+                <div className="uu-editor-v4-shop-sidehead">
+                  <span>公開頁資訊摘要</span>
+                  <strong>{restaurant || "未命名店家"}</strong>
+                </div>
+                <div className="uu-editor-v4-shop-sidegrid">
+                  <div><span>目前網址</span><strong>/{safeSlug}</strong></div>
+                  <div><span>電話</span><strong>{phone || "未填寫"}</strong></div>
+                  <div><span>營業時間</span><strong>{hours || "未填寫"}</strong></div>
+                  <div><span>地址</span><strong>{address || "未填寫"}</strong></div>
+                </div>
+              </aside>
             </div>
 
-            <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
-
-            <div className="uu-editor-v4-url-card">
+            <div className="uu-editor-v4-url-card uu-editor-v4-url-card-pro">
               <div>
                 <span>公開網址</span>
                 <strong>{publicUrl}</strong>
@@ -356,36 +466,43 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             </div>
           </section>
 
-          <section id="menu-items" className="uu-simple-section uu-editor-v4-section">
-            <div className="uu-section-head">
+          <section id="menu-items" className="uu-simple-section uu-editor-v4-section uu-editor-v4-menu-section">
+            <div className="uu-section-head uu-editor-v4-section-head-pro">
               <div>
                 <h2>菜單品項</h2>
-                <p>把最常用的編輯區做成卡片式欄位，分類、價格與狀態一眼就能看清楚。</p>
+                <p>把分類、菜名、價格與供應狀態集中成更直覺的卡片，編輯時更整齊、掃一眼就知道哪裡要改。</p>
               </div>
               <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
             </div>
 
-            <div className="uu-menu-editor-toolbar uu-menu-editor-toolbar-refined">
+            <div className="uu-menu-editor-overview-grid">
               <div className="uu-menu-editor-summary-card">
                 <div>
-                  <span>快速整理</span>
-                  <strong>同分類品項請用相同分類名稱</strong>
+                  <span>整理建議</span>
+                  <strong>同分類請保持同一種命名方式</strong>
                 </div>
-                <small>例如都用「熱炒」而不是一下「熱炒」、一下「熱炒類」。</small>
+                <small>例如固定用「熱炒」或「飲品」，不要同時出現多種近似名稱。</small>
               </div>
               <div className="uu-menu-editor-summary-card is-soft">
                 <div>
-                  <span>輸入方式</span>
-                  <strong>價格只填數字，備註留給辣度或限量</strong>
+                  <span>填寫方式</span>
+                  <strong>價格填數字，備註只放辣度、份量或限量資訊</strong>
                 </div>
-                <small>卡片已簡化成分類、菜名、價格、備註四個核心欄位。</small>
+                <small>整個品項卡片已壓縮成最常用的 4 個核心欄位。</small>
+              </div>
+              <div className="uu-menu-editor-summary-card is-strong">
+                <div>
+                  <span>目前狀態</span>
+                  <strong>{activeCount} 項供應中 / {soldOutCount} 項售完</strong>
+                </div>
+                <small>{categorySummary.length ? `已整理出 ${categorySummary.length} 個分類` : "建立第一個品項後，這裡會自動顯示分類摘要。"}</small>
               </div>
             </div>
 
-            <div className="uu-menu-editor-quickbar">
+            <div className="uu-menu-editor-quickbar uu-menu-editor-quickbar-pro">
               <div className="uu-menu-editor-quickbar-copy">
-                <strong>目前分類</strong>
-                <span>{categorySummary.length ? `已整理出 ${categorySummary.length} 個分類，新增品項時會沿用最後一個分類。` : "先新增第一個品項，之後會自動整理分類摘要。"}</span>
+                <strong>分類快速操作</strong>
+                <span>{categorySummary.length ? `點一下分類就能直接新增同分類品項，維持整份菜單更整齊。` : "先新增第一個品項，之後這裡會自動出現分類捷徑。"}</span>
               </div>
               <div className="uu-menu-editor-category-pills">
                 {categorySummary.length ? categorySummary.map((category) => (
@@ -406,7 +523,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
             <div className="uu-items-stack uu-menu-editor-stack">
               {formItems.map((item, index) => (
-                <article key={item.uid} className="uu-menu-item-card uu-menu-item-card-simple">
+                <article key={item.uid} className="uu-menu-item-card uu-menu-item-card-simple uu-menu-item-card-pro">
                   <div className="uu-menu-item-card-head uu-menu-item-card-head-simple">
                     <div className="uu-menu-item-card-title-wrap">
                       <span className="uu-menu-item-index">{String(index + 1).padStart(2, "0")}</span>
@@ -424,7 +541,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     </div>
                   </div>
 
-                  <div className="uu-menu-item-grid uu-menu-item-grid-simple">
+                  <div className="uu-menu-item-grid uu-menu-item-grid-simple uu-menu-item-grid-pro">
                     <Field label="分類">
                       <input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="熱炒" />
                     </Field>
@@ -432,7 +549,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                       <input className="uu-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="炒螺肉" />
                     </Field>
                     <Field label="價格">
-                      <div className="uu-price-input-wrap">
+                      <div className="uu-price-input-wrap uu-price-input-wrap-pro">
                         <span>$</span>
                         <input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="120" />
                       </div>
@@ -442,10 +559,16 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     </Field>
                   </div>
 
-                  <div className="uu-menu-item-actions uu-menu-item-actions-simple">
-                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem(item.category)}>同分類新增</button>
-                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => duplicateItem(index)}>複製</button>
-                    <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
+                  <div className="uu-menu-item-footerline">
+                    <div className="uu-menu-item-miniinfo">
+                      <span>{item.price.trim() ? `價格 $${item.price.trim()}` : "尚未填價格"}</span>
+                      <span>{item.note.trim() || "可在備註寫辣度、份量或限量"}</span>
+                    </div>
+                    <div className="uu-menu-item-actions uu-menu-item-actions-simple">
+                      <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem(item.category)}>同分類新增</button>
+                      <button type="button" className="uu-btn uu-btn-secondary" onClick={() => duplicateItem(index)}>複製</button>
+                      <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
+                    </div>
                   </div>
                 </article>
               ))}
@@ -511,39 +634,47 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     </div>
                     <div className="uu-editor-v4-theme-note-accent" style={{ background: selectedTheme.accent }} />
                   </div>
-                  <div className="uu-editor-v4-public-preview" style={{ background: previewTokens.shell, color: previewTokens.text, borderColor: previewTokens.border }}>
+                  <div className="uu-editor-v4-public-preview uu-editor-v4-public-preview-pro" style={{ background: previewTokens.shell, color: previewTokens.text, borderColor: previewTokens.border }}>
                     <div className="uu-editor-v4-public-preview-hero uu-editor-v4-public-preview-hero-themed" style={{ background: previewTokens.hero, borderColor: previewTokens.border }}>
                       <div className="uu-editor-v4-public-preview-brand-row">
                         <div className="uu-editor-v4-public-preview-badge" style={{ background: previewTokens.accentSoft, color: previewTokens.accent }}>UU MENU</div>
                         <div className="uu-editor-v4-public-preview-theme-dot" style={{ background: selectedTheme.accent }} />
                       </div>
-                      <strong style={{ color: previewTokens.title }}>{restaurant || "未命名店家"}</strong>
-                      <span style={{ color: previewTokens.muted }}>{hours || "每日營業 11:00 - 20:00"}</span>
+                      <div className="uu-editor-v4-public-preview-hero-copy">
+                        <strong style={{ color: previewTokens.title }}>{restaurant || "未命名店家"}</strong>
+                        <span style={{ color: previewTokens.muted }}>{previewSubtitle}</span>
+                      </div>
                       <div className="uu-editor-v4-public-preview-mini-meta">
                         <span style={{ background: previewTokens.panel, borderColor: previewTokens.border, color: previewTokens.muted }}>{selectedTheme.label}</span>
                         <span style={{ background: previewTokens.panel, borderColor: previewTokens.border, color: previewTokens.muted }}>{logoDataUrl ? "品牌 Logo 已套用" : "乾淨文字版"}</span>
                       </div>
                     </div>
-                    <div className="uu-editor-v4-public-preview-section-chip" style={{ background: previewTokens.soft, color: previewTokens.accent }}>{categorySummary[0]?.name || "主廚推薦"}</div>
-                    <div className="uu-editor-v4-public-preview-list">
-                      {formItems.filter((item) => item.name.trim()).slice(0, 3).map((item) => (
-                        <div key={item.uid} className="uu-editor-v4-public-preview-item" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
-                          <div>
-                            <strong style={{ color: previewTokens.title }}>{item.name.trim()}</strong>
-                            <span style={{ color: previewTokens.muted }}>{item.note.trim() || item.category.trim() || "人氣推薦"}</span>
+
+                    <div className="uu-editor-v4-public-preview-shell" style={{ background: previewTokens.surface, borderColor: previewTokens.line }}>
+                      <div className="uu-editor-v4-public-preview-headerline">
+                        <div className="uu-editor-v4-public-preview-section-chip" style={{ background: previewTokens.soft, color: previewTokens.section }}>{previewCategory}</div>
+                        <div className="uu-editor-v4-public-preview-headerline-text" style={{ color: previewTokens.muted }}>{hours || "每日營業 11:00 - 20:00"}</div>
+                      </div>
+                      <div className="uu-editor-v4-public-preview-list">
+                        {previewItems.map((item) => (
+                          <div key={item.uid} className="uu-editor-v4-public-preview-item uu-editor-v4-public-preview-item-pro" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
+                            <div>
+                              <strong style={{ color: previewTokens.title }}>{item.name.trim()}</strong>
+                              <span style={{ color: previewTokens.muted }}>{item.note.trim() || item.category.trim() || "人氣推薦"}</span>
+                            </div>
+                            <b style={{ color: previewTokens.accent, background: previewTokens.priceBg }}>{item.price.trim() ? `$${item.price.trim()}` : "$--"}</b>
                           </div>
-                          <b style={{ color: previewTokens.accent, background: previewTokens.priceBg }}>{item.price.trim() ? `$${item.price.trim()}` : "$--"}</b>
-                        </div>
-                      ))}
-                      {!formItems.filter((item) => item.name.trim()).length ? (
-                        <div className="uu-editor-v4-public-preview-item" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
-                          <div>
-                            <strong style={{ color: previewTokens.title }}>招牌炒飯</strong>
-                            <span style={{ color: previewTokens.muted }}>先新增品項，這裡會同步預覽</span>
+                        ))}
+                        {!previewItems.length ? (
+                          <div className="uu-editor-v4-public-preview-item uu-editor-v4-public-preview-item-pro" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
+                            <div>
+                              <strong style={{ color: previewTokens.title }}>招牌炒飯</strong>
+                              <span style={{ color: previewTokens.muted }}>先新增品項，這裡會同步預覽主題效果</span>
+                            </div>
+                            <b style={{ color: previewTokens.accent, background: previewTokens.priceBg }}>$90</b>
                           </div>
-                          <b style={{ color: previewTokens.accent, background: previewTokens.priceBg }}>$90</b>
-                        </div>
-                      ) : null}
+                        ) : null}
+                      </div>
                     </div>
                   </div>
                   <div className="uu-editor-v4-theme-checklist">

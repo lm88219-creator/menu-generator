@@ -154,7 +154,7 @@ export default async function UUDashboardPage({
             <div className="uu-dashboard-list-v7 uu-dashboard-list-v8">
               <div className="uu-dashboard-column-head-v7 uu-dashboard-column-head-v8" aria-hidden="true">
                 <span>店家列表</span>
-                <span>聯絡與操作</span>
+                <span>狀態與操作</span>
               </div>
 
               {filteredMenus.map((menu) => {
@@ -164,7 +164,7 @@ export default async function UUDashboardPage({
                 return (
                   <article key={menu.id} className="uu-dashboard-row-v7 uu-dashboard-row-v8">
                     <div className="uu-dashboard-row-main-v7 uu-dashboard-row-main-v8">
-                      <div className="uu-store-logo uu-dashboard-store-logo-v7">
+                      <div className="uu-store-logo uu-dashboard-store-logo-v7 uu-dashboard-store-logo-v8">
                         {menu.logoDataUrl ? (
                           <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} />
                         ) : (
@@ -172,24 +172,29 @@ export default async function UUDashboardPage({
                         )}
                       </div>
 
-                      <div className="uu-dashboard-store-copy-v7">
-                        <div className="uu-dashboard-store-title-v7">
-                          <h3 className="uu-store-name">{menu.restaurant || "未命名店家"}</h3>
+                      <div className="uu-dashboard-store-copy-v7 uu-dashboard-store-copy-v8">
+                        <div className="uu-dashboard-store-title-v7 uu-dashboard-store-title-v8">
+                          <div>
+                            <h3 className="uu-store-name">{menu.restaurant || "未命名店家"}</h3>
+                            <p className="uu-dashboard-store-subtitle-v8">{menu.slug || menu.id}</p>
+                          </div>
                           <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
                             {menu.isPublished === false ? "已下架" : "上架中"}
                           </span>
                         </div>
+
                         <div className="uu-dashboard-store-meta-v7 uu-dashboard-store-meta-v8">
-                          <code className="uu-table-code">/{menu.slug || menu.id}</code>
                           <span className="uu-dashboard-meta-chip">{getThemeLabel(menu.theme)}</span>
                           <span className="uu-dashboard-meta-chip">更新 {formatShortDate(menu.updatedAt)}</span>
+                          <span className="uu-dashboard-meta-chip">{menu.logoDataUrl ? "含 Logo" : "純文字版"}</span>
                         </div>
-                        <div className="uu-dashboard-contact-inline-v8">
-                          <div className="uu-dashboard-info-item-v7">
+
+                        <div className="uu-dashboard-contact-inline-v8 uu-dashboard-contact-inline-v9">
+                          <div className="uu-dashboard-info-item-v7 uu-dashboard-info-card-v8">
                             <span>電話</span>
                             <strong>{menu.phone || "未填電話"}</strong>
                           </div>
-                          <div className="uu-dashboard-info-item-v7">
+                          <div className="uu-dashboard-info-item-v7 uu-dashboard-info-card-v8 uu-dashboard-info-card-wide-v8">
                             <span>地址</span>
                             <strong>{menu.address || "未填地址"}</strong>
                           </div>
@@ -197,11 +202,15 @@ export default async function UUDashboardPage({
                       </div>
                     </div>
 
-                    <div className="uu-dashboard-row-actions-wrap-v8">
-                      <div className="uu-dashboard-row-contact-v7 uu-dashboard-row-contact-v8">
+                    <div className="uu-dashboard-row-actions-wrap-v8 uu-dashboard-row-actions-wrap-v9">
+                      <div className="uu-dashboard-row-contact-v7 uu-dashboard-row-contact-v8 uu-dashboard-status-panel-v8">
                         <div className="uu-dashboard-info-item-v7 uu-dashboard-info-item-soft-v8">
                           <span>公開頁狀態</span>
                           <strong>{menu.isPublished === false ? "目前不顯示給客人" : "客人可直接開啟"}</strong>
+                        </div>
+                        <div className="uu-dashboard-info-item-v7 uu-dashboard-info-item-soft-v8">
+                          <span>主要操作</span>
+                          <strong>編輯、複製網址、桌卡都集中在下方</strong>
                         </div>
                       </div>
 

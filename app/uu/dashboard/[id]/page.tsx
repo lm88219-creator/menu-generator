@@ -34,14 +34,14 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
   return (
     <main className="uu-admin-shell">
       <div className="uu-admin-container uu-admin-container-narrow uu-editor-page-v4">
-        <section className="uu-panel uu-editor-page-hero">
-          <div>
+        <section className="uu-panel uu-editor-page-hero uu-editor-page-hero-v5">
+          <div className="uu-editor-page-hero-copy-v5">
             <div className="uu-kicker">UU MENU EDITOR</div>
             <h1 className="uu-dashboard-title">編輯菜單</h1>
-            <p className="uu-dashboard-copy">把常用資訊、網址與儲存操作集中在前面，減少來回切換。</p>
+            <p className="uu-dashboard-copy">把店家資訊、品項整理與公開頁外觀收成更清楚的編輯流程，桌機與手機閱讀都更順。</p>
           </div>
 
-          <div className="uu-editor-page-meta">
+          <div className="uu-editor-page-meta uu-editor-page-meta-v5">
             <span className="uu-chip">{menu.restaurant || "未命名店家"}</span>
             <span className="uu-chip">{menu.theme ? "主題已設定" : "預設主題"}</span>
             <span className="uu-chip">{itemCount} 個品項</span>
