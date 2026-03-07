@@ -144,6 +144,16 @@ export default function EditMenuForm({
         previewBg: "linear-gradient(180deg,#ffffff 0%,#eef6ec 100%)",
         previewBorder: "1px solid rgba(41,87,53,0.08)",
       },
+      market: {
+        name: "招牌米白",
+        pageBg: "linear-gradient(180deg, #f7f3ed 0%, #efe8dc 100%)",
+        cardBg: "rgba(255,255,255,0.9)",
+        cardBorder: "1px solid rgba(16,35,63,0.1)",
+        text: "#10233f",
+        muted: "#6d7685",
+        accent: "#d53b2f",
+        previewBg: "linear-gradient(180deg, #f5f1ea 0%, #efe7db 100%)",
+      },
       rose: {
         name: "玫瑰奶茶風",
         pageBg: "linear-gradient(180deg,#fff4f7 0%,#f9dde6 100%)",
@@ -160,23 +170,6 @@ export default function EditMenuForm({
         buttonGhostText: "#5a3141",
         previewBg: "linear-gradient(180deg,#fffafc 0%,#fdebf1 100%)",
         previewBorder: "1px solid rgba(145,78,101,0.08)",
-      },
-      market: {
-        name: "招牌米白",
-        pageBg: "linear-gradient(180deg,#f7f1e8 0%,#efe6d8 100%)",
-        cardBg: "rgba(255,250,242,0.96)",
-        cardBorder: "1px solid rgba(18,36,62,0.1)",
-        text: "#132946",
-        subText: "#6b7787",
-        accent: "#d74b3f",
-        inputBg: "rgba(255,255,255,0.86)",
-        inputBorder: "1px solid rgba(18,36,62,0.1)",
-        buttonMainBg: "#d74b3f",
-        buttonMainText: "#fff8f2",
-        buttonGhostBg: "rgba(18,36,62,0.06)",
-        buttonGhostText: "#132946",
-        previewBg: "linear-gradient(180deg,#f7f1e8 0%,#fffaf2 100%)",
-        previewBorder: "1px solid rgba(18,36,62,0.1)",
       },
     }),
     []
@@ -312,9 +305,7 @@ export default function EditMenuForm({
         ? "linear-gradient(180deg,#f5fdff 0%,#d8eef7 100%)"
         : value === "forest"
         ? "linear-gradient(180deg,#f5faf5 0%,#d7e8d7 100%)"
-        : value === "rose"
-        ? "linear-gradient(180deg,#fff8fb 0%,#f3d8e3 100%)"
-        : "linear-gradient(180deg,#f7f1e8 0%,#fffaf2 100%)",
+        : "linear-gradient(180deg,#fff8fb 0%,#f3d8e3 100%)",
     color:
       value === "dark"
         ? "#fff"
@@ -326,9 +317,7 @@ export default function EditMenuForm({
         ? "#0f3550"
         : value === "forest"
         ? "#233b2c"
-        : value === "rose"
-        ? "#5a3141"
-        : "#132946",
+        : "#5a3141",
     cursor: "pointer",
     minHeight: 112,
     display: "flex",
@@ -443,13 +432,14 @@ export default function EditMenuForm({
                   <div style={{ fontWeight: 800 }}>森林自然風</div>
                   <div style={{ fontSize: 13, opacity: 0.8 }}>自然、手作、健康感</div>
                 </div>
+                <div onClick={() => setTheme("market")} style={themeCardStyle("market")}>
+                  <strong>招牌米白</strong>
+                  <span style={{ color: themeSurfaceMap.market.muted, fontSize: 13 }}>米白底、深藍字、紅色重點</span>
+                </div>
+
                 <div onClick={() => setTheme("rose")} style={themeCardStyle("rose")}>
                   <div style={{ fontWeight: 800 }}>玫瑰奶茶風</div>
                   <div style={{ fontSize: 13, opacity: 0.8 }}>柔和、甜點、質感感</div>
-                </div>
-                <div onClick={() => setTheme("market")} style={themeCardStyle("market")}>
-                  <div style={{ fontWeight: 800 }}>招牌米白</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>米白、深藍字、紅色重點</div>
                 </div>
               </div>
             </div>

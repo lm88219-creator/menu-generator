@@ -52,7 +52,7 @@ const THEME_OPTIONS: Array<{ value: ThemeType; label: string; desc: string; acce
   { value: "ocean", label: "海洋清新", desc: "色調明亮清爽，適合海鮮、健康餐、早午餐。", accent: "#4da3ff", preview: ["#10202d", "#173247", "#0d1923"] },
   { value: "forest", label: "森林自然", desc: "較有自然感，適合便當、蔬食、手作餐飲。", accent: "#6fb17a", preview: ["#142118", "#203126", "#101813"] },
   { value: "rose", label: "玫瑰奶茶", desc: "較柔和有質感，適合甜點、飲料與輕食。", accent: "#d78aa4", preview: ["#2b1a21", "#3a222b", "#1f1418"] },
-  { value: "market", label: "招牌米白", desc: "米白底搭配深藍字與紅色重點，適合熱炒、海產、小吃店。", accent: "#d74b3f", preview: ["#f7f1e8", "#fffaf2", "#ece2d4"] },
+  { value: "market", label: "招牌米白", desc: "米白底、深藍字、紅色重點，像熱炒招牌菜單。", accent: "#d53b2f", preview: ["#f5f1ea", "#10233f", "#f0d7d1"] },
 ];
 
 function createFormItem(partial?: Partial<MenuItemForm>): MenuItemForm {
@@ -131,6 +131,7 @@ function getPreviewTokens(theme: ThemeType) {
   if (theme === "ocean") return { shell: "#0e1b26", panel: "rgba(21, 42, 59, 0.92)", soft: "rgba(77, 163, 255, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#63b3ff", text: "#eef9ff", muted: "#a7c6dc" };
   if (theme === "forest") return { shell: "#101813", panel: "rgba(27, 40, 31, 0.94)", soft: "rgba(111, 177, 122, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#7bc68a", text: "#f0fff4", muted: "#b0cdb7" };
   if (theme === "rose") return { shell: "#1c1216", panel: "rgba(48, 29, 37, 0.94)", soft: "rgba(215, 138, 164, 0.16)", border: "rgba(255,255,255,0.08)", accent: "#e3a0b6", text: "#fff2f6", muted: "#d8b2c1" };
+  if (theme === "market") return { shell: "#171c24", panel: "rgba(245, 241, 234, 0.96)", soft: "rgba(213, 59, 47, 0.12)", border: "rgba(16, 35, 63, 0.12)", accent: "#d53b2f", text: "#10233f", muted: "#6d7685" };
   return { shell: "#f4f6fa", panel: "rgba(255, 255, 255, 0.96)", soft: "rgba(214, 178, 103, 0.18)", border: "rgba(15,23,42,0.08)", accent: "#c7922e", text: "#263244", muted: "#6f7c92" };
 }
 

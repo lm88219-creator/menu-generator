@@ -138,6 +138,30 @@ function getThemeTokens(theme: ThemeType): ThemeTokens {
       shadow: "0 24px 54px rgba(43, 78, 50, 0.12)",
     };
   }
+  if (theme === "market") {
+    return {
+      pageBg: "#f5f1ea",
+      pageOverlay: "radial-gradient(circle at top right, rgba(213,59,47,0.10), transparent 32%), radial-gradient(circle at top left, rgba(16,35,63,0.08), transparent 28%)",
+      cardBg: "rgba(255,255,255,0.76)",
+      cardBorder: "rgba(16,35,63,0.10)",
+      text: "#10233f",
+      muted: "#6d7685",
+      accent: "#d53b2f",
+      accentSoft: "rgba(213,59,47,0.12)",
+      badgeBg: "rgba(255,255,255,0.92)",
+      badgeBorder: "rgba(213,59,47,0.20)",
+      badgeText: "#b4362c",
+      priceBg: "rgba(213,59,47,0.10)",
+      priceText: "#b4362c",
+      soldOutBg: "rgba(16,35,63,0.08)",
+      soldOutText: "#4d5b72",
+      heroGlow: "linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,249,242,0.72))",
+      divider: "rgba(16,35,63,0.08)",
+      chipBg: "rgba(255,255,255,0.95)",
+      chipText: "#10233f",
+    };
+  }
+
   if (theme === "rose") {
     return {
       accent: "#d47f9d",
@@ -160,30 +184,6 @@ function getThemeTokens(theme: ThemeType): ThemeTokens {
       soldoutBg: "rgba(176, 72, 72, 0.1)",
       soldoutText: "#ad4949",
       shadow: "0 24px 54px rgba(120, 63, 85, 0.12)",
-    };
-  }
-  if (theme === "market") {
-    return {
-      accent: "#e14f43",
-      accentStrong: "#c63d31",
-      accentSoft: "#fff2ea",
-      accentTint: "rgba(225, 79, 67, 0.12)",
-      accentTintStrong: "rgba(225, 79, 67, 0.2)",
-      badge: "rgba(255, 249, 241, 0.94)",
-      border: "rgba(24, 42, 67, 0.12)",
-      bg: "#f5efe5",
-      bgSoft: "#faf6ef",
-      bgDeep: "#efe6d8",
-      surface: "rgba(255, 251, 245, 0.98)",
-      surfaceSoft: "rgba(255, 250, 244, 1)",
-      text: "#243d5b",
-      title: "#14253f",
-      muted: "#6e7b8f",
-      priceBg: "rgba(225, 79, 67, 0.1)",
-      priceText: "#b9382f",
-      soldoutBg: "rgba(201, 80, 68, 0.1)",
-      soldoutText: "#a73e35",
-      shadow: "0 24px 54px rgba(77, 58, 32, 0.1)",
     };
   }
   return {
@@ -219,7 +219,11 @@ function formatMapHref(address: string) {
 }
 
 const THEME_LABEL: Partial<Record<ThemeType, string>> = {
-  market: "招牌米白",
+  dark: "夜幕深色",
+  warm: "暖金木質",
+  ocean: "清爽海洋",
+  forest: "森林自然",
+  rose: "玫瑰雅緻",
 };
 
 function toSectionId(category: string, index: number) {

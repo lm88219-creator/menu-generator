@@ -129,21 +129,6 @@ export default function Home() {
         buttonGhostBg: "rgba(255,255,255,0.72)",
         buttonGhostText: "#5a3141",
       },
-      market: {
-        name: "招牌米白",
-        pageBg: "linear-gradient(180deg,#f7f1e8 0%,#efe6d8 100%)",
-        cardBg: "rgba(255,250,242,0.92)",
-        cardBorder: "1px solid rgba(18,36,62,0.1)",
-        text: "#132946",
-        subText: "#6b7787",
-        accent: "#d74b3f",
-        inputBg: "rgba(255,255,255,0.86)",
-        inputBorder: "1px solid rgba(18,36,62,0.1)",
-        buttonMainBg: "#d74b3f",
-        buttonMainText: "#fff8f2",
-        buttonGhostBg: "rgba(18,36,62,0.06)",
-        buttonGhostText: "#132946",
-      },
     }),
     []
   );
@@ -605,6 +590,7 @@ y += 150;
     ocean: "#53a8c9",
     forest: "#5e9468",
     rose: "#c78a9f",
+    market: "#d53b2f",
   };
 
   const themeSurfaceMap: Record<ThemeType, { bg: string; text: string; muted: string; border: string }> = {
@@ -614,6 +600,7 @@ y += 150;
     ocean: { bg: "#e2f3f8", text: "#214d63", muted: "#5d7f90", border: "rgba(83,168,201,0.26)" },
     forest: { bg: "#e7f1e5", text: "#274332", muted: "#667a6c", border: "rgba(94,148,104,0.26)" },
     rose: { bg: "#f7e7eb", text: "#623d49", muted: "#8d6b76", border: "rgba(199,138,159,0.28)" },
+    market: { bg: "#f5f1ea", text: "#10233f", muted: "#6d7685", border: "rgba(213,59,47,0.22)" },
   };
 
   const themeCardStyle = (value: ThemeType): React.CSSProperties => ({
@@ -878,6 +865,7 @@ y += 150;
                   ["ocean", "海洋清新風", "清爽、海味、明亮感"],
                   ["forest", "森林自然風", "自然、手作、健康感"],
                   ["rose", "玫瑰奶茶風", "柔和、甜點、質感感"],
+                  ["market", "招牌米白", "米白、深藍字、紅色重點"],
                 ] as const).map(([value, title, desc]) => (
                   <button
                     key={value}
@@ -966,7 +954,7 @@ y += 150;
                   theme === "dark"
                     ? "1px solid rgba(255,255,255,0.08)"
                     : "1px solid rgba(0,0,0,0.08)",
-                color: theme === "dark" ? "#fff" : theme === "light" ? "#111" : theme === "warm" ? "#4e3426" : theme === "ocean" ? "#0f3550" : theme === "forest" ? "#233b2c" : theme === "rose" ? "#5a3141" : "#132946",
+                color: theme === "dark" ? "#fff" : theme === "light" ? "#111" : theme === "warm" ? "#4e3426" : theme === "ocean" ? "#0f3550" : theme === "forest" ? "#233b2c" : "#5a3141",
                 minHeight: isMobile ? "auto" : 520,
                 maxWidth: 390,
                 margin: "0 auto",
