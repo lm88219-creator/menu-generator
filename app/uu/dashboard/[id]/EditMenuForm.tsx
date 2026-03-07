@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import { QRCodeCanvas } from "qrcode.react";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { groupMenuItems, parseMenuText, normalizeSlug } from "@/lib/menu";
 
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
 
 type InitialData = {
   restaurant: string;
@@ -12,161 +13,169 @@ type InitialData = {
   address: string;
   hours: string;
   menuText: string;
-  theme: string;
+  theme: ThemeType;
   logoDataUrl?: string;
   slug?: string;
   isPublished?: boolean;
 };
 
-export default function EditMenuForm({
-  id,
-  initialData,
-}: {
-  id: string;
-  initialData: InitialData;
-}) {
-  const router = useRouter();
+type MenuItemForm = {
+  category: string;
+  name: string;
+  price: string;
+  note: string;
+  soldOut: boolean;
+};
 
+const THEME_OPTIONS: Array<{ value: ThemeType; label: string }> = [
+  { value: "dark", label: "深色經典" },
+  { value: "light", label: "簡約白" },
+  { value: "warm", label: "暖木咖啡" },
+  { value: "ocean", label: "海洋清新" },
+  { value: "forest", label: "森林自然" },
+  { value: "rose", label: "玫瑰奶茶" },
+];
+
+function toFormItems(menuText: string): MenuItemForm[] {
+  const parsed = parseMenuText(menuText);
+  return parsed.length
+    ? parsed.map((item) => ({
+        category: item.category || "精選菜單",
+        name: item.name || "",
+        price: item.price || "",
+        note: item.note || "",
+        soldOut: Boolean(item.soldOut),
+      }))
+    : [{ category: "精選菜單", name: "", price: "", note: "", soldOut: false }];
+}
+
+function toMenuText(items: MenuItemForm[]) {
+  const groups = new Map<string, MenuItemForm[]>();
+  items.forEach((item) => {
+    const category = item.category.trim() || "精選菜單";
+    if (!item.name.trim() && !item.price.trim() && !item.note.trim()) return;
+    if (!groups.has(category)) groups.set(category, []);
+    groups.get(category)!.push(item);
+  });
+
+  const sections: string[] = [];
+  groups.forEach((groupItems, category) => {
+    sections.push(category);
+    groupItems.forEach((item) => {
+      const name = item.name.trim();
+      const price = item.price.trim();
+      const note = item.note.trim();
+      const soldOut = item.soldOut ? " 售完" : "";
+      if (price && note) sections.push(`${name} ${price} | ${note}${soldOut}`.trim());
+      else if (price) sections.push(`${name} ${price}${soldOut}`.trim());
+      else if (note) sections.push(`${name} | ${note}${soldOut}`.trim());
+      else sections.push(`${name}${soldOut}`.trim());
+    });
+    sections.push("");
+  });
+
+  return sections.join("\n").trim();
+}
+
+function getBaseUrl() {
+  const envUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
+  if (envUrl) return /^https?:\/\//i.test(envUrl) ? envUrl : `https://${envUrl}`;
+  if (typeof window !== "undefined") return window.location.origin;
+  return "";
+}
+
+function parseDeskInput(input: string, start: string, end: string) {
+  const manual = input
+    .split(/[,，\s]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (manual.length) return Array.from(new Set(manual));
+
+  const from = Number(start);
+  const to = Number(end);
+  if (Number.isFinite(from) && Number.isFinite(to) && from > 0 && to >= from) {
+    return Array.from({ length: to - from + 1 }, (_, index) => String(from + index));
+  }
+  return [];
+}
+
+export default function EditMenuForm({ id, initialData }: { id: string; initialData: InitialData }) {
+  const router = useRouter();
   const [restaurant, setRestaurant] = useState(initialData.restaurant);
   const [phone, setPhone] = useState(initialData.phone);
   const [address, setAddress] = useState(initialData.address);
   const [hours, setHours] = useState(initialData.hours);
   const [menuText, setMenuText] = useState(initialData.menuText);
-  const [theme, setTheme] = useState<ThemeType>((initialData.theme as ThemeType) ?? "dark");
-  const [logoDataUrl, setLogoDataUrl] = useState(initialData.logoDataUrl);
-  const [slug, setSlug] = useState(initialData.slug ?? "");
+  const [formItems, setFormItems] = useState<MenuItemForm[]>(() => toFormItems(initialData.menuText));
+  const [theme, setTheme] = useState<ThemeType>(initialData.theme || "dark");
+  const [logoDataUrl, setLogoDataUrl] = useState(initialData.logoDataUrl || "");
+  const [slug, setSlug] = useState(initialData.slug || "");
+  const [isPublished, setIsPublished] = useState(initialData.isPublished !== false);
+  const [mode, setMode] = useState<"form" | "text">("form");
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [message, setMessage] = useState("");
+  const [deskInput, setDeskInput] = useState("A1 A2 A3 A4");
+  const [deskStart, setDeskStart] = useState("1");
+  const [deskEnd, setDeskEnd] = useState("12");
 
-  const publicPath = slug.trim() ? `/menu/${encodeURIComponent(slug.trim())}` : `/m/${id}`;
+  const safeSlug = normalizeSlug(slug || restaurant) || id;
+  const publicPath = `/uu/menu/${safeSlug}`;
+  const publicUrl = `${getBaseUrl()}${publicPath}`;
+  const groupedPreview = useMemo(() => groupMenuItems(menuText || "精選菜單\n招牌菜 100"), [menuText]);
+  const deskCodes = useMemo(() => parseDeskInput(deskInput, deskStart, deskEnd), [deskInput, deskStart, deskEnd]);
 
-  const themeMap = useMemo(
-    () => ({
-      dark: {
-        name: "黑色餐廳風",
-        pageBg: "radial-gradient(circle at top,#1a1a1a 0%,#000 45%,#000 100%)",
-        cardBg: "rgba(255,255,255,0.04)",
-        cardBorder: "1px solid rgba(255,255,255,0.08)",
-        text: "#fff",
-        subText: "#a9a9a9",
-        accent: "#f4d58d",
-        inputBg: "rgba(255,255,255,0.05)",
-        inputBorder: "1px solid rgba(255,255,255,0.08)",
-        buttonMainBg: "#fff",
-        buttonMainText: "#000",
-        buttonGhostBg: "rgba(255,255,255,0.08)",
-        buttonGhostText: "#fff",
-        previewBg: "radial-gradient(circle at top,#1b1b1b 0%,#080808 70%)",
-        previewBorder: "1px solid rgba(255,255,255,0.08)",
-      },
-      light: {
-        name: "簡約白色",
-        pageBg: "linear-gradient(180deg,#f8f8f8 0%,#eeeeee 100%)",
-        cardBg: "rgba(255,255,255,0.92)",
-        cardBorder: "1px solid rgba(0,0,0,0.08)",
-        text: "#111",
-        subText: "#666",
-        accent: "#0b57d0",
-        inputBg: "#fff",
-        inputBorder: "1px solid rgba(0,0,0,0.08)",
-        buttonMainBg: "#111",
-        buttonMainText: "#fff",
-        buttonGhostBg: "#fff",
-        buttonGhostText: "#111",
-        previewBg: "linear-gradient(180deg,#ffffff 0%,#f3f3f3 100%)",
-        previewBorder: "1px solid rgba(0,0,0,0.08)",
-      },
-      warm: {
-        name: "溫暖咖啡風",
-        pageBg: "linear-gradient(180deg,#f6efe5 0%,#eadbc8 100%)",
-        cardBg: "rgba(255,250,244,0.92)",
-        cardBorder: "1px solid rgba(88,54,24,0.12)",
-        text: "#3e2d20",
-        subText: "#7b6756",
-        accent: "#8b5e34",
-        inputBg: "rgba(255,255,255,0.78)",
-        inputBorder: "1px solid rgba(88,54,24,0.12)",
-        buttonMainBg: "#4e3426",
-        buttonMainText: "#fff",
-        buttonGhostBg: "rgba(255,255,255,0.65)",
-        buttonGhostText: "#3e2d20",
-        previewBg: "linear-gradient(180deg,#fffaf3 0%,#f1e0cb 100%)",
-        previewBorder: "1px solid rgba(88,54,24,0.1)",
-      },
-      ocean: {
-        name: "海洋清新風",
-        pageBg: "linear-gradient(180deg,#e9f6ff 0%,#cfe9f6 100%)",
-        cardBg: "rgba(245,251,255,0.9)",
-        cardBorder: "1px solid rgba(34,87,122,0.12)",
-        text: "#0f3550",
-        subText: "#4d7289",
-        accent: "#1574a9",
-        inputBg: "rgba(255,255,255,0.8)",
-        inputBorder: "1px solid rgba(34,87,122,0.12)",
-        buttonMainBg: "#0f5d8f",
-        buttonMainText: "#fff",
-        buttonGhostBg: "rgba(255,255,255,0.72)",
-        buttonGhostText: "#0f3550",
-        previewBg: "linear-gradient(180deg,#ffffff 0%,#dff2fb 100%)",
-        previewBorder: "1px solid rgba(34,87,122,0.08)",
-      },
-      forest: {
-        name: "森林自然風",
-        pageBg: "linear-gradient(180deg,#edf5ee 0%,#dbe8dc 100%)",
-        cardBg: "rgba(249,253,249,0.92)",
-        cardBorder: "1px solid rgba(41,87,53,0.12)",
-        text: "#233b2c",
-        subText: "#5c7564",
-        accent: "#3f7d4f",
-        inputBg: "rgba(255,255,255,0.82)",
-        inputBorder: "1px solid rgba(41,87,53,0.12)",
-        buttonMainBg: "#2f5d3b",
-        buttonMainText: "#fff",
-        buttonGhostBg: "rgba(255,255,255,0.74)",
-        buttonGhostText: "#233b2c",
-        previewBg: "linear-gradient(180deg,#ffffff 0%,#eef6ec 100%)",
-        previewBorder: "1px solid rgba(41,87,53,0.08)",
-      },
-      rose: {
-        name: "玫瑰奶茶風",
-        pageBg: "linear-gradient(180deg,#fff4f7 0%,#f9dde6 100%)",
-        cardBg: "rgba(255,250,252,0.92)",
-        cardBorder: "1px solid rgba(145,78,101,0.12)",
-        text: "#5a3141",
-        subText: "#8b6573",
-        accent: "#b35c7a",
-        inputBg: "rgba(255,255,255,0.84)",
-        inputBorder: "1px solid rgba(145,78,101,0.14)",
-        buttonMainBg: "#a14b68",
-        buttonMainText: "#fff",
-        buttonGhostBg: "rgba(255,255,255,0.72)",
-        buttonGhostText: "#5a3141",
-        previewBg: "linear-gradient(180deg,#fffafc 0%,#fdebf1 100%)",
-        previewBorder: "1px solid rgba(145,78,101,0.08)",
-      },
-    }),
-    []
-  );
+  function pushMessage(text: string) {
+    setMessage(text);
+    setTimeout(() => setMessage(""), 2200);
+  }
 
-  const currentTheme = themeMap[theme];
-  const parsedLines = parseMenuLines(menuText || "熱炒\n炒飯 80\n炒麵 80");
-  const categoryCount = parsedLines.filter((line) => isLikelyCategory(line)).length;
-  const itemCount = parsedLines.filter((line) => !isLikelyCategory(line)).length;
+  function updateFormItem(index: number, patch: Partial<MenuItemForm>) {
+    setFormItems((current) => {
+      const next = current.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item));
+      setMenuText(toMenuText(next));
+      return next;
+    });
+  }
+
+  function addItem(afterCategory?: string) {
+    setFormItems((current) => {
+      const next = [...current, { category: afterCategory || current[current.length - 1]?.category || "精選菜單", name: "", price: "", note: "", soldOut: false }];
+      return next;
+    });
+  }
+
+  function removeItem(index: number) {
+    setFormItems((current) => {
+      const next = current.filter((_, itemIndex) => itemIndex !== index);
+      setMenuText(toMenuText(next));
+      return next.length ? next : [{ category: "精選菜單", name: "", price: "", note: "", soldOut: false }];
+    });
+  }
+
+  function syncTextToForm() {
+    const next = toFormItems(menuText);
+    setFormItems(next);
+    pushMessage("已從文字同步到表單");
+  }
+
+  function syncFormToText() {
+    const next = toMenuText(formItems);
+    setMenuText(next);
+    pushMessage("已從表單同步到文字");
+  }
 
   async function handleSave() {
     if (!restaurant.trim()) {
       alert("請輸入餐廳名稱");
       return;
     }
-
     if (!menuText.trim()) {
       alert("請輸入菜單內容");
       return;
     }
 
     setSaving(true);
-    setSaved(false);
-
     try {
       const res = await fetch(`/api/menu/${id}`, {
         method: "PATCH",
@@ -180,6 +189,7 @@ export default function EditMenuForm({
           theme,
           logoDataUrl,
           customSlug: slug,
+          isPublished,
         }),
       });
 
@@ -188,12 +198,10 @@ export default function EditMenuForm({
         alert(data?.error || "更新失敗");
         return;
       }
-
-      setSaved(true);
+      if (data?.data?.slug) setSlug(data.data.slug);
+      pushMessage("已成功儲存");
       router.refresh();
-      setTimeout(() => setSaved(false), 2000);
-    } catch (error) {
-      console.error(error);
+    } catch {
       alert("更新失敗");
     } finally {
       setSaving(false);
@@ -212,285 +220,179 @@ export default function EditMenuForm({
     reader.readAsDataURL(file);
   }
 
-  function removeLogo() {
-    setLogoDataUrl("");
-  }
-
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "14px 16px",
-    borderRadius: 16,
-    border: currentTheme.inputBorder,
-    background: currentTheme.inputBg,
-    color: currentTheme.text,
-    fontSize: 15,
-    outline: "none",
-    boxSizing: "border-box",
-  };
-
-  const primaryButtonStyle: React.CSSProperties = {
-    padding: "13px 18px",
-    borderRadius: 16,
-    border: "none",
-    background: currentTheme.buttonMainBg,
-    color: currentTheme.buttonMainText,
-    cursor: "pointer",
-    fontSize: 15,
-    fontWeight: 800,
-    boxShadow: "0 12px 26px rgba(0,0,0,0.12)",
-  };
-
-  const ghostButtonStyle: React.CSSProperties = {
-    padding: "13px 18px",
-    borderRadius: 16,
-    border: currentTheme.inputBorder,
-    background: currentTheme.buttonGhostBg,
-    color: currentTheme.buttonGhostText,
-    cursor: "pointer",
-    fontSize: 15,
-    fontWeight: 700,
-    textDecoration: "none",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-  };
-
-  const sectionCardStyle: React.CSSProperties = {
-    borderRadius: 24,
-    padding: 22,
-    border: currentTheme.cardBorder,
-    background: currentTheme.cardBg,
-    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-  };
-
-  const themeCardStyle = (value: ThemeType): React.CSSProperties => ({
-    borderRadius: 18,
-    padding: 16,
-    border: theme === value ? `2px solid ${currentTheme.accent}` : currentTheme.inputBorder,
-    background:
-      value === "dark"
-        ? "linear-gradient(180deg,#202020 0%,#090909 100%)"
-        : value === "light"
-        ? "linear-gradient(180deg,#ffffff 0%,#f0f0f0 100%)"
-        : value === "warm"
-        ? "linear-gradient(180deg,#f8efe3 0%,#e7d2b8 100%)"
-        : value === "ocean"
-        ? "linear-gradient(180deg,#f5fdff 0%,#d8eef7 100%)"
-        : value === "forest"
-        ? "linear-gradient(180deg,#f5faf5 0%,#d7e8d7 100%)"
-        : "linear-gradient(180deg,#fff8fb 0%,#f3d8e3 100%)",
-    color:
-      value === "dark"
-        ? "#fff"
-        : value === "light"
-        ? "#111"
-        : value === "warm"
-        ? "#4e3426"
-        : value === "ocean"
-        ? "#0f3550"
-        : value === "forest"
-        ? "#233b2c"
-        : "#5a3141",
-    cursor: "pointer",
-    minHeight: 112,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    boxShadow: theme === value ? "0 12px 30px rgba(0,0,0,0.10)" : "none",
-  });
-
   return (
-    <div className="admin-editor-layout">
-      <div className="admin-editor-main">
-        <section style={sectionCardStyle}>
-          <div className="admin-section-head" style={{ marginBottom: 0 }}>
-            <div>
-              <div className="admin-section-title" style={{ color: currentTheme.text }}>編輯資訊總覽</div>
-              <div className="admin-section-subtitle" style={{ color: currentTheme.subText }}>
-                這裡集中管理餐廳基本資料、網址代稱、品牌外觀與菜單內容。
+    <div className="uu-editor-layout">
+      <section className="uu-panel uu-editor-main-panel">
+        <div className="uu-sticky-toolbar">
+          <div className="uu-form-actions">
+            <button type="button" className={`uu-tab-btn ${mode === "form" ? "is-active" : ""}`} onClick={() => setMode("form")}>表單模式</button>
+            <button type="button" className={`uu-tab-btn ${mode === "text" ? "is-active" : ""}`} onClick={() => setMode("text")}>文字模式</button>
+          </div>
+          <div className="uu-form-actions">
+            {message ? <span className="uu-inline-hint is-success">{message}</span> : null}
+            <button type="button" className="uu-btn uu-btn-secondary" onClick={async () => navigator.clipboard.writeText(publicUrl)}>複製公開網址</button>
+            <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
+          </div>
+        </div>
+
+        <div className="uu-editor-stack">
+          <section className="uu-panel uu-subpanel">
+            <div className="uu-section-head">
+              <div>
+                <h2>店家資訊</h2>
+                <p>先把店名、電話、地址、營業時間與公開狀態整理好。</p>
+              </div>
+              <label className="uu-switch-row">
+                <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
+                <span>{isPublished ? "上架中" : "已下架"}</span>
+              </label>
+            </div>
+            <div className="uu-form-grid-2">
+              <Field label="餐廳名稱"><input className="uu-input" value={restaurant} onChange={(e) => setRestaurant(e.target.value)} placeholder="例如：友愛熱炒" /></Field>
+              <Field label="網址 slug"><input className="uu-input" value={slug} onChange={(e) => setSlug(normalizeSlug(e.target.value))} placeholder="例如：you-ai-re-chao" /></Field>
+              <Field label="電話"><input className="uu-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="例如：0912-345-678" /></Field>
+              <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>
+            </div>
+            <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
+            <div className="uu-preview-url-box">公開網址：<strong>{publicUrl}</strong></div>
+          </section>
+
+          <section className="uu-panel uu-subpanel">
+            <div className="uu-section-head">
+              <div>
+                <h2>品牌與風格</h2>
+                <p>後台維持深色專業感，公開菜單頁則偏亮色、客人閱讀更舒服。</p>
               </div>
             </div>
-            <span className="admin-pill">目前風格：{currentTheme.name}</span>
-          </div>
-
-          <div className="admin-stats-grid" style={{ marginTop: 18 }}>
-            <MiniInfo label="餐點數" value={String(itemCount)} textColor={currentTheme.text} muted={currentTheme.subText} />
-            <MiniInfo label="分類數" value={String(categoryCount)} textColor={currentTheme.text} muted={currentTheme.subText} />
-            <MiniInfo label="網址代稱" value={slug.trim() || "未設定"} textColor={currentTheme.text} muted={currentTheme.subText} />
-            <MiniInfo label="公開路徑" value={publicPath} textColor={currentTheme.text} muted={currentTheme.subText} />
-          </div>
-        </section>
-
-        <section style={sectionCardStyle}>
-          <SectionTitle title="基本資料" subtitle="先把店名、聯絡資訊與營業時間整理好。" color={currentTheme.text} muted={currentTheme.subText} />
-
-          <div style={{ marginTop: 18 }}>
-            <div className="admin-field-label" style={{ color: currentTheme.text }}>餐廳名稱</div>
-            <input value={restaurant} onChange={(e) => setRestaurant(e.target.value)} style={inputStyle} placeholder="例如：友愛熱炒" />
-          </div>
-
-          <div className="admin-form-grid-2" style={{ marginTop: 16 }}>
-            <div>
-              <div className="admin-field-label" style={{ color: currentTheme.text }}>電話</div>
-              <input value={phone} onChange={(e) => setPhone(e.target.value)} style={inputStyle} placeholder="例如：0912-345-678" />
+            <div className="uu-theme-grid">
+              {THEME_OPTIONS.map((option) => (
+                <button key={option.value} type="button" className={`uu-theme-card ${theme === option.value ? "is-active" : ""}`} onClick={() => setTheme(option.value)}>
+                  <strong>{option.label}</strong>
+                  <span>{option.value}</span>
+                </button>
+              ))}
             </div>
-            <div>
-              <div className="admin-field-label" style={{ color: currentTheme.text }}>營業時間</div>
-              <input value={hours} onChange={(e) => setHours(e.target.value)} style={inputStyle} placeholder="例如：17:00 - 01:00" />
-            </div>
-          </div>
-
-          <div style={{ marginTop: 16 }}>
-            <div className="admin-field-label" style={{ color: currentTheme.text }}>地址</div>
-            <input value={address} onChange={(e) => setAddress(e.target.value)} style={inputStyle} placeholder="例如：嘉義市西區友愛路100號" />
-          </div>
-
-          <div style={{ marginTop: 16 }}>
-            <div className="admin-field-label" style={{ color: currentTheme.text }}>自訂網址代稱</div>
-            <input value={slug} onChange={(e) => setSlug(e.target.value)} style={inputStyle} placeholder="例如：youai-hotpot" />
-            <div style={{ marginTop: 8, color: currentTheme.subText, fontSize: 13, lineHeight: 1.7 }}>
-              輸入後可讓公開網址更好記。建議使用短一點、容易唸的英文或拼音。
-            </div>
-            <div style={{ marginTop: 10, borderRadius: 14, padding: "10px 12px", background: currentTheme.inputBg, border: currentTheme.inputBorder, color: currentTheme.text, fontSize: 14 }}>
-              公開網址預覽：<strong>{publicPath}</strong>
-            </div>
-          </div>
-        </section>
-
-        <section style={sectionCardStyle}>
-          <SectionTitle title="品牌與主題" subtitle="上傳 Logo、切換風格，讓前台更像正式品牌頁。" color={currentTheme.text} muted={currentTheme.subText} />
-
-          <div className="admin-form-grid-2" style={{ marginTop: 18, alignItems: "start" }}>
-            <div>
-              <div className="admin-field-label" style={{ color: currentTheme.text }}>餐廳 Logo</div>
-              <label style={{ display: "block", borderRadius: 22, border: currentTheme.inputBorder, background: currentTheme.inputBg, padding: 20, textAlign: "center", cursor: "pointer" }}>
-                <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: "none" }} />
-                {logoDataUrl ? (
-                  <div style={{ width: 96, height: 96, borderRadius: "50%", background: "#fff", margin: "0 auto 10px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 18px rgba(0,0,0,0.12)", border: "1px solid rgba(0,0,0,0.06)", overflow: "hidden", padding: 10 }}>
-                    <img src={logoDataUrl} alt="logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                  </div>
-                ) : (
-                  <div style={{ width: 96, height: 96, borderRadius: "50%", margin: "0 auto 10px", background: "rgba(255,255,255,0.75)", display: "flex", alignItems: "center", justifyContent: "center", color: "#666", fontWeight: 700 }}>LOGO</div>
-                )}
-                <div style={{ fontWeight: 700, color: currentTheme.text }}>{logoDataUrl ? "點擊更換 Logo" : "點擊上傳餐廳 Logo"}</div>
-                <div style={{ marginTop: 6, color: currentTheme.subText, fontSize: 12 }}>建議方形圖片，前台顯示會更漂亮。</div>
+            <div className="uu-logo-row">
+              <label className="uu-upload-box">
+                <input type="file" accept="image/*" onChange={handleLogoUpload} />
+                <span>上傳 Logo</span>
               </label>
               {logoDataUrl ? (
-                <div style={{ marginTop: 12 }}>
-                  <button onClick={removeLogo} style={ghostButtonStyle}>移除 Logo</button>
-                </div>
-              ) : null}
-            </div>
-
-            <div>
-              <div className="admin-field-label" style={{ color: currentTheme.text }}>主題風格</div>
-              <div className="admin-theme-grid">
-                <div onClick={() => setTheme("dark")} style={themeCardStyle("dark")}>
-                  <div style={{ fontWeight: 800 }}>黑色餐廳風</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>質感、夜店、燈箱感</div>
-                </div>
-                <div onClick={() => setTheme("light")} style={themeCardStyle("light")}>
-                  <div style={{ fontWeight: 800 }}>簡約白色</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>乾淨、清楚、百搭</div>
-                </div>
-                <div onClick={() => setTheme("warm")} style={themeCardStyle("warm")}>
-                  <div style={{ fontWeight: 800 }}>溫暖咖啡風</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>木質、餐館、溫暖感</div>
-                </div>
-                <div onClick={() => setTheme("ocean")} style={themeCardStyle("ocean")}>
-                  <div style={{ fontWeight: 800 }}>海洋清新風</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>清爽、海味、明亮感</div>
-                </div>
-                <div onClick={() => setTheme("forest")} style={themeCardStyle("forest")}>
-                  <div style={{ fontWeight: 800 }}>森林自然風</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>自然、手作、健康感</div>
-                </div>
-                <div onClick={() => setTheme("rose")} style={themeCardStyle("rose")}>
-                  <div style={{ fontWeight: 800 }}>玫瑰奶茶風</div>
-                  <div style={{ fontSize: 13, opacity: 0.8 }}>柔和、甜點、質感感</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section style={sectionCardStyle}>
-          <SectionTitle title="菜單內容" subtitle="建議用一個分類接多個菜名的方式，後台維護最輕鬆。" color={currentTheme.text} muted={currentTheme.subText} />
-
-          <div style={{ marginTop: 18 }}>
-            <textarea
-              rows={16}
-              value={menuText}
-              onChange={(e) => setMenuText(e.target.value)}
-              style={{ ...inputStyle, resize: "vertical", lineHeight: 1.8, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
-              placeholder={`例如：\n鵝肉\n鹽水鵝肉 200\n麻油鵝肉 220\n\n主食\n炒飯 80\n炒麵 80`}
-            />
-            <div style={{ marginTop: 10, color: currentTheme.subText, fontSize: 13, lineHeight: 1.7 }}>
-              規則：單獨一行會被視為分類；有價格的行會自動顯示成品項。像「炒蝦球 200」這種格式最穩。
-            </div>
-          </div>
-        </section>
-
-        <section style={{ ...sectionCardStyle, position: "sticky", bottom: 16 }}>
-          <div className="admin-actions-row">
-            <button onClick={handleSave} disabled={saving} style={primaryButtonStyle}>
-              {saving ? "儲存中..." : saved ? "已儲存完成" : "儲存更新"}
-            </button>
-            <Link href="/dashboard" style={ghostButtonStyle}>返回後台</Link>
-            <Link href={publicPath} target="_blank" style={ghostButtonStyle}>查看公開頁</Link>
-          </div>
-        </section>
-      </div>
-
-      <aside className="admin-editor-side">
-        <div style={{ ...sectionCardStyle, position: "sticky", top: 20, color: currentTheme.text }}>
-          <SectionTitle title="即時預覽" subtitle="右側會模擬客人手機看到的前台樣子。" color={currentTheme.text} muted={currentTheme.subText} />
-
-          <div style={{ marginTop: 18, borderRadius: 28, padding: 24, background: currentTheme.previewBg, border: currentTheme.previewBorder, minHeight: 620 }}>
-            <div style={{ textAlign: "center" }}>
-              {logoDataUrl ? (
-                <div style={{ width: 96, height: 96, borderRadius: "50%", margin: "0 auto 14px", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(0,0,0,0.14)", border: "1px solid rgba(0,0,0,0.06)", overflow: "hidden", padding: 10 }}>
-                  <img src={logoDataUrl} alt="logo preview" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                <div className="uu-logo-preview-wrap">
+                  <img src={logoDataUrl} alt="logo preview" className="uu-logo-preview" />
+                  <button type="button" className="uu-btn uu-btn-secondary" onClick={() => setLogoDataUrl("")}>移除 Logo</button>
                 </div>
               ) : (
-                <div style={{ width: 96, height: 96, borderRadius: "50%", margin: "0 auto 14px", background: theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: currentTheme.subText, border: currentTheme.previewBorder }}>
-                  LOGO
-                </div>
+                <div className="uu-inline-hint">建議用正方形圖片，客人看起來會更完整。</div>
               )}
+            </div>
+          </section>
 
-              <div style={{ fontSize: 12, letterSpacing: 3, opacity: 0.7, marginBottom: 8 }}>DIGITAL MENU</div>
-              <h2 style={{ margin: 0, fontSize: 28 }}>{restaurant || "餐廳名稱"}</h2>
-              <div style={{ marginTop: 10, fontSize: 14, opacity: 0.8, lineHeight: 1.8 }}>
-                {phone || "電話"}
-                <br />
-                {address || "地址"}
-                <br />
-                {hours || "營業時間"}
+          <section className="uu-panel uu-subpanel">
+            <div className="uu-section-head">
+              <div>
+                <h2>菜單編輯器</h2>
+                <p>這一版改成比較舒服的兩段式排版，不再把所有欄位硬擠在同一排。</p>
+              </div>
+              <div className="uu-form-actions">
+                <button type="button" className="uu-btn uu-btn-secondary" onClick={syncTextToForm}>文字 → 表單</button>
+                <button type="button" className="uu-btn uu-btn-secondary" onClick={syncFormToText}>表單 → 文字</button>
               </div>
             </div>
 
-            <div style={{ marginTop: 22, borderTop: theme === "dark" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)", paddingTop: 16 }}>
-              {parsedLines.map((line, index) =>
-                isLikelyCategory(line) ? (
-                  <div key={`${line}-${index}`} style={{ marginTop: index === 0 ? 0 : 14, marginBottom: 6, fontWeight: 800, color: currentTheme.accent }}>
-                    {line}
-                  </div>
-                ) : (
-                  <div key={`${line}-${index}`} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderBottom: theme === "dark" ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.06)", fontSize: 15 }}>
-                    <span>{line.replace(/\s+\S+$/, "")}</span>
-                    <span>{line.match(/\S+$/)?.[0]}</span>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
+            {mode === "form" ? (
+              <div className="uu-items-stack">
+                {formItems.map((item, index) => (
+                  <article key={`${index}-${item.category}-${item.name}`} className="uu-item-card">
+                    <div className="uu-item-grid-top">
+                      <Field label="分類"><input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="例如：熱炒" /></Field>
+                      <Field label="價格"><input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="例如：120" /></Field>
+                    </div>
+                    <Field label="菜名"><input className="uu-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="例如：炒螺肉" /></Field>
+                    <Field label="備註"><input className="uu-input" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="例如：小辣 / 限量供應 / 推薦" /></Field>
+                    <div className="uu-item-footer">
+                      <label className="uu-switch-row">
+                        <input type="checkbox" checked={item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: e.target.checked })} />
+                        <span>{item.soldOut ? "已售完" : "供應中"}</span>
+                      </label>
+                      <div className="uu-form-actions">
+                        <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem(item.category)}>新增同分類</button>
+                        <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+                <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => addItem()}>＋ 新增品項</button>
+              </div>
+            ) : (
+              <div className="uu-text-editor-wrap">
+                <textarea className="uu-textarea" value={menuText} onChange={(e) => setMenuText(e.target.value)} placeholder={"熱炒\n炒蝦球 200\n炒螺肉 120\n\n主食\n炒飯 80"} />
+                <p className="uu-inline-hint">文字模式適合你快速貼上舊菜單；表單模式則適合日常微調。</p>
+              </div>
+            )}
+          </section>
 
-          <div style={{ marginTop: 16, borderRadius: 18, padding: 16, background: currentTheme.inputBg, border: currentTheme.inputBorder }}>
-            <div style={{ fontWeight: 800, marginBottom: 8 }}>公開資訊</div>
-            <div style={{ color: currentTheme.subText, fontSize: 14, lineHeight: 1.8 }}>
-              目前風格：{currentTheme.name}
-              <br />
-              公開路徑：{publicPath}
+          <section className="uu-panel uu-subpanel">
+            <div className="uu-section-head">
+              <div>
+                <h2>桌號 QR 工具</h2>
+                <p>你現在是自己幫店家管理，這區讓你能先把桌號版網址與 QR 一次準備好。</p>
+              </div>
+            </div>
+            <div className="uu-form-grid-2">
+              <Field label="手動桌號（可用空白或逗號分隔）"><input className="uu-input" value={deskInput} onChange={(e) => setDeskInput(e.target.value)} placeholder="A1 A2 A3 B1" /></Field>
+              <Field label="快速產生連號"><div className="uu-inline-range"><input className="uu-input" value={deskStart} onChange={(e) => setDeskStart(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" /><span>到</span><input className="uu-input" value={deskEnd} onChange={(e) => setDeskEnd(e.target.value.replace(/[^0-9]/g, ""))} placeholder="12" /></div></Field>
+            </div>
+            <div className="uu-qr-grid">
+              {deskCodes.slice(0, 8).map((tableCode) => {
+                const tableUrl = `${publicUrl}?table=${encodeURIComponent(tableCode)}`;
+                return (
+                  <div key={tableCode} className="uu-qr-card">
+                    <div className="uu-qr-label">桌號 {tableCode}</div>
+                    <QRCodeCanvas value={tableUrl} size={118} includeMargin level="H" />
+                    <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={async () => navigator.clipboard.writeText(tableUrl)}>複製桌號網址</button>
+                  </div>
+                );
+              })}
+              {!deskCodes.length ? <div className="uu-inline-hint">輸入桌號後，這裡就會顯示可直接複製的桌號 QR。</div> : null}
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <aside className="uu-preview-panel">
+        <div className="uu-preview-shell">
+          <div className="uu-preview-head">
+            <div>
+              <div className="uu-kicker is-dark">客人看到的菜單</div>
+              <h2>{restaurant || "未命名店家"}</h2>
+            </div>
+            <div className="uu-chip is-light">{isPublished ? "上架中" : "已下架"}</div>
+          </div>
+          <div className={`uu-menu-preview theme-${theme}`}>
+            <div className="uu-menu-hero">
+              {logoDataUrl ? <img src={logoDataUrl} alt="logo preview" className="uu-menu-logo" /> : null}
+              <h3>{restaurant || "餐廳名稱"}</h3>
+              <p>電話 {phone || "未填寫"} ・ {hours || "營業時間未填寫"}</p>
+              <span>{address || "地址未填寫"}</span>
+            </div>
+            <div className="uu-menu-section-wrap">
+              {groupedPreview.map((group) => (
+                <section key={group.category} className="uu-menu-section">
+                  <div className="uu-menu-category">{group.category}</div>
+                  <div className="uu-menu-items">
+                    {group.items.map((item, index) => (
+                      <div key={`${group.category}-${item.name}-${index}`} className={`uu-menu-item ${item.soldOut ? "is-soldout" : ""}`}>
+                        <div>
+                          <strong>{item.name}</strong>
+                          {item.note ? <p>{item.note}</p> : null}
+                        </div>
+                        <div className="uu-menu-price">{item.price ? `$${item.price}` : "時價"}</div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
             </div>
           </div>
         </div>
@@ -499,31 +401,11 @@ export default function EditMenuForm({
   );
 }
 
-function parseMenuLines(raw: string) {
-  return raw
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-}
-
-function isLikelyCategory(line: string) {
-  return line.split(/\s+/).length === 1;
-}
-
-function SectionTitle({ title, subtitle, color, muted }: { title: string; subtitle: string; color: string; muted: string }) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
-      <div style={{ fontSize: 22, fontWeight: 800, color }}>{title}</div>
-      <div style={{ marginTop: 6, fontSize: 14, lineHeight: 1.7, color: muted }}>{subtitle}</div>
-    </div>
-  );
-}
-
-function MiniInfo({ label, value, textColor, muted }: { label: string; value: string; textColor: string; muted: string }) {
-  return (
-    <div style={{ borderRadius: 18, padding: 18, border: "1px solid rgba(127,127,127,0.12)", background: "rgba(255,255,255,0.03)" }}>
-      <div style={{ color: muted, fontSize: 13, marginBottom: 6 }}>{label}</div>
-      <div style={{ color: textColor, fontSize: 22, fontWeight: 800, wordBreak: "break-word" }}>{value}</div>
-    </div>
+    <label className="uu-field">
+      <span>{label}</span>
+      {children}
+    </label>
   );
 }

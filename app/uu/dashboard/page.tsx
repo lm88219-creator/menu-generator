@@ -1,100 +1,170 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import DeleteButton from "@/app/dashboard/DeleteButton";
-import DeskCardButton from "@/app/dashboard/DeskCardButton";
 import LogoutButton from "@/components/LogoutButton";
+import CopyUrlButton from "@/components/admin/CopyUrlButton";
+import DeleteMenuButton from "@/components/admin/DeleteMenuButton";
+import DeskCardButton from "@/components/admin/DeskCardButton";
 import { requireAdmin } from "@/lib/auth";
 import { listMenus } from "@/lib/store";
 import { getConfiguredSiteUrl } from "@/lib/site";
 
-type SearchParamsShape = { q?: string; theme?: string };
-
-function getThemeName(theme?: string) {
-  if (theme === "light") return "簡約白色";
-  if (theme === "warm") return "溫暖咖啡風";
-  if (theme === "ocean") return "海洋清新風";
-  if (theme === "forest") return "森林自然風";
-  if (theme === "rose") return "玫瑰奶茶風";
-  return "黑色餐廳風";
+function getThemeLabel(theme?: string) {
+  if (theme === "light") return "簡約白";
+  if (theme === "warm") return "暖木咖啡";
+  if (theme === "ocean") return "海洋清新";
+  if (theme === "forest") return "森林自然";
+  if (theme === "rose") return "玫瑰奶茶";
+  return "深色經典";
 }
 
-export default async function UUDashboardPage({ searchParams }: { searchParams?: Promise<SearchParamsShape> | SearchParamsShape }) {
+function formatDateTime(value?: number) {
+  if (!value) return "—";
+  return new Date(value).toLocaleString("zh-TW", { hour12: false });
+}
+
+export default async function UUDashboardPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ q?: string; theme?: string }> | { q?: string; theme?: string };
+}) {
   await requireAdmin();
-  const resolvedSearchParams = searchParams ? await searchParams : {};
-  const q = String(resolvedSearchParams?.q ?? "").trim().toLowerCase();
-  const themeFilter = String(resolvedSearchParams?.theme ?? "").trim();
+  const resolved = searchParams ? await searchParams : {};
+  const keyword = String(resolved?.q ?? "").trim().toLowerCase();
+  const theme = String(resolved?.theme ?? "").trim();
   const menus = await listMenus();
-  const publicBaseUrl = getConfiguredSiteUrl();
+  const baseUrl = getConfiguredSiteUrl();
 
   const filteredMenus = menus.filter((menu) => {
-    const matchKeyword = !q || [menu.restaurant, menu.id, menu.slug, menu.phone, menu.address].some((v) => String(v ?? "").toLowerCase().includes(q));
-    const matchTheme = !themeFilter || menu.theme === themeFilter;
-    return matchKeyword && matchTheme;
+    const haystack = [menu.restaurant, menu.slug, menu.id, menu.phone, menu.address]
+      .map((value) => String(value ?? "").toLowerCase())
+      .join(" ");
+    const matchesKeyword = !keyword || haystack.includes(keyword);
+    const matchesTheme = !theme || menu.theme === theme;
+    return matchesKeyword && matchesTheme;
   });
 
+  const publishedCount = menus.filter((menu) => menu.isPublished !== false).length;
+  const logoCount = menus.filter((menu) => Boolean(menu.logoDataUrl)).length;
+  const latestUpdate = menus[0]?.updatedAt;
+
   return (
-    <main style={{ minHeight: "100vh", background: "radial-gradient(circle at top, #1a1a1a 0%, #0b0b0b 45%, #000 100%)", color: "#fff", padding: "32px 16px 60px", fontFamily: "Arial, sans-serif" }}>
-      <div style={{ maxWidth: 1180, margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
+    <main className="uu-admin-shell">
+      <div className="uu-admin-container">
+        <section className="uu-admin-hero">
           <div>
-            <div style={{ display: "inline-flex", padding: "8px 12px", borderRadius: 999, background: "rgba(255,255,255,0.08)", color: "#bdbdbd", fontSize: 13, marginBottom: 12 }}>UU Menu SaaS Dashboard</div>
-            <h1 style={{ margin: 0, fontSize: 38, lineHeight: 1.2, fontWeight: 800 }}>我的菜單後台</h1>
-            <p style={{ marginTop: 10, marginBottom: 0, color: "#a9a9a9", fontSize: 15, lineHeight: 1.8 }}>管理公開菜單、複製連結、下載 QR 與維護上架狀態。</p>
+            <div className="uu-kicker">UU MENU ADMIN</div>
+            <h1 className="uu-admin-title">多店菜單控制台</h1>
+            <p className="uu-admin-copy">
+              現在由你統一幫店家建立、編輯與維護菜單。整個後台改成深色專業介面，長時間操作比較不傷眼，也更方便你管理多家店。
+            </p>
+            <div className="uu-form-actions">
+              <Link href="/" className="uu-btn uu-btn-primary">建立新菜單</Link>
+              <Link href="/uu/login" className="uu-btn uu-btn-secondary">登入頁</Link>
+              <LogoutButton />
+            </div>
           </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <Link href="/" style={ghostButtonStyle}>＋ 新增菜單</Link>
-            <LogoutButton />
+          <div className="uu-admin-hero-panel">
+            <div className="uu-admin-hero-grid">
+              <StatCard label="全部菜單" value={String(menus.length)} sub="目前可管理的餐廳數" />
+              <StatCard label="上架中" value={String(publishedCount)} sub="公開客人可看的菜單" />
+              <StatCard label="有 Logo" value={String(logoCount)} sub="品牌識別更完整" />
+              <StatCard label="最近更新" value={latestUpdate ? formatDateTime(latestUpdate) : "—"} sub="最後異動時間" compact />
+            </div>
           </div>
-        </div>
+        </section>
 
-        <form action="/uu/dashboard" method="GET" style={{ borderRadius: 24, padding: 18, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(12px)", marginBottom: 24 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.4fr 0.7fr auto auto", gap: 12, alignItems: "center" }}>
-            <input type="text" name="q" defaultValue={resolvedSearchParams?.q ?? ""} placeholder="搜尋餐廳名稱 / 菜單 ID / 電話 / 地址" style={inputStyle} />
-            <select name="theme" defaultValue={resolvedSearchParams?.theme ?? ""} style={inputStyle}>
+        <section className="uu-panel uu-filter-panel">
+          <div className="uu-section-head">
+            <div>
+              <h2>快速搜尋</h2>
+              <p>可搜尋店名、slug、ID、電話與地址，管理多家店時會快很多。</p>
+            </div>
+          </div>
+          <form action="/uu/dashboard" method="GET" className="uu-filter-grid">
+            <input className="uu-input" type="text" name="q" defaultValue={resolved?.q ?? ""} placeholder="搜尋店名 / slug / 電話 / 地址" />
+            <select className="uu-input" name="theme" defaultValue={resolved?.theme ?? ""}>
               <option value="">全部主題</option>
-              <option value="dark">黑色餐廳風</option><option value="light">簡約白色</option><option value="warm">溫暖咖啡風</option><option value="ocean">海洋清新風</option><option value="forest">森林自然風</option><option value="rose">玫瑰奶茶風</option>
+              <option value="dark">深色經典</option>
+              <option value="light">簡約白</option>
+              <option value="warm">暖木咖啡</option>
+              <option value="ocean">海洋清新</option>
+              <option value="forest">森林自然</option>
+              <option value="rose">玫瑰奶茶</option>
             </select>
-            <button type="submit" style={primaryButtonStyle}>搜尋</button>
-            <Link href="/uu/dashboard" style={ghostButtonStyle}>清除</Link>
-          </div>
-        </form>
+            <button type="submit" className="uu-btn uu-btn-primary">搜尋</button>
+            <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">清除</Link>
+          </form>
+        </section>
 
-        <div style={{ display: "grid", gap: 18 }}>
-          {filteredMenus.map((menu) => {
-            const publicPath = `/uu/menu/${encodeURIComponent(menu.slug || menu.id)}`;
-            return (
-              <div key={menu.id} style={{ borderRadius: 24, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", padding: 20 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
-                  <div style={{ flex: 1, minWidth: 280 }}>
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
-                      <span style={pillStyle}>#{menu.id}</span>
-                      <span style={pillStyle}>slug：{menu.slug || menu.id}</span>
-                      <span style={pillStyle}>{getThemeName(menu.theme)}</span>
-                      <span style={{ ...pillStyle, color: menu.isPublished === false ? "#ffd7a8" : "#b6f5c8", background: menu.isPublished === false ? "rgba(255,180,80,0.12)" : "rgba(80,255,160,0.1)" }}>{menu.isPublished === false ? "已下架" : "上架中"}</span>
+        <section className="uu-panel">
+          <div className="uu-section-head">
+            <div>
+              <h2>店家列表</h2>
+              <p>每家店都能直接編輯、查看公開頁、下載 QR，並看到最後更新時間。</p>
+            </div>
+            <div className="uu-chip">共 {filteredMenus.length} 間</div>
+          </div>
+
+          <div className="uu-store-grid">
+            {filteredMenus.length ? (
+              filteredMenus.map((menu) => {
+                const publicPath = `/uu/menu/${encodeURIComponent(menu.slug || menu.id)}`;
+                const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
+                return (
+                  <article key={menu.id} className="uu-store-card">
+                    <div className="uu-store-top">
+                      <div className="uu-store-logo">
+                        {menu.logoDataUrl ? <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} /> : <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>}
+                      </div>
+                      <div className="uu-store-main">
+                        <div className="uu-store-head-row">
+                          <div>
+                            <h3>{menu.restaurant || "未命名店家"}</h3>
+                            <div className="uu-store-sub">slug：{menu.slug || menu.id}</div>
+                          </div>
+                          <div className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
+                            {menu.isPublished === false ? "已下架" : "上架中"}
+                          </div>
+                        </div>
+                        <div className="uu-store-meta-grid">
+                          <div><span>主題</span><strong>{getThemeLabel(menu.theme)}</strong></div>
+                          <div><span>最後更新</span><strong>{formatDateTime(menu.updatedAt)}</strong></div>
+                          <div><span>聯絡資訊</span><strong>{menu.phone || "未填寫"}</strong></div>
+                          <div><span>公開網址</span><strong className="uu-url-ellipsis">{publicUrl}</strong></div>
+                        </div>
+                      </div>
                     </div>
-                    <h2 style={{ margin: 0, fontSize: 28 }}>{menu.restaurant}</h2>
-                    <div style={{ color: "#a9a9a9", marginTop: 8, lineHeight: 1.8 }}>{menu.phone || "—"} {menu.address ? `｜ ${menu.address}` : ""}</div>
-                    <div style={{ color: "#d0d0d0", marginTop: 10, fontSize: 14 }}>{publicBaseUrl ? `${publicBaseUrl}${publicPath}` : publicPath}</div>
-                  </div>
-                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                    <Link href={`/uu/dashboard/${menu.id}`} style={primaryButtonStyle}>編輯</Link>
-                    <Link href={publicPath} target="_blank" style={ghostButtonStyle}>查看公開頁</Link>
-                    <DeskCardButton restaurant={menu.restaurant} publicUrl={publicPath} theme={menu.theme} logoDataUrl={menu.logoDataUrl} phone={menu.phone} hours={menu.hours} />
-                    <DeleteButton id={menu.id} publicUrl={publicPath} />
-                  </div>
-                </div>
+                    <div className="uu-card-actions">
+                      <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
+                      <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">查看公開頁</Link>
+                      <CopyUrlButton url={publicUrl} />
+                      <DeskCardButton restaurant={menu.restaurant} publicUrl={publicPath} />
+                      <DeleteMenuButton id={menu.id} />
+                    </div>
+                  </article>
+                );
+              })
+            ) : (
+              <div className="uu-empty-state">
+                <h3>找不到符合條件的店家</h3>
+                <p>你可以清除篩選後再試一次，或回首頁新增新的菜單。</p>
+                <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">清除篩選</Link>
               </div>
-            );
-          })}
-          {!filteredMenus.length ? <div style={{ padding: 28, textAlign: "center", color: "#aaa", borderRadius: 24, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>目前沒有符合條件的菜單。</div> : null}
-        </div>
+            )}
+          </div>
+        </section>
       </div>
     </main>
   );
 }
 
-const inputStyle: React.CSSProperties = { width: "100%", padding: "14px 16px", borderRadius: 14, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.05)", color: "#fff", fontSize: 15, outline: "none", boxSizing: "border-box" };
-const primaryButtonStyle: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "12px 16px", borderRadius: 14, textDecoration: "none", background: "#fff", color: "#000", border: "none", fontSize: 14, fontWeight: 800, cursor: "pointer" };
-const ghostButtonStyle: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "12px 16px", borderRadius: 14, textDecoration: "none", border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.06)", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer" };
-const pillStyle: React.CSSProperties = { display: "inline-flex", padding: "6px 10px", borderRadius: 999, fontSize: 12, background: "rgba(255,255,255,0.08)", color: "#ddd" };
+function StatCard({ label, value, sub, compact = false }: { label: string; value: string; sub: string; compact?: boolean }) {
+  return (
+    <div className={`uu-stat-card ${compact ? "is-compact" : ""}`}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+      <small>{sub}</small>
+    </div>
+  );
+}

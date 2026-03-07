@@ -14,7 +14,6 @@ export default function LoginForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
       const res = await fetch("/api/admin/login", {
         method: "POST",
@@ -36,36 +35,17 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "grid", gap: 14, marginTop: 22 }}>
-      <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="管理員帳號" style={inputStyle} />
-      <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="管理員密碼" style={inputStyle} />
-      {error ? <div style={{ color: "#ffb4b4", fontSize: 14 }}>{error}</div> : null}
-      <button type="submit" disabled={loading} style={{ ...buttonStyle, opacity: loading ? 0.75 : 1 }}>
-        {loading ? "登入中..." : "登入後台"}
-      </button>
+    <form onSubmit={handleSubmit} className="uu-login-form">
+      <label className="uu-field">
+        <span>管理員帳號</span>
+        <input className="uu-input" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="請輸入帳號" />
+      </label>
+      <label className="uu-field">
+        <span>管理員密碼</span>
+        <input className="uu-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="請輸入密碼" />
+      </label>
+      {error ? <div className="uu-inline-hint is-error">{error}</div> : null}
+      <button type="submit" className="uu-btn uu-btn-primary uu-full-width" disabled={loading}>{loading ? "登入中..." : "登入後台"}</button>
     </form>
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "14px 16px",
-  borderRadius: 14,
-  border: "1px solid rgba(255,255,255,0.1)",
-  background: "rgba(255,255,255,0.06)",
-  color: "#fff",
-  fontSize: 16,
-  outline: "none",
-  boxSizing: "border-box",
-};
-
-const buttonStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "14px 16px",
-  borderRadius: 14,
-  border: "none",
-  background: "#fff",
-  color: "#000",
-  fontWeight: 800,
-  cursor: "pointer",
-};
