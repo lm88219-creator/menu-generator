@@ -376,7 +376,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
         <div className="uu-editor-v4-topbar-main">
           <div>
             <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
-            <p className="uu-admin-copy">把主要編輯步驟集中成清楚的四段，滑動時更容易知道自己改到哪裡。</p>
           </div>
           <div className="uu-editor-v4-stats uu-editor-v4-stats-refined">
             <div className="uu-editor-v4-stat-card">
@@ -440,10 +439,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>
                 </div>
 
-                <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
+                <div className="uu-editor-v4-address-row">
+                  <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
+                </div>
               </div>
 
-              <aside className="uu-editor-v4-shop-sidecard">
+              <aside className="uu-editor-v4-shop-sidecard uu-editor-v4-shop-sidecard-compact">
                 <div className="uu-editor-v4-shop-sidehead">
                   <span>公開頁資訊摘要</span>
                   <strong>{restaurant || "未命名店家"}</strong>
@@ -475,17 +476,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               </div>
               <div className="uu-menu-editor-category-pills uu-menu-editor-category-pills-simple">
                 {categorySummary.length ? categorySummary.map((category) => (
-                  <button
-                    key={category.name}
-                    type="button"
-                    className="uu-menu-editor-category-pill"
-                    onClick={() => addItem(category.name)}
-                  >
+                  <span key={category.name} className="uu-menu-editor-category-pill uu-menu-editor-category-pill-static">
                     <strong>{category.name}</strong>
                     <span>{category.count}</span>
-                  </button>
+                  </span>
                 )) : (
-                  <span className="uu-menu-editor-empty-pill">新增第一個品項後會顯示分類捷徑</span>
+                  <span className="uu-menu-editor-empty-pill">新增第一個品項後會顯示分類摘要</span>
                 )}
               </div>
             </div>
@@ -496,9 +492,9 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   <div className="uu-menu-item-card-head uu-menu-item-card-head-simple">
                     <div className="uu-menu-item-card-title-wrap">
                       <span className="uu-menu-item-index">{String(index + 1).padStart(2, "0")}</span>
-                      <div>
+                      <div className="uu-menu-item-card-title-copy">
                         <strong>{item.name.trim() || "未命名品項"}</strong>
-                        <small>{item.price.trim() ? `$${item.price.trim()}` : "尚未填價格"}</small>
+                        <small>{item.price.trim() ? `$${item.price.trim()}` : "未填價格"}</small>
                       </div>
                     </div>
                     <div className="uu-menu-item-card-tools">
@@ -510,13 +506,13 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   </div>
 
                   <div className="uu-menu-item-grid uu-menu-item-grid-simple uu-menu-item-grid-pro">
-                    <Field label="分類名稱">
+                    <Field label="分類">
                       <input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="熱炒" />
                     </Field>
-                    <Field label="品項">
+                    <Field label="菜名">
                       <input className="uu-input uu-menu-item-name-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="炒螺肉" />
                     </Field>
-                    <Field label="金額">
+                    <Field label="價格">
                       <div className="uu-price-input-wrap uu-price-input-wrap-pro">
                         <span>$</span>
                         <input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="120" />
@@ -528,14 +524,19 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   </div>
 
                   <div className="uu-menu-item-footerline uu-menu-item-footerline-simple">
-                    <div className="uu-menu-item-actions uu-menu-item-actions-simple">
-                      <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem(item.category)}>同分類新增</button>
+                    <div className="uu-menu-item-actions uu-menu-item-actions-simple uu-menu-item-actions-compact">
                       <button type="button" className="uu-btn uu-btn-secondary" onClick={() => duplicateItem(index)}>複製</button>
                       <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
                     </div>
                   </div>
                 </article>
               ))}
+            </div>
+
+            <div className="uu-menu-editor-savebar-inline">
+              <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>
+                {saving ? "儲存中..." : "儲存變更"}
+              </button>
             </div>
           </section>
 

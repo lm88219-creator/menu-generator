@@ -7628,3 +7628,136 @@ select.uu-input:focus {
     grid-template-columns: 1fr;
   }
 }
+
+
+.uu-editor-v4-topbar-main > div:first-child {
+  min-width: 0;
+}
+
+.uu-editor-v4-shop-formgrid {
+  align-items: start;
+}
+
+.uu-editor-v4-address-row {
+  margin-top: 10px;
+}
+
+.uu-editor-v4-address-row .uu-field {
+  display: grid;
+  gap: 8px;
+}
+
+.uu-editor-v4-shop-sidecard-compact .uu-editor-v4-shop-sidegrid div {
+  padding: 11px 13px;
+}
+
+.uu-menu-editor-category-pill-static {
+  cursor: default;
+}
+
+.uu-menu-editor-category-pill-static:hover {
+  transform: none;
+}
+
+.uu-menu-item-card-title-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.uu-menu-item-card-pro {
+  padding: 12px 12px 10px;
+  border-radius: 18px;
+}
+
+.uu-menu-item-card-pro .uu-menu-item-card-head {
+  margin-bottom: 2px;
+}
+
+.uu-menu-item-card-pro .uu-menu-item-card-title-wrap {
+  gap: 8px;
+}
+
+.uu-menu-item-card-pro .uu-menu-item-card-title-wrap strong {
+  font-size: 14px;
+}
+
+.uu-menu-item-card-pro .uu-menu-item-card-title-wrap small {
+  font-size: 12px;
+}
+
+.uu-menu-item-card-pro .uu-menu-item-index {
+  width: 30px;
+  height: 30px;
+}
+
+.uu-menu-item-grid-pro {
+  margin-top: 10px;
+  grid-template-columns: minmax(92px, 0.7fr) minmax(120px, 0.95fr) minmax(82px, 0.45fr) minmax(120px, 0.8fr);
+  gap: 10px;
+}
+
+.uu-menu-item-grid-pro .uu-field {
+  padding: 7px 9px;
+  border-radius: 14px;
+}
+
+.uu-menu-item-grid-pro .uu-field > span {
+  margin-bottom: 5px;
+  font-size: 11px;
+}
+
+.uu-menu-item-grid-pro .uu-input,
+.uu-menu-item-grid-pro .uu-price-input-wrap {
+  min-height: 34px;
+}
+
+.uu-menu-item-name-input {
+  font-size: 12.5px;
+}
+
+.uu-price-input-wrap-pro span {
+  font-size: 12px;
+}
+
+.uu-menu-item-footerline-simple {
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.uu-menu-item-actions-compact .uu-btn {
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.uu-menu-editor-savebar-inline {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+.uu-menu-editor-savebar-inline .uu-btn {
+  min-width: 148px;
+}
+
+@media (max-width: 760px) {
+  .uu-editor-v4-shop-sidecard {
+    order: 2;
+  }
+
+  .uu-menu-item-card-pro {
+    padding: 11px 11px 10px;
+  }
+
+  .uu-menu-item-grid-pro {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .uu-menu-editor-savebar-inline {
+    justify-content: stretch;
+  }
+
+  .uu-menu-editor-savebar-inline .uu-btn {
+    width: 100%;
+  }
+}
