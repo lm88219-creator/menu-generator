@@ -1,3 +1,5 @@
+import { pinyin } from "pinyin-pro";
+
 export type ParsedMenuItem = {
   category: string;
   name: string;
@@ -11,20 +13,30 @@ function cleanupText(value: string) {
 }
 
 export function normalizeSlug(value: string) {
-  return value
+  return String(value || "")
+    .toLowerCase()
     .trim()
-    .replace(/[\/?#%]+/g, " ")
+    .replace(/[^a-z0-9-\s]/g, " ")
     .replace(/\s+/g, "-")
-    .replace(/[^\p{L}\p{N}-]/gu, "")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "")
-    .slice(0, 40);
+    .slice(0, 50);
+}
+
+export function transliterateToSlug(value: string) {
+  const base = pinyin(String(value || ""), {
+    toneType: "none",
+    type: "array",
+    nonZh: "consecutive",
+  }).join("-");
+
+  return normalizeSlug(base);
 }
 
 export function buildMenuPathSegment(customSlug: string, restaurant: string) {
   const custom = normalizeSlug(customSlug);
   if (custom) return custom;
-  return normalizeSlug(restaurant);
+  return transliterateToSlug(restaurant);
 }
 
 export function isCategoryLine(line: string) {
@@ -40,11 +52,7 @@ export function getCategoryLabel(line: string) {
 }
 
 export function parseMenuText(raw: string) {
-  const lines = raw
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-
+  const lines = raw.split("\n").map((line) => line.trim()).filter(Boolean);
   const items: ParsedMenuItem[] = [];
   let currentCategory = "精選菜單";
 
@@ -56,7 +64,6 @@ export function parseMenuText(raw: string) {
 
     const soldOut = /(?:售完|sold\s*out)/i.test(line);
     const soldOutTextRemoved = line.replace(/(?:\(|（)?(?:售完|sold\s*out)(?:\)|）)?/gi, "").trim();
-
     const match = soldOutTextRemoved.match(/^(.*?)(?:\s+)(\$?\d+(?:\.\d{1,2})?)(?:\s*[|｜\/／-]\s*(.+))?$/);
 
     if (match) {
@@ -71,13 +78,7 @@ export function parseMenuText(raw: string) {
       continue;
     }
 
-    items.push({
-      category: currentCategory,
-      name: cleanupText(soldOutTextRemoved),
-      price: "",
-      note: "",
-      soldOut,
-    });
+    items.push({ category: currentCategory, name: cleanupText(soldOutTextRemoved), price: "", note: "", soldOut });
   }
 
   return items;
@@ -89,11 +90,8 @@ export function groupMenuItems(raw: string) {
 
   for (const item of items) {
     const last = groups[groups.length - 1];
-    if (!last || last.category !== item.category) {
-      groups.push({ category: item.category, items: [item] });
-      continue;
-    }
-    last.items.push(item);
+    if (!last || last.category !== item.category) groups.push({ category: item.category, items: [item] });
+    else last.items.push(item);
   }
 
   return groups;

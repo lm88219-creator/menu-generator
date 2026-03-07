@@ -740,7 +740,7 @@ y += 150;
       wordBreak: "break-all",
     }}
   >
-    https://你的網站/menu/{customSlug}
+    https://你的網站/uu/menu/{customSlug}
   </div>
 )}
               <div style={{ marginTop: 8, color: currentTheme.subText, fontSize: 13, lineHeight: 1.7 }}>
@@ -1232,7 +1232,7 @@ y += 150;
                     分享 FB
                   </button>
                   <a
-  href="/dashboard"
+  href="/uu/dashboard"
   style={{
     display: "inline-block",
     marginTop: 10,

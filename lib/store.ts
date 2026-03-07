@@ -16,6 +16,7 @@ export type MenuData = {
   slug?: string;
   createdAt?: number;
   updatedAt?: number;
+  isPublished?: boolean;
 };
 
 export type MenuRecord = MenuData & {
