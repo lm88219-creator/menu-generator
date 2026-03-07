@@ -4983,3 +4983,100 @@ select.uu-input:focus {
     flex-direction: column;
   }
 }
+
+/* ===== Editor refinement v12 ===== */
+.uu-editor-v4-appearance-overview {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: linear-gradient(180deg, rgba(14, 18, 25, 0.94), rgba(10, 14, 20, 0.94));
+}
+
+.uu-editor-v4-appearance-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.uu-editor-v4-appearance-tags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.uu-editor-v4-theme-note-card,
+.uu-editor-v4-asset-card,
+.uu-editor-v4-tool-card {
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: linear-gradient(180deg, rgba(14, 18, 25, 0.95), rgba(10, 14, 20, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+.uu-editor-v4-tools-grid {
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+  align-items: start;
+}
+
+.uu-editor-v4-quick-tool-card {
+  display: grid;
+  gap: 16px;
+}
+
+.uu-editor-v4-quick-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.uu-editor-v4-tool-note-list {
+  display: grid;
+  gap: 12px;
+}
+
+.uu-editor-v4-tool-note-list > div {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.uu-editor-v4-tool-note-list strong {
+  color: #f3f7fd;
+  font-size: 14px;
+}
+
+.uu-editor-v4-tool-note-list span {
+  color: #9ba9bc;
+  line-height: 1.65;
+  font-size: 13px;
+}
+
+.uu-item-row {
+  transition: border-color .16s ease, background .16s ease, transform .16s ease;
+}
+
+.uu-item-row:focus-within {
+  border-color: rgba(110, 168, 255, 0.32);
+  background: linear-gradient(180deg, rgba(17, 24, 34, 0.98), rgba(12, 17, 24, 0.98));
+  transform: translateY(-1px);
+}
+
+@media (max-width: 980px) {
+  .uu-editor-v4-appearance-layout,
+  .uu-editor-v4-tools-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -19,6 +19,7 @@ type InitialData = {
 };
 
 type MenuItemForm = {
+  uid: string;
   category: string;
   name: string;
   price: string;
@@ -35,17 +36,28 @@ const THEME_OPTIONS: Array<{ value: ThemeType; label: string; desc: string; acce
   { value: "rose", label: "玫瑰奶茶", desc: "較柔和有質感，適合甜點、飲料與輕食。", accent: "#d78aa4", preview: ["#2b1a21", "#3a222b", "#1f1418"] },
 ];
 
+function createFormItem(partial?: Partial<MenuItemForm>): MenuItemForm {
+  return {
+    uid: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    category: partial?.category ?? "精選菜單",
+    name: partial?.name ?? "",
+    price: partial?.price ?? "",
+    note: partial?.note ?? "",
+    soldOut: partial?.soldOut ?? false,
+  };
+}
+
 function toFormItems(menuText: string): MenuItemForm[] {
   const parsed = parseMenuText(menuText);
   return parsed.length
-    ? parsed.map((item) => ({
+    ? parsed.map((item) => createFormItem({
         category: item.category || "精選菜單",
         name: item.name || "",
         price: item.price || "",
         note: item.note || "",
         soldOut: Boolean(item.soldOut),
       }))
-    : [{ category: "精選菜單", name: "", price: "", note: "", soldOut: false }];
+    : [createFormItem()];
 }
 
 function toMenuText(items: MenuItemForm[]) {
@@ -168,7 +180,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   function addItem(afterCategory?: string) {
     setFormItems((current) => [
       ...current,
-      { category: afterCategory || current[current.length - 1]?.category || "精選菜單", name: "", price: "", note: "", soldOut: false },
+      createFormItem({ category: afterCategory || current[current.length - 1]?.category || "精選菜單" }),
     ]);
   }
 
@@ -177,7 +189,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
       const target = current[index];
       if (!target) return current;
       const next = [...current];
-      next.splice(index + 1, 0, { ...target });
+      next.splice(index + 1, 0, createFormItem({ ...target }));
       return next;
     });
   }
@@ -185,7 +197,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   function removeItem(index: number) {
     setFormItems((current) => {
       const next = current.filter((_, itemIndex) => itemIndex !== index);
-      return next.length ? next : [{ category: "精選菜單", name: "", price: "", note: "", soldOut: false }];
+      return next.length ? next : [createFormItem()];
     });
   }
 
@@ -336,7 +348,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                 <span className="is-actions">操作</span>
               </div>
               {formItems.map((item, index) => (
-                <article key={`${index}-${item.category}-${item.name}`} className="uu-item-row">
+                <article key={item.uid} className="uu-item-row">
                   <input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="熱炒" />
                   <input className="uu-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="炒螺肉" />
                   <input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="120" />
@@ -358,7 +370,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>外觀設定</h2>
-                <p>把風格選擇、Logo 與外觀說明集中整理，改完比較容易知道實際呈現方向。</p>
+                <p>把主題、Logo 與公開頁預覽放在同一區，選風格時會更有方向，也更像真的品牌設定。</p>
               </div>
             </div>
 
@@ -368,6 +380,10 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   <div className="uu-editor-v4-appearance-intro">
                     <span className="uu-chip">目前主題：{selectedTheme.label}</span>
                     <p>{selectedTheme.desc}</p>
+                    <div className="uu-editor-v4-appearance-tags">
+                      <span>公開頁同步套用</span>
+                      <span>{logoDataUrl ? "含 Logo" : "未使用 Logo"}</span>
+                    </div>
                   </div>
                   <div className="uu-editor-v4-theme-note-accent" style={{ background: selectedTheme.accent }} />
                 </div>
@@ -575,25 +591,31 @@ VIP1"
                 </div>
               </div>
 
-              <details className="uu-editor-v4-advanced-card uu-collapsible-section uu-editor-v4-tool-card">
-                <summary className="uu-collapsible-head">
+              <section className="uu-editor-v4-advanced-card uu-editor-v4-tool-card uu-editor-v4-quick-tool-card">
+                <div className="uu-section-head uu-section-head-tight">
                   <div>
-                    <h3>原始文字</h3>
-                    <p>系統實際儲存的內容，主要用來檢查格式或除錯。</p>
+                    <h3>快速工具</h3>
+                    <p>保留真正常用的動作，讓進階工具區不要太雜。</p>
                   </div>
-                </summary>
-                <div className="uu-collapsible-body">
-                  <div className="uu-editor-v4-raw-note">這區主要是檢查資料結構是否正常，平常編輯菜單大多不需要打開。</div>
-                  <div className="uu-editor-v4-tool-toolbar uu-editor-v4-raw-toolbar">
-                    <div className="uu-editor-v4-tool-tip">需要備份或比對內容時，可以直接複製整份原始文字。</div>
-                    <div className="uu-editor-v4-tool-actions">
-                      <button type="button" className="uu-btn uu-btn-secondary" onClick={() => copyText(menuText, "已複製原始文字")}>複製原始文字</button>
-                    </div>
-                  </div>
-                  <textarea className="uu-textarea uu-editor-v4-raw-textarea" value={menuText} readOnly />
                 </div>
-              </details>
-            </div>
+
+                <div className="uu-editor-v4-quick-actions">
+                  <button type="button" className="uu-btn uu-btn-secondary" onClick={() => copyText(publicUrl, "已複製公開網址")}>複製公開網址</button>
+                  <a className="uu-btn uu-btn-secondary" href={publicPath} target="_blank" rel="noreferrer">開啟客戶公開頁</a>
+                  <button type="button" className="uu-btn uu-btn-secondary" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>回到頁面上方</button>
+                </div>
+
+                <div className="uu-editor-v4-tool-note-list">
+                  <div>
+                    <strong>桌號 QR 用在桌卡</strong>
+                    <span>只有需要桌號分享時再使用，平常編輯菜單可直接略過。</span>
+                  </div>
+                  <div>
+                    <strong>公開頁配色會一起套用</strong>
+                    <span>外觀設定區選的主題，客戶看到的公開菜單也會同步更新。</span>
+                  </div>
+                </div>
+              </section>            </div>
           </section>
         </div>
 
