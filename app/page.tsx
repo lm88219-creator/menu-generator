@@ -12,7 +12,7 @@ function getPublicBaseUrl() {
 }
 
 
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market";
 
 function generateSlug(name: string) {
   return name
@@ -128,6 +128,21 @@ export default function Home() {
         buttonMainText: "#fff",
         buttonGhostBg: "rgba(255,255,255,0.72)",
         buttonGhostText: "#5a3141",
+      },
+      market: {
+        name: "招牌米白",
+        pageBg: "linear-gradient(180deg,#f7f1e8 0%,#efe6d8 100%)",
+        cardBg: "rgba(255,250,242,0.92)",
+        cardBorder: "1px solid rgba(18,36,62,0.1)",
+        text: "#132946",
+        subText: "#6b7787",
+        accent: "#d74b3f",
+        inputBg: "rgba(255,255,255,0.86)",
+        inputBorder: "1px solid rgba(18,36,62,0.1)",
+        buttonMainBg: "#d74b3f",
+        buttonMainText: "#fff8f2",
+        buttonGhostBg: "rgba(18,36,62,0.06)",
+        buttonGhostText: "#132946",
       },
     }),
     []
@@ -951,7 +966,7 @@ y += 150;
                   theme === "dark"
                     ? "1px solid rgba(255,255,255,0.08)"
                     : "1px solid rgba(0,0,0,0.08)",
-                color: theme === "dark" ? "#fff" : theme === "light" ? "#111" : theme === "warm" ? "#4e3426" : theme === "ocean" ? "#0f3550" : theme === "forest" ? "#233b2c" : "#5a3141",
+                color: theme === "dark" ? "#fff" : theme === "light" ? "#111" : theme === "warm" ? "#4e3426" : theme === "ocean" ? "#0f3550" : theme === "forest" ? "#233b2c" : theme === "rose" ? "#5a3141" : "#132946",
                 minHeight: isMobile ? "auto" : 520,
                 maxWidth: 390,
                 margin: "0 auto",

@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     if (!restaurant) return Response.json({ error: "請輸入餐廳名稱" }, { status: 400 });
     if (!menuText) return Response.json({ error: "請輸入菜單內容" }, { status: 400 });
 
-    const allowedThemes = ["dark", "light", "warm", "ocean", "forest", "rose"];
+    const allowedThemes = ["dark", "light", "warm", "ocean", "forest", "rose", "market"];
     const safeTheme = allowedThemes.includes(theme) ? theme : "dark";
     const slug = await makeAvailableSlug(customSlug || restaurant);
     const id = randomId();

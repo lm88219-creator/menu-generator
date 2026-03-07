@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market";
 
 type ThemeConfig = {
   name: string;
@@ -161,6 +161,23 @@ export default function EditMenuForm({
         previewBg: "linear-gradient(180deg,#fffafc 0%,#fdebf1 100%)",
         previewBorder: "1px solid rgba(145,78,101,0.08)",
       },
+      market: {
+        name: "招牌米白",
+        pageBg: "linear-gradient(180deg,#f7f1e8 0%,#efe6d8 100%)",
+        cardBg: "rgba(255,250,242,0.96)",
+        cardBorder: "1px solid rgba(18,36,62,0.1)",
+        text: "#132946",
+        subText: "#6b7787",
+        accent: "#d74b3f",
+        inputBg: "rgba(255,255,255,0.86)",
+        inputBorder: "1px solid rgba(18,36,62,0.1)",
+        buttonMainBg: "#d74b3f",
+        buttonMainText: "#fff8f2",
+        buttonGhostBg: "rgba(18,36,62,0.06)",
+        buttonGhostText: "#132946",
+        previewBg: "linear-gradient(180deg,#f7f1e8 0%,#fffaf2 100%)",
+        previewBorder: "1px solid rgba(18,36,62,0.1)",
+      },
     }),
     []
   );
@@ -295,7 +312,9 @@ export default function EditMenuForm({
         ? "linear-gradient(180deg,#f5fdff 0%,#d8eef7 100%)"
         : value === "forest"
         ? "linear-gradient(180deg,#f5faf5 0%,#d7e8d7 100%)"
-        : "linear-gradient(180deg,#fff8fb 0%,#f3d8e3 100%)",
+        : value === "rose"
+        ? "linear-gradient(180deg,#fff8fb 0%,#f3d8e3 100%)"
+        : "linear-gradient(180deg,#f7f1e8 0%,#fffaf2 100%)",
     color:
       value === "dark"
         ? "#fff"
@@ -307,7 +326,9 @@ export default function EditMenuForm({
         ? "#0f3550"
         : value === "forest"
         ? "#233b2c"
-        : "#5a3141",
+        : value === "rose"
+        ? "#5a3141"
+        : "#132946",
     cursor: "pointer",
     minHeight: 112,
     display: "flex",
@@ -425,6 +446,10 @@ export default function EditMenuForm({
                 <div onClick={() => setTheme("rose")} style={themeCardStyle("rose")}>
                   <div style={{ fontWeight: 800 }}>玫瑰奶茶風</div>
                   <div style={{ fontSize: 13, opacity: 0.8 }}>柔和、甜點、質感感</div>
+                </div>
+                <div onClick={() => setTheme("market")} style={themeCardStyle("market")}>
+                  <div style={{ fontWeight: 800 }}>招牌米白</div>
+                  <div style={{ fontSize: 13, opacity: 0.8 }}>米白、深藍字、紅色重點</div>
                 </div>
               </div>
             </div>

@@ -63,7 +63,7 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
             address: menu.address ?? "",
             hours: menu.hours ?? "",
             menuText: menu.menuText ?? "",
-            theme: (menu.theme ?? "dark") as "dark" | "light" | "warm" | "ocean" | "forest" | "rose",
+            theme: (menu.theme ?? "dark") as "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market",
             logoDataUrl: menu.logoDataUrl ?? "",
             slug: menu.slug ?? "",
             isPublished: menu.isPublished !== false,

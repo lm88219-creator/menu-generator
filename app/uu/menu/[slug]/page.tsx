@@ -162,6 +162,30 @@ function getThemeTokens(theme: ThemeType): ThemeTokens {
       shadow: "0 24px 54px rgba(120, 63, 85, 0.12)",
     };
   }
+  if (theme === "market") {
+    return {
+      accent: "#e14f43",
+      accentStrong: "#c63d31",
+      accentSoft: "#fff2ea",
+      accentTint: "rgba(225, 79, 67, 0.12)",
+      accentTintStrong: "rgba(225, 79, 67, 0.2)",
+      badge: "rgba(255, 249, 241, 0.94)",
+      border: "rgba(24, 42, 67, 0.12)",
+      bg: "#f5efe5",
+      bgSoft: "#faf6ef",
+      bgDeep: "#efe6d8",
+      surface: "rgba(255, 251, 245, 0.98)",
+      surfaceSoft: "rgba(255, 250, 244, 1)",
+      text: "#243d5b",
+      title: "#14253f",
+      muted: "#6e7b8f",
+      priceBg: "rgba(225, 79, 67, 0.1)",
+      priceText: "#b9382f",
+      soldoutBg: "rgba(201, 80, 68, 0.1)",
+      soldoutText: "#a73e35",
+      shadow: "0 24px 54px rgba(77, 58, 32, 0.1)",
+    };
+  }
   return {
     accent: "#bc9b59",
     accentStrong: "#8d6c35",
@@ -195,11 +219,7 @@ function formatMapHref(address: string) {
 }
 
 const THEME_LABEL: Partial<Record<ThemeType, string>> = {
-  dark: "夜幕深色",
-  warm: "暖金木質",
-  ocean: "清爽海洋",
-  forest: "森林自然",
-  rose: "玫瑰雅緻",
+  market: "招牌米白",
 };
 
 function toSectionId(category: string, index: number) {

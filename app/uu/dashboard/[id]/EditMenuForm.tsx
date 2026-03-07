@@ -4,7 +4,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { useEffect, useMemo, useState } from "react";
 import { parseMenuText, normalizeSlug } from "@/lib/menu";
 
-export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market";
 
 type ThemeConfig = {
   name: string;
@@ -52,6 +52,7 @@ const THEME_OPTIONS: Array<{ value: ThemeType; label: string; desc: string; acce
   { value: "ocean", label: "海洋清新", desc: "色調明亮清爽，適合海鮮、健康餐、早午餐。", accent: "#4da3ff", preview: ["#10202d", "#173247", "#0d1923"] },
   { value: "forest", label: "森林自然", desc: "較有自然感，適合便當、蔬食、手作餐飲。", accent: "#6fb17a", preview: ["#142118", "#203126", "#101813"] },
   { value: "rose", label: "玫瑰奶茶", desc: "較柔和有質感，適合甜點、飲料與輕食。", accent: "#d78aa4", preview: ["#2b1a21", "#3a222b", "#1f1418"] },
+  { value: "market", label: "招牌米白", desc: "米白底搭配深藍字與紅色重點，適合熱炒、海產、小吃店。", accent: "#d74b3f", preview: ["#f7f1e8", "#fffaf2", "#ece2d4"] },
 ];
 
 function createFormItem(partial?: Partial<MenuItemForm>): MenuItemForm {
