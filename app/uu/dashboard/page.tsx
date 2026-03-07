@@ -55,20 +55,22 @@ export default async function UUDashboardPage({
   return (
     <main className="uu-admin-shell">
       <div className="uu-admin-container uu-admin-container-narrow">
-        <section className="uu-panel uu-dashboard-hero">
-          <div className="uu-dashboard-hero-main">
-            <div className="uu-kicker">UU MENU ADMIN</div>
-            <h1 className="uu-admin-title uu-admin-title-sm">多店菜單控制台</h1>
-            <p className="uu-admin-copy">
-              這版後台改成更乾淨的一排式管理：先找到店家，再快速編輯、開公開頁、複製網址、下載 QR。
-            </p>
-            <div className="uu-form-actions uu-dashboard-hero-actions">
+        <section className="uu-panel uu-dashboard-hero-v2">
+          <div className="uu-dashboard-topbar">
+            <div>
+              <div className="uu-kicker">UU MENU ADMIN</div>
+              <h1 className="uu-admin-title uu-admin-title-sm">多店菜單控制台</h1>
+              <p className="uu-admin-copy">
+                以 10～50 家店為目標重新整理成清楚的管理後台：先搜尋，再快速編輯、拿公開網址、下載 QR。
+              </p>
+            </div>
+            <div className="uu-form-actions uu-dashboard-topbar-actions">
               <Link href="/" className="uu-btn uu-btn-primary">新增菜單</Link>
               <LogoutButton />
             </div>
           </div>
 
-          <div className="uu-dashboard-stat-grid">
+          <div className="uu-dashboard-stat-grid uu-dashboard-stat-grid-v2">
             <div className="uu-dashboard-stat-card">
               <span>全部菜單</span>
               <strong>{menus.length}</strong>
@@ -77,31 +79,31 @@ export default async function UUDashboardPage({
             <div className="uu-dashboard-stat-card">
               <span>上架中</span>
               <strong>{publishedCount}</strong>
-              <small>客人目前可直接查看</small>
+              <small>客人現在可以直接看到</small>
             </div>
             <div className="uu-dashboard-stat-card">
               <span>已下架</span>
               <strong>{hiddenCount}</strong>
-              <small>暫時不公開的菜單</small>
+              <small>暫時不顯示的店家</small>
             </div>
             <div className="uu-dashboard-stat-card is-accent">
               <span>最後更新</span>
               <strong>{latestUpdate ? formatDateTime(latestUpdate) : "尚無資料"}</strong>
-              <small>方便你快速確認最近有沒有改到</small>
+              <small>方便你快速確認最近有沒有改過</small>
             </div>
           </div>
         </section>
 
-        <section className="uu-panel uu-dashboard-toolbar">
+        <section className="uu-panel uu-dashboard-toolbar uu-dashboard-toolbar-v2">
           <div className="uu-section-head uu-section-head-tight">
             <div>
               <h2>店家列表</h2>
-              <p>一排一間店，操作直接展開，不用再多點一次。</p>
+              <p>一排一間店，常用操作直接展開，避免再多點一層。</p>
             </div>
             <div className="uu-chip">顯示 {filteredMenus.length} / {menus.length}</div>
           </div>
 
-          <form action="/uu/dashboard" method="GET" className="uu-dashboard-search-card">
+          <form action="/uu/dashboard" method="GET" className="uu-dashboard-search-card uu-dashboard-search-card-v2">
             <div className="uu-dashboard-search-main">
               <input
                 className="uu-input uu-dashboard-search-input"
@@ -118,15 +120,17 @@ export default async function UUDashboardPage({
           </form>
         </section>
 
-        <section className="uu-panel uu-store-list-panel">
+        <section className="uu-panel uu-store-list-panel uu-store-list-panel-v2">
           {filteredMenus.length ? (
-            <div className="uu-store-list-upgraded">
-              {filteredMenus.map((menu) => {
+            <div className="uu-store-list-upgraded uu-store-list-upgraded-v2">
+              {filteredMenus.map((menu, index) => {
                 const publicPath = `/uu/menu/${encodeURIComponent(menu.slug || menu.id)}`;
                 const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
                 return (
-                  <article key={menu.id} className="uu-store-row-card">
+                  <article key={menu.id} className="uu-store-row-card uu-store-row-card-v2">
                     <div className="uu-store-row-main">
+                      <div className="uu-store-order-badge">#{index + 1}</div>
+
                       <div className="uu-store-cell uu-store-cell-top">
                         <div className="uu-store-logo uu-store-logo-table">
                           {menu.logoDataUrl ? (
@@ -135,6 +139,7 @@ export default async function UUDashboardPage({
                             <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>
                           )}
                         </div>
+
                         <div className="uu-store-row-copy">
                           <div className="uu-store-row-headline">
                             <h3 className="uu-store-name">{menu.restaurant || "未命名店家"}</h3>
@@ -142,7 +147,8 @@ export default async function UUDashboardPage({
                               {menu.isPublished === false ? "已下架" : "上架中"}
                             </span>
                           </div>
-                          <div className="uu-store-row-meta">
+
+                          <div className="uu-store-row-meta uu-store-row-meta-v2">
                             <div>
                               <span>slug</span>
                               <code className="uu-table-code">{menu.slug || menu.id}</code>
@@ -160,12 +166,18 @@ export default async function UUDashboardPage({
                               <strong>{formatDateTime(menu.updatedAt)}</strong>
                             </div>
                           </div>
+
                           <div className="uu-store-row-address">{menu.address || "未填地址"}</div>
+
+                          <div className="uu-store-public-link-box">
+                            <span>公開網址</span>
+                            <strong>{publicUrl}</strong>
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="uu-store-row-actions">
+                    <div className="uu-store-row-actions uu-store-row-actions-v2">
                       <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
                       <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">公開頁</Link>
                       <CopyUrlButton url={publicUrl} />

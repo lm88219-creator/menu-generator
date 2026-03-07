@@ -122,6 +122,8 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const publicPath = `/uu/menu/${safeSlug}`;
   const publicUrl = `${getBaseUrl()}${publicPath}`;
   const deskCodes = useMemo(() => parseDeskInput(deskInput, deskStart, deskEnd), [deskInput, deskStart, deskEnd]);
+  const soldOutCount = formItems.filter((item) => item.soldOut).length;
+  const activeCount = formItems.filter((item) => item.name.trim() && !item.soldOut).length;
 
   useEffect(() => {
     setMenuText(toMenuText(formItems));
@@ -141,6 +143,16 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
       ...current,
       { category: afterCategory || current[current.length - 1]?.category || "精選菜單", name: "", price: "", note: "", soldOut: false },
     ]);
+  }
+
+  function duplicateItem(index: number) {
+    setFormItems((current) => {
+      const target = current[index];
+      if (!target) return current;
+      const next = [...current];
+      next.splice(index + 1, 0, { ...target });
+      return next;
+    });
   }
 
   function removeItem(index: number) {
@@ -211,10 +223,15 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   return (
     <div className="uu-editor-simple">
       <section className="uu-panel uu-subpanel">
-        <div className="uu-sticky-toolbar uu-sticky-toolbar-clean">
+        <div className="uu-sticky-toolbar uu-sticky-toolbar-clean uu-sticky-toolbar-v2">
           <div>
             <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
             <p className="uu-admin-copy">把最常用的操作留在上方，其它設定往下收。</p>
+            <div className="uu-inline-stats">
+              <span className="uu-chip">總品項 {formItems.length}</span>
+              <span className="uu-chip">供應中 {activeCount}</span>
+              <span className="uu-chip">售完 {soldOutCount}</span>
+            </div>
           </div>
           <div className="uu-form-actions">
             <span className={`uu-status ${isPublished ? "is-on" : "is-off"}`}>{isPublished ? "上架中" : "已下架"}</span>
@@ -242,9 +259,11 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>
             </div>
             <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
-            <div className="uu-preview-url-box">
-              <span>公開網址</span>
-              <strong>{publicUrl}</strong>
+            <div className="uu-preview-url-box uu-preview-url-box-v2">
+              <div>
+                <span>公開網址</span>
+                <strong>{publicUrl}</strong>
+              </div>
               <button type="button" className="uu-btn uu-btn-secondary uu-btn-inline" onClick={async () => navigator.clipboard.writeText(publicUrl)}>複製公開網址</button>
             </div>
           </section>
@@ -314,13 +333,21 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     <span>{item.soldOut ? "售完" : "供應中"}</span>
                   </label>
                   <div className="uu-row-actions">
-                    <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
+                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => duplicateItem(index)}>複製列</button><button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
                   </div>
                 </article>
               ))}
               <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => addItem()}>＋ 新增品項</button>
             </div>
           </section>
+
+          <div className="uu-bottom-save-bar">
+            <div>
+              <strong>編輯完記得儲存</strong>
+              <p>這裡放一個底部儲存列，拉到下面也不用再滑回頂端。</p>
+            </div>
+            <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
+          </div>
 
           <details className="uu-simple-section uu-collapsible-section">
             <summary className="uu-collapsible-head">
