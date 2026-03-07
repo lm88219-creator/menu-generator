@@ -32,7 +32,7 @@ export default function EditMenuForm({
   const [address, setAddress] = useState(initialData.address);
   const [hours, setHours] = useState(initialData.hours);
   const [menuText, setMenuText] = useState(initialData.menuText);
-  const [theme, setTheme] = useState<ThemeType>(initialData.theme);
+  const [theme, setTheme] = useState<ThemeType>((initialData.theme as ThemeType) ?? "dark");
   const [logoDataUrl, setLogoDataUrl] = useState(initialData.logoDataUrl);
   const [slug, setSlug] = useState(initialData.slug ?? "");
   const [saving, setSaving] = useState(false);
