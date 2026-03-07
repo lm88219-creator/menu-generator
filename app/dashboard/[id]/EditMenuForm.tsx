@@ -441,59 +441,6 @@ export default function EditMenuForm({
         </section>
       </div>
 
-      <aside className="admin-editor-side">
-        <div style={{ ...sectionCardStyle, position: "sticky", top: 20, color: currentTheme.text }}>
-          <SectionTitle title="即時預覽" subtitle="右側會模擬客人手機看到的前台樣子。" color={currentTheme.text} muted={currentTheme.subText} />
-
-          <div style={{ marginTop: 18, borderRadius: 28, padding: 24, background: currentTheme.previewBg, border: currentTheme.previewBorder, minHeight: 620 }}>
-            <div style={{ textAlign: "center" }}>
-              {logoDataUrl ? (
-                <div style={{ width: 96, height: 96, borderRadius: "50%", margin: "0 auto 14px", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(0,0,0,0.14)", border: "1px solid rgba(0,0,0,0.06)", overflow: "hidden", padding: 10 }}>
-                  <img src={logoDataUrl} alt="logo preview" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                </div>
-              ) : (
-                <div style={{ width: 96, height: 96, borderRadius: "50%", margin: "0 auto 14px", background: theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: currentTheme.subText, border: currentTheme.previewBorder }}>
-                  LOGO
-                </div>
-              )}
-
-              <div style={{ fontSize: 12, letterSpacing: 3, opacity: 0.7, marginBottom: 8 }}>DIGITAL MENU</div>
-              <h2 style={{ margin: 0, fontSize: 28 }}>{restaurant || "餐廳名稱"}</h2>
-              <div style={{ marginTop: 10, fontSize: 14, opacity: 0.8, lineHeight: 1.8 }}>
-                {phone || "電話"}
-                <br />
-                {address || "地址"}
-                <br />
-                {hours || "營業時間"}
-              </div>
-            </div>
-
-            <div style={{ marginTop: 22, borderTop: theme === "dark" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)", paddingTop: 16 }}>
-              {parsedLines.map((line, index) =>
-                isLikelyCategory(line) ? (
-                  <div key={`${line}-${index}`} style={{ marginTop: index === 0 ? 0 : 14, marginBottom: 6, fontWeight: 800, color: currentTheme.accent }}>
-                    {line}
-                  </div>
-                ) : (
-                  <div key={`${line}-${index}`} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderBottom: theme === "dark" ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.06)", fontSize: 15 }}>
-                    <span>{line.replace(/\s+\S+$/, "")}</span>
-                    <span>{line.match(/\S+$/)?.[0]}</span>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-
-          <div style={{ marginTop: 16, borderRadius: 18, padding: 16, background: currentTheme.inputBg, border: currentTheme.inputBorder }}>
-            <div style={{ fontWeight: 800, marginBottom: 8 }}>公開資訊</div>
-            <div style={{ color: currentTheme.subText, fontSize: 14, lineHeight: 1.8 }}>
-              目前風格：{currentTheme.name}
-              <br />
-              公開路徑：{publicPath}
-            </div>
-          </div>
-        </div>
-      </aside>
     </div>
   );
 }
