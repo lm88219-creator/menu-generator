@@ -14,6 +14,22 @@ function getPublicBaseUrl() {
 
 type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market";
 
+type ThemeConfig = {
+  name: string;
+  pageBg: string;
+  cardBg: string;
+  cardBorder: string;
+  text: string;
+  subText: string;
+  accent: string;
+  inputBg: string;
+  inputBorder: string;
+  buttonMainBg: string;
+  buttonMainText: string;
+  buttonGhostBg: string;
+  buttonGhostText: string;
+};
+
 function generateSlug(name: string) {
   return name
     .toLowerCase()
@@ -37,7 +53,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [downloadingPoster, setDownloadingPoster] = useState(false);
 
-  const themeMap = useMemo(
+  const themeMap = useMemo<Record<ThemeType, ThemeConfig>>(
     () => ({
       dark: {
         name: "黑色餐廳風",
@@ -128,6 +144,21 @@ export default function Home() {
         buttonMainText: "#fff",
         buttonGhostBg: "rgba(255,255,255,0.72)",
         buttonGhostText: "#5a3141",
+      },
+      market: {
+        name: "招牌米白",
+        pageBg: "linear-gradient(180deg,#f6f1e9 0%,#eee5d8 100%)",
+        cardBg: "rgba(255,251,246,0.94)",
+        cardBorder: "1px solid rgba(16,35,63,0.10)",
+        text: "#10233f",
+        subText: "#6d7685",
+        accent: "#d53b2f",
+        inputBg: "rgba(255,255,255,0.88)",
+        inputBorder: "1px solid rgba(16,35,63,0.10)",
+        buttonMainBg: "#d53b2f",
+        buttonMainText: "#fff",
+        buttonGhostBg: "rgba(255,255,255,0.82)",
+        buttonGhostText: "#10233f",
       },
     }),
     []
@@ -600,7 +631,7 @@ y += 150;
     ocean: { bg: "#e2f3f8", text: "#214d63", muted: "#5d7f90", border: "rgba(83,168,201,0.26)" },
     forest: { bg: "#e7f1e5", text: "#274332", muted: "#667a6c", border: "rgba(94,148,104,0.26)" },
     rose: { bg: "#f7e7eb", text: "#623d49", muted: "#8d6b76", border: "rgba(199,138,159,0.28)" },
-    market: { bg: "#f5f1ea", text: "#10233f", muted: "#6d7685", border: "rgba(213,59,47,0.22)" },
+    market: { bg: "#f5f1ea", text: "#10233f", muted: "#6d7685", border: "rgba(213,59,47,0.24)" },
   };
 
   const themeCardStyle = (value: ThemeType): React.CSSProperties => ({
@@ -865,7 +896,6 @@ y += 150;
                   ["ocean", "海洋清新風", "清爽、海味、明亮感"],
                   ["forest", "森林自然風", "自然、手作、健康感"],
                   ["rose", "玫瑰奶茶風", "柔和、甜點、質感感"],
-                  ["market", "招牌米白", "米白、深藍字、紅色重點"],
                 ] as const).map(([value, title, desc]) => (
                   <button
                     key={value}

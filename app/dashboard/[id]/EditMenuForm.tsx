@@ -144,23 +144,6 @@ export default function EditMenuForm({
         previewBg: "linear-gradient(180deg,#ffffff 0%,#eef6ec 100%)",
         previewBorder: "1px solid rgba(41,87,53,0.08)",
       },
-      market: {
-        name: "招牌米白",
-        pageBg: "linear-gradient(180deg,#f7f3ed 0%,#efe8dc 100%)",
-        cardBg: "rgba(255,255,255,0.9)",
-        cardBorder: "1px solid rgba(16,35,63,0.1)",
-        text: "#10233f",
-        subText: "#6d7685",
-        accent: "#d53b2f",
-        inputBg: "rgba(255,255,255,0.78)",
-        inputBorder: "1px solid rgba(16,35,63,0.12)",
-        buttonMainBg: "#10233f",
-        buttonMainText: "#fffaf5",
-        buttonGhostBg: "rgba(255,255,255,0.72)",
-        buttonGhostText: "#10233f",
-        previewBg: "linear-gradient(180deg,#f5f1ea 0%,#efe7db 100%)",
-        previewBorder: "1px solid rgba(16,35,63,0.08)",
-      },
       rose: {
         name: "玫瑰奶茶風",
         pageBg: "linear-gradient(180deg,#fff4f7 0%,#f9dde6 100%)",
@@ -177,6 +160,23 @@ export default function EditMenuForm({
         buttonGhostText: "#5a3141",
         previewBg: "linear-gradient(180deg,#fffafc 0%,#fdebf1 100%)",
         previewBorder: "1px solid rgba(145,78,101,0.08)",
+      },
+      market: {
+        name: "招牌米白",
+        pageBg: "linear-gradient(180deg,#f6f1e9 0%,#eee5d8 100%)",
+        cardBg: "rgba(255,251,246,0.94)",
+        cardBorder: "1px solid rgba(16,35,63,0.10)",
+        text: "#10233f",
+        subText: "#6d7685",
+        accent: "#d53b2f",
+        inputBg: "rgba(255,255,255,0.88)",
+        inputBorder: "1px solid rgba(16,35,63,0.10)",
+        buttonMainBg: "#d53b2f",
+        buttonMainText: "#fff",
+        buttonGhostBg: "rgba(255,255,255,0.82)",
+        buttonGhostText: "#10233f",
+        previewBg: "linear-gradient(180deg,#f5f1ea 0%,#efe7db 100%)",
+        previewBorder: "1px solid rgba(213,59,47,0.14)",
       },
     }),
     []
@@ -439,11 +439,6 @@ export default function EditMenuForm({
                   <div style={{ fontWeight: 800 }}>森林自然風</div>
                   <div style={{ fontSize: 13, opacity: 0.8 }}>自然、手作、健康感</div>
                 </div>
-                <div onClick={() => setTheme("market")} style={themeCardStyle("market")}>
-                  <strong>招牌米白</strong>
-                  <span style={{ color: currentTheme.subText, fontSize: 13 }}>米白底、深藍字、紅色重點</span>
-                </div>
-
                 <div onClick={() => setTheme("rose")} style={themeCardStyle("rose")}>
                   <div style={{ fontWeight: 800 }}>玫瑰奶茶風</div>
                   <div style={{ fontSize: 13, opacity: 0.8 }}>柔和、甜點、質感感</div>
