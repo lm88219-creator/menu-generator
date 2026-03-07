@@ -84,20 +84,15 @@ function getBaseUrl() {
   return "";
 }
 
-function parseDeskInput(input: string, start: string, end: string) {
-  const manual = input
-    .split(/[,，\s]+/)
-    .map((item) => item.trim())
-    .filter(Boolean);
-
-  if (manual.length) return Array.from(new Set(manual));
-
-  const from = Number(start);
-  const to = Number(end);
-  if (Number.isFinite(from) && Number.isFinite(to) && from > 0 && to >= from) {
-    return Array.from({ length: to - from + 1 }, (_, index) => String(from + index));
-  }
-  return [];
+function parseDeskInput(input: string) {
+  return Array.from(
+    new Set(
+      input
+        .split(/[,，\s]+/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+    )
+  );
 }
 
 export default function EditMenuForm({ id, initialData }: { id: string; initialData: InitialData }) {
@@ -114,14 +109,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const [isPublished, setIsPublished] = useState(initialData.isPublished !== false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
-  const [deskInput, setDeskInput] = useState("A1 A2 A3 A4");
-  const [deskStart, setDeskStart] = useState("1");
-  const [deskEnd, setDeskEnd] = useState("12");
+  const [deskInput, setDeskInput] = useState("");
 
   const safeSlug = normalizeSlug(slug || restaurant) || id;
   const publicPath = `/uu/menu/${safeSlug}`;
   const publicUrl = `${getBaseUrl()}${publicPath}`;
-  const deskCodes = useMemo(() => parseDeskInput(deskInput, deskStart, deskEnd), [deskInput, deskStart, deskEnd]);
+  const deskCodes = useMemo(() => parseDeskInput(deskInput), [deskInput]);
   const soldOutCount = formItems.filter((item) => item.soldOut).length;
   const activeCount = formItems.filter((item) => item.name.trim() && !item.soldOut).length;
 
@@ -366,7 +359,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head">
               <div>
                 <h2>進階工具</h2>
-                <p>桌號 QR 和原始文字平常不常用，所以集中在最後。</p>
+                <p>把不常用的工具收在最後，主編輯流程會更乾淨。</p>
               </div>
             </div>
 
@@ -375,13 +368,19 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                 <div className="uu-section-head uu-section-head-tight">
                   <div>
                     <h3>桌號 QR 工具</h3>
-                    <p>手動輸入桌號，或設定連號範圍。</p>
+                    <p>只保留手動輸入桌號，避免不明確的連號功能造成操作困惑。</p>
                   </div>
                 </div>
-                <div className="uu-form-grid-2">
-                  <Field label="手動輸入桌號（用空白或逗號分隔）"><input className="uu-input" value={deskInput} onChange={(e) => setDeskInput(e.target.value)} placeholder="A1 A2 A3 B1" /></Field>
-                  <Field label="連號範圍（從幾號到幾號)"><div className="uu-inline-range"><input className="uu-input" value={deskStart} onChange={(e) => setDeskStart(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" /><span>到</span><input className="uu-input" value={deskEnd} onChange={(e) => setDeskEnd(e.target.value.replace(/[^0-9]/g, ""))} placeholder="12" /></div></Field>
-                </div>
+                <Field label="手動輸入桌號（用空白、逗號或換行分隔）">
+                  <textarea
+                    className="uu-textarea uu-desk-input-area"
+                    value={deskInput}
+                    onChange={(e) => setDeskInput(e.target.value)}
+                    placeholder="例如：A1 A2 A3
+B1 B2
+VIP1"
+                  />
+                </Field>
                 <div className="uu-qr-grid">
                   {deskCodes.slice(0, 8).map((tableCode) => {
                     const tableUrl = `${publicUrl}?table=${encodeURIComponent(tableCode)}`;

@@ -72,7 +72,7 @@ export default async function UUDashboardPage({
             <div>
               <h1 className="uu-dashboard-title">多店菜單控制台</h1>
               <p className="uu-dashboard-copy">
-                深色版後台以搜尋、編輯、公開頁與 QR 操作為主，減少視覺干擾，讓你更快找到店家。
+                把多店管理收斂成搜尋、編輯、公開頁與 QR 四個核心操作，讓畫面更安定、資訊更好找。
               </p>
             </div>
           </div>
@@ -87,7 +87,7 @@ export default async function UUDashboardPage({
           <form action="/uu/dashboard" method="GET" className="uu-dashboard-searchbar-v7">
             <div className="uu-dashboard-search-copy-v7">
               <span className="uu-dashboard-section-label-v7">快速搜尋</span>
-              <strong>搜尋店名、slug、電話或地址</strong>
+              <strong>搜尋店名、網址代稱、電話或地址</strong>
             </div>
             <input
               className="uu-input uu-dashboard-search-input"
@@ -129,7 +129,7 @@ export default async function UUDashboardPage({
             <div>
               <span className="uu-dashboard-section-label-v7">店家管理</span>
               <h2>店家列表</h2>
-              <p>{keyword ? `搜尋「${resolved?.q}」共找到 ${filteredMenus.length} 家` : `目前共 ${menus.length} 家店，可直接在列表完成主要操作。`}</p>
+              <p>{keyword ? `搜尋「${resolved?.q}」共找到 ${filteredMenus.length} 家` : `目前共 ${menus.length} 家店，主要操作都可以直接在列表完成。`}</p>
             </div>
             <div className="uu-dashboard-list-meta-v7">
               <span className="uu-chip">顯示 {filteredMenus.length} / {menus.length}</span>
@@ -190,6 +190,7 @@ export default async function UUDashboardPage({
                     <div className="uu-dashboard-row-url-v7">
                       <span>公開網址</span>
                       <strong title={publicUrl}>{publicUrl}</strong>
+                      <small>{menu.isPublished === false ? "目前為下架狀態，客人不建議直接開啟。" : "可直接複製給店家或放進 QR Code。"}</small>
                     </div>
 
                     <div className="uu-dashboard-row-actions-v7">

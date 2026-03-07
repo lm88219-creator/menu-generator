@@ -4061,3 +4061,164 @@ select.uu-input:focus {
     border-radius: 16px;
   }
 }
+
+
+/* ===== Pro dark refinement v8 ===== */
+.uu-admin-shell {
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 0 24%),
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.07), transparent 0 22%),
+    linear-gradient(180deg, #0a0e14 0%, #090c12 48%, #07090d 100%);
+}
+
+.uu-panel,
+.uu-admin-hero,
+.uu-admin-subhero,
+.uu-login-card,
+.uu-preview-shell,
+.uu-public-card,
+.uu-public-hero,
+.uu-modal-card {
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: linear-gradient(180deg, rgba(15, 19, 27, 0.94), rgba(11, 15, 21, 0.96));
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.34);
+}
+
+.uu-btn {
+  min-height: 44px;
+  border: 1px solid transparent;
+}
+
+.uu-btn-primary {
+  background: linear-gradient(180deg, #4c7ec7, #365f9f);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(29, 54, 92, 0.28);
+}
+
+.uu-btn-primary:hover {
+  border-color: rgba(147, 197, 253, 0.22);
+}
+
+.uu-btn-secondary {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  color: #eef2f8;
+}
+
+.uu-btn-secondary:hover,
+.uu-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.uu-btn-danger {
+  background: rgba(127, 29, 29, 0.26);
+  border: 1px solid rgba(248, 113, 113, 0.18);
+  color: #fecaca;
+}
+
+.uu-chip,
+.uu-dashboard-meta-chip,
+.uu-table-code {
+  background: rgba(255, 255, 255, 0.035);
+  border-color: rgba(148, 163, 184, 0.15);
+}
+
+.uu-input,
+.uu-textarea {
+  background: rgba(6, 10, 16, 0.92);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+.uu-dashboard-hero-v7 {
+  padding: 26px;
+  background:
+    linear-gradient(135deg, rgba(31, 41, 55, 0.92), rgba(14, 18, 26, 0.96)),
+    radial-gradient(circle at top right, rgba(96, 165, 250, 0.14), transparent 0 26%);
+}
+
+.uu-dashboard-copy {
+  max-width: 60ch;
+}
+
+.uu-dashboard-searchbar-v7 {
+  align-items: center;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.uu-dashboard-search-copy-v7 {
+  display: grid;
+  gap: 4px;
+}
+
+.uu-dashboard-stat-card-v7 {
+  position: relative;
+  overflow: hidden;
+}
+
+.uu-dashboard-stat-card-v7::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.55), rgba(96, 165, 250, 0));
+}
+
+.uu-dashboard-list-shell-v7 {
+  background: linear-gradient(180deg, rgba(13, 17, 24, 0.96), rgba(10, 14, 19, 0.98));
+}
+
+.uu-dashboard-row-v7 {
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.uu-dashboard-row-v7:hover {
+  transform: translateY(-1px);
+  border-color: rgba(96, 165, 250, 0.18);
+  background: linear-gradient(180deg, rgba(18, 24, 33, 0.97), rgba(11, 15, 21, 0.97));
+}
+
+.uu-dashboard-row-url-v7 {
+  display: grid;
+  gap: 6px;
+}
+
+.uu-dashboard-row-url-v7 small {
+  color: #718198;
+  line-height: 1.55;
+}
+
+.uu-dashboard-row-actions-v7 {
+  align-items: center;
+}
+
+.uu-dashboard-row-actions-v7 > *:first-child {
+  min-width: 88px;
+}
+
+.uu-editor-v4-topbar,
+.uu-editor-v4-side-card,
+.uu-editor-v4-url-card,
+.uu-editor-v4-advanced-card,
+.uu-editor-v4-summary-item,
+.uu-editor-v4-savebar,
+.uu-item-row,
+.uu-item-table-header {
+  background: linear-gradient(180deg, rgba(15, 19, 26, 0.96), rgba(10, 13, 18, 0.96));
+}
+
+.uu-editor-v4-topbar {
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.uu-desk-input-area {
+  min-height: 112px;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .uu-dashboard-searchbar-v7 {
+    align-items: stretch;
+  }
+}
