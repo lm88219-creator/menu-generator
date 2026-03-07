@@ -43,10 +43,8 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
 
           <div className="uu-editor-page-meta">
             <span className="uu-chip">{menu.restaurant || "未命名店家"}</span>
-            <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
-              {menu.isPublished === false ? "已下架" : "上架中"}
-            </span>
-            <span className="uu-chip">共 {itemCount} 個品項</span>
+            <span className="uu-chip">{menu.theme ? "主題已設定" : "預設主題"}</span>
+            <span className="uu-chip">{itemCount} 個品項</span>
           </div>
 
           <div className="uu-editor-page-actions">

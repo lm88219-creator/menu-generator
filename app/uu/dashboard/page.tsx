@@ -137,12 +137,24 @@ export default async function UUDashboardPage({
             </div>
           </div>
 
+          <div className="uu-dashboard-list-summary-v7">
+            <div className="uu-dashboard-list-summary-card-v7">
+              <span>管理重點</span>
+              <strong>把店家資訊、狀態與主要操作收在同一張卡片</strong>
+              <small>列表閱讀會更乾淨，手機與桌機都比較不雜亂。</small>
+            </div>
+            <div className="uu-dashboard-list-summary-card-v7 is-soft">
+              <span>本次調整</span>
+              <strong>已移除店家資訊中的公開網址列</strong>
+              <small>公開頁連結保留在操作區，不再佔用列表版面。</small>
+            </div>
+          </div>
+
           {filteredMenus.length ? (
             <div className="uu-dashboard-list-v7">
               <div className="uu-dashboard-column-head-v7" aria-hidden="true">
                 <span>店家資訊</span>
                 <span>聯絡資訊</span>
-                <span>公開網址</span>
                 <span>操作</span>
               </div>
 
@@ -185,12 +197,6 @@ export default async function UUDashboardPage({
                         <span>地址</span>
                         <strong>{menu.address || "未填地址"}</strong>
                       </div>
-                    </div>
-
-                    <div className="uu-dashboard-row-url-v7">
-                      <span>公開網址</span>
-                      <strong title={publicUrl}>{publicUrl}</strong>
-                      <small>{menu.isPublished === false ? "目前為下架狀態，客人不建議直接開啟。" : "可直接複製給店家或放進 QR Code。"}</small>
                     </div>
 
                     <div className="uu-dashboard-row-actions-v7">
