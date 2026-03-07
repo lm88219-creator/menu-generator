@@ -95,6 +95,16 @@ function getBaseUrl() {
   return "";
 }
 
+function sanitizeSlugInput(value: string) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9-\s]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 50);
+}
+
 function parseDeskInput(input: string) {
   return Array.from(
     new Set(
@@ -287,6 +297,16 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
     ]);
   }
 
+  function duplicateItem(index: number) {
+    setFormItems((current) => {
+      const target = current[index];
+      if (!target) return current;
+      const next = [...current];
+      next.splice(index + 1, 0, createFormItem({ ...target }));
+      return next;
+    });
+  }
+
   function removeItem(index: number) {
     setFormItems((current) => {
       const next = current.filter((_, itemIndex) => itemIndex !== index);
@@ -366,6 +386,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
         <div className="uu-editor-v4-topbar-main">
           <div>
             <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
+            <p className="uu-admin-copy">把主要編輯步驟集中成清楚的四段，滑動時更容易知道自己改到哪裡。</p>
           </div>
           <div className="uu-editor-v4-stats uu-editor-v4-stats-refined">
             <div className="uu-editor-v4-stat-card">
@@ -406,7 +427,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
         </div>
       </section>
 
-      <div className="uu-editor-v4-layout uu-editor-v4-layout-mainonly">
+      <div className="uu-editor-v4-layout">
         <div className="uu-editor-v4-main">
           <section id="shop-info" className="uu-simple-section uu-editor-v4-section uu-editor-v4-shop-section">
             <div className="uu-section-head uu-editor-v4-section-head-pro">
@@ -424,30 +445,19 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               <div className="uu-editor-v4-shop-maincard">
                 <div className="uu-form-grid-2 uu-editor-v4-shop-formgrid">
                   <Field label="餐廳名稱"><input className="uu-input" value={restaurant} onChange={(e) => setRestaurant(e.target.value)} placeholder="例如：友愛熱炒" /></Field>
-                  <Field label="網址 slug"><input className="uu-input" value={slug} onChange={(e) => setSlug(normalizeSlug(e.target.value))} placeholder="例如：you-ai-re-chao" /></Field>
+                  <label className="uu-field uu-editor-v4-shop-form-note-field">
+                    <span>網址 slug</span>
+                    <input className="uu-input" value={slug} onChange={(e) => setSlug(sanitizeSlugInput(e.target.value))} placeholder="例如：you-ai-re-chao" />
+                    <small>可輸入英文、數字與 -，公開網址會沿用這組 slug。</small>
+                  </label>
                   <Field label="電話"><input className="uu-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="例如：0912-345-678" /></Field>
                   <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>
                 </div>
 
-                <div className="uu-editor-v4-address-row uu-editor-v4-address-row-refined">
-                  <label className="uu-editor-v4-address-card uu-editor-v4-address-card-unified">
-                    <div className="uu-editor-v4-address-card-head uu-editor-v4-address-card-head-unified">
-                      <div>
-                        <span>地址</span>
-                        <small>公開頁與導航會優先使用這裡的資訊</small>
-                      </div>
-                    </div>
-                    <input
-                      className="uu-input uu-editor-v4-address-input"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      placeholder="例如：嘉義市西區友愛路100號"
-                    />
-                  </label>
-                </div>
+                <Field label="地址"><input className="uu-input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例如：嘉義市西區友愛路100號" /></Field>
               </div>
 
-              <aside className="uu-editor-v4-shop-sidecard uu-editor-v4-shop-sidecard-compact">
+              <aside className="uu-editor-v4-shop-sidecard">
                 <div className="uu-editor-v4-shop-sidehead">
                   <span>公開頁資訊摘要</span>
                   <strong>{restaurant || "未命名店家"}</strong>
@@ -461,20 +471,33 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               </aside>
             </div>
 
+            <div className="uu-editor-v4-url-card uu-editor-v4-url-card-pro">
+              <div>
+                <span>公開網址</span>
+                <strong>{publicUrl}</strong>
+              </div>
+              <div className="uu-editor-v4-url-card-note">公開頁連結已同步到頁面上方與快速工具，分享會更順手。</div>
+            </div>
           </section>
 
           <section id="menu-items" className="uu-simple-section uu-editor-v4-section uu-editor-v4-menu-section">
-            <div className="uu-section-head uu-editor-v4-section-head-pro">
+            <div className="uu-section-head uu-editor-v4-section-head-pro uu-menu-editor-section-head-refined">
               <div>
                 <h2>菜單品項</h2>
-                <p>把分類、菜名、價格與供應狀態整理成更乾淨的單列編輯區，桌機與手機都更好掃視。</p>
+                <p>把常用欄位集中成更乾淨的單列卡片，分類、菜名、價格與供應狀態會更好掃視。</p>
               </div>
+              <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
             </div>
 
-            <div className="uu-menu-editor-slimbar uu-menu-editor-slimbar-minimal">
+            <div className="uu-menu-editor-slimbar uu-menu-editor-slimbar-refined">
               <div className="uu-menu-editor-slimbar-copy">
                 <strong>{activeCount} 項供應中</strong>
-                <span>{categorySummary.length ? `${categorySummary.length} 個分類已整理完成` : "新增第一個品項後會自動整理分類"}</span>
+                <span>{categorySummary.length ? `${categorySummary.length} 個分類已整理完成` : "新增第一個品項後，這裡會自動整理分類"}</span>
+              </div>
+              <div className="uu-menu-editor-category-tags">
+                {categorySummary.length ? categorySummary.slice(0, 6).map((category) => (
+                  <span key={category.name}>{category.name} ・ {category.count}</span>
+                )) : <span>尚未建立分類</span>}
               </div>
             </div>
 
@@ -487,9 +510,13 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               <span>刪除</span>
             </div>
 
-            <div className="uu-items-stack uu-menu-editor-stack uu-menu-editor-stack-minimal">
+            <div className="uu-items-stack uu-menu-editor-stack uu-menu-editor-stack-refined">
               {formItems.map((item, index) => (
                 <article key={item.uid} className="uu-menu-item-row-card">
+                  <div className="uu-menu-item-row-top">
+                    <span className="uu-menu-item-row-index">#{String(index + 1).padStart(2, "0")}</span>
+                    <span className={`uu-menu-item-row-state ${item.soldOut ? "is-off" : "is-on"}`}>{item.soldOut ? "停售中" : "供應中"}</span>
+                  </div>
                   <div className="uu-menu-item-row-grid">
                     <label className="uu-menu-item-mini-field">
                       <span className="uu-menu-item-mini-label">分類</span>
@@ -523,11 +550,9 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               ))}
             </div>
 
-            <div className="uu-menu-editor-savebar-inline uu-menu-editor-savebar-inline-right uu-menu-editor-actionbar">
+            <div className="uu-menu-editor-savebar-inline uu-menu-editor-actionbar">
               <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
-              <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>
-                {saving ? "儲存中..." : "儲存變更"}
-              </button>
+              <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
             </div>
           </section>
 
@@ -826,6 +851,40 @@ VIP1"
           </section>
         </div>
 
+        <aside className="uu-editor-v4-side">
+          <section className="uu-simple-section uu-editor-v4-side-card">
+            <div className="uu-section-head uu-section-head-tight">
+              <div>
+                <h3>操作摘要</h3>
+                <p>編輯時常用的資訊集中放右邊。</p>
+              </div>
+            </div>
+            <div className="uu-editor-v4-summary-grid">
+              <div className="uu-editor-v4-summary-item"><span>公開狀態</span><strong>{isPublished ? "上架中" : "已下架"}</strong></div>
+              <div className="uu-editor-v4-summary-item"><span>菜單風格</span><strong>{selectedTheme.label}</strong></div>
+              <div className="uu-editor-v4-summary-item"><span>供應中</span><strong>{activeCount}</strong></div>
+              <div className="uu-editor-v4-summary-item"><span>售完</span><strong>{soldOutCount}</strong></div>
+            </div>
+          </section>
+
+          <section className="uu-simple-section uu-editor-v4-side-card">
+            <div className="uu-section-head uu-section-head-tight">
+              <div>
+                <h3>公開網址</h3>
+                <p>分享或貼給店家時最常用。</p>
+              </div>
+            </div>
+            <div className="uu-editor-v4-side-url">{publicUrl}</div>
+            <div className="uu-inline-hint">複製按鈕已移到頁面上方與快速工具區，常用操作會更集中。</div>
+          </section>
+
+          <div className="uu-bottom-save-bar uu-editor-v4-savebar uu-editor-v4-savebar-note">
+            <div>
+              <strong>儲存按鈕已集中到快速工具區</strong>
+              <p>編輯流程會更乾淨，右側保留摘要資訊即可。</p>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );
