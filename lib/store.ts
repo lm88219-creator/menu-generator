@@ -3,7 +3,7 @@ import { normalizeSlug } from "@/lib/menu";
 
 const redis = Redis.fromEnv();
 
-export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market";
 
 export type MenuData = {
   restaurant: string;

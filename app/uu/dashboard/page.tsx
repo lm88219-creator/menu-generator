@@ -15,6 +15,7 @@ function getThemeLabel(theme?: string) {
   if (theme === "ocean") return "海洋清新";
   if (theme === "forest") return "森林自然";
   if (theme === "rose") return "玫瑰奶茶";
+  if (theme === "market") return "招牌米白";
   return "深色經典";
 }
 

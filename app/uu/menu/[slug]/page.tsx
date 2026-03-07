@@ -162,6 +162,31 @@ function getThemeTokens(theme: ThemeType): ThemeTokens {
       shadow: "0 24px 54px rgba(120, 63, 85, 0.12)",
     };
   }
+
+  if (theme === "market") {
+    return {
+      accent: "#c53a30",
+      accentStrong: "#a82922",
+      accentSoft: "#fff0ea",
+      accentTint: "rgba(197, 58, 48, 0.10)",
+      accentTintStrong: "rgba(197, 58, 48, 0.16)",
+      badge: "rgba(255, 246, 241, 0.9)",
+      border: "rgba(197, 58, 48, 0.18)",
+      bg: "#f6f1ea",
+      bgSoft: "#fcfaf7",
+      bgDeep: "#efe7df",
+      surface: "rgba(255, 252, 248, 0.98)",
+      surfaceSoft: "rgba(255, 250, 245, 0.98)",
+      text: "#24344b",
+      title: "#16263a",
+      muted: "#66758b",
+      priceBg: "rgba(197, 58, 48, 0.1)",
+      priceText: "#a22c24",
+      soldoutBg: "rgba(136, 42, 35, 0.08)",
+      soldoutText: "#8a2f28",
+      shadow: "0 24px 54px rgba(71, 55, 42, 0.10)",
+    };
+  }
   return {
     accent: "#bc9b59",
     accentStrong: "#8d6c35",
@@ -195,11 +220,7 @@ function formatMapHref(address: string) {
 }
 
 const THEME_LABEL: Partial<Record<ThemeType, string>> = {
-  dark: "夜幕深色",
-  warm: "暖金木質",
-  ocean: "清爽海洋",
-  forest: "森林自然",
-  rose: "玫瑰雅緻",
+  market: "招牌米白",
 };
 
 function toSectionId(category: string, index: number) {
@@ -236,6 +257,7 @@ export default async function UuMenuPage({
   }));
   const hasMeta = Boolean(data.hours || data.phone || data.address);
   const themeLabel = THEME_LABEL[theme];
+  const isMarketTheme = theme === "market";
 
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 28%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 56%, ${tokens.bgDeep} 100%)`,
@@ -266,13 +288,13 @@ export default async function UuMenuPage({
   };
 
   return (
-    <main className="uu-public-shell" style={shellStyle}>
+    <main className={`uu-public-shell ${isMarketTheme ? "is-market-theme" : ""}`} style={shellStyle}>
       <div className="uu-public-container uu-public-container-refined">
-        <section className="uu-public-hero uu-public-hero-refined" style={cardStyle}>
+        <section className={`uu-public-hero uu-public-hero-refined ${isMarketTheme ? "is-market-theme" : ""}`} style={cardStyle}>
           <div className="uu-public-hero-top">
             <div className="uu-public-hero-badges">
-              {themeLabel ? <span className="uu-public-badge-chip">{themeLabel}</span> : null}
               {table ? <span className="uu-public-badge-chip is-table">桌號 {table}</span> : null}
+              {themeLabel ? <span className="uu-public-badge-chip">{themeLabel}</span> : null}
               <span className="uu-public-kicker">UU MENU</span>
             </div>
           </div>
@@ -306,7 +328,7 @@ export default async function UuMenuPage({
           ) : null}
         </section>
 
-        <section className="uu-public-card uu-public-menu-card" style={cardStyle}>
+        <section className={`uu-public-card uu-public-menu-card ${isMarketTheme ? "is-market-theme" : ""}`} style={cardStyle}>
           <div className="uu-public-section-head is-menu-head">
             <div>
               <h2>菜單</h2>
@@ -317,7 +339,7 @@ export default async function UuMenuPage({
             grouped.map((group, index) => (
               <section key={`${group.category}-${index}`} id={categoryLinks[index]?.id} className="uu-public-section uu-public-section-refined">
                 <div className="uu-public-section-title-row">
-                  <div className="uu-public-section-title uu-public-section-title-refined" style={{ color: tokens.accentStrong, background: tokens.badge, borderColor: tokens.border }}>
+                  <div className={`uu-public-section-title uu-public-section-title-refined ${isMarketTheme ? "is-market-theme" : ""}`} style={{ color: tokens.accentStrong, background: tokens.badge, borderColor: tokens.border }}>
                     <span className="uu-public-section-dot" />
                     {group.category}
                   </div>
@@ -327,7 +349,7 @@ export default async function UuMenuPage({
                   {group.items.map((item: any, itemIndex: number) => (
                     <div
                       key={`${group.category}-${item.name}-${itemIndex}`}
-                      className={`uu-public-item uu-public-item-refined ${item.soldOut ? "is-soldout" : ""}`}
+                      className={`uu-public-item uu-public-item-refined ${item.soldOut ? "is-soldout" : ""} ${isMarketTheme ? "is-market-theme" : ""}`}
                       style={{ borderColor: tokens.border, background: tokens.surfaceSoft }}
                     >
                       <div className="uu-public-item-copy">

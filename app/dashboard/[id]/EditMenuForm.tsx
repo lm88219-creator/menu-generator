@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market";
 
 type InitialData = {
   restaurant: string;
@@ -72,8 +72,23 @@ export default function EditMenuForm({
         buttonMainText: "#fff",
         buttonGhostBg: "#fff",
         buttonGhostText: "#111",
-        previewBg: "linear-gradient(180deg,#ffffff 0%,#f3f3f3 100%)",
-        previewBorder: "1px solid rgba(0,0,0,0.08)",
+      },
+      market: {
+        name: "招牌米白風",
+        pageBg: "linear-gradient(180deg,#f5efe7 0%,#ece2d7 100%)",
+        cardBg: "rgba(255,251,246,0.94)",
+        cardBorder: "1px solid rgba(197,58,48,0.16)",
+        text: "#223549",
+        subText: "#6b7a8d",
+        accent: "#c53a30",
+        inputBg: "rgba(255,255,255,0.88)",
+        inputBorder: "1px solid rgba(197,58,48,0.16)",
+        buttonMainBg: "#c53a30",
+        buttonMainText: "#fff",
+        buttonGhostBg: "rgba(255,255,255,0.72)",
+        buttonGhostText: "#223549",
+        previewBg: "linear-gradient(180deg,#fffaf5 0%,#f2e6da 100%)",
+        previewBorder: "1px solid rgba(197,58,48,0.12)",
       },
       warm: {
         name: "溫暖咖啡風",

@@ -12,7 +12,7 @@ function getPublicBaseUrl() {
 }
 
 
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market";
 
 function generateSlug(name: string) {
   return name
@@ -68,6 +68,21 @@ export default function Home() {
         buttonMainText: "#fff",
         buttonGhostBg: "#fff",
         buttonGhostText: "#111",
+      },
+      market: {
+        name: "招牌米白風",
+        pageBg: "linear-gradient(180deg,#f5efe7 0%,#ece2d7 100%)",
+        cardBg: "rgba(255,251,246,0.94)",
+        cardBorder: "1px solid rgba(197,58,48,0.16)",
+        text: "#223549",
+        subText: "#6b7a8d",
+        accent: "#c53a30",
+        inputBg: "rgba(255,255,255,0.88)",
+        inputBorder: "1px solid rgba(197,58,48,0.16)",
+        buttonMainBg: "#c53a30",
+        buttonMainText: "#fff",
+        buttonGhostBg: "rgba(255,255,255,0.72)",
+        buttonGhostText: "#223549",
       },
       warm: {
         name: "溫暖咖啡風",
@@ -859,6 +874,7 @@ y += 150;
                 {([
                   ["dark", "黑色餐廳風", "質感、夜店、燈箱感"],
                   ["light", "簡約白色", "乾淨、清楚、百搭"],
+                  ["market", "招牌米白風", "米白、招牌、台味餐館感"],
                   ["warm", "溫暖咖啡風", "木質、餐館、溫暖感"],
                   ["ocean", "海洋清新風", "清爽、海味、明亮感"],
                   ["forest", "森林自然風", "自然、手作、健康感"],
