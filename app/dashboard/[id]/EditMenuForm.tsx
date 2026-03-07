@@ -4,25 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market";
-
-type ThemeConfig = {
-  name: string;
-  pageBg: string;
-  cardBg: string;
-  cardBorder: string;
-  text: string;
-  subText: string;
-  accent: string;
-  inputBg: string;
-  inputBorder: string;
-  buttonMainBg: string;
-  buttonMainText: string;
-  buttonGhostBg: string;
-  buttonGhostText: string;
-  previewBg: string;
-  previewBorder: string;
-};
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
 
 type InitialData = {
   restaurant: string;
@@ -57,7 +39,7 @@ export default function EditMenuForm({
 
   const publicPath = slug.trim() ? `/menu/${encodeURIComponent(slug.trim())}` : `/m/${id}`;
 
-  const themeMap = useMemo<Record<ThemeType, ThemeConfig>>(
+  const themeMap = useMemo(
     () => ({
       dark: {
         name: "黑色餐廳風",
@@ -160,23 +142,6 @@ export default function EditMenuForm({
         buttonGhostText: "#5a3141",
         previewBg: "linear-gradient(180deg,#fffafc 0%,#fdebf1 100%)",
         previewBorder: "1px solid rgba(145,78,101,0.08)",
-      },
-      market: {
-        name: "招牌米白",
-        pageBg: "linear-gradient(180deg,#f6f1e9 0%,#eee5d8 100%)",
-        cardBg: "rgba(255,251,246,0.94)",
-        cardBorder: "1px solid rgba(16,35,63,0.10)",
-        text: "#10233f",
-        subText: "#6d7685",
-        accent: "#d53b2f",
-        inputBg: "rgba(255,255,255,0.88)",
-        inputBorder: "1px solid rgba(16,35,63,0.10)",
-        buttonMainBg: "#d53b2f",
-        buttonMainText: "#fff",
-        buttonGhostBg: "rgba(255,255,255,0.82)",
-        buttonGhostText: "#10233f",
-        previewBg: "linear-gradient(180deg,#f5f1ea 0%,#efe7db 100%)",
-        previewBorder: "1px solid rgba(213,59,47,0.14)",
       },
     }),
     []

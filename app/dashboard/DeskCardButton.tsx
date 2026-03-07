@@ -12,7 +12,7 @@ function getPublicBaseUrl() {
 }
 
 
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "market";
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
 
 export default function DeskCardButton({
   restaurant,
