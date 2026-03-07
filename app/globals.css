@@ -5634,7 +5634,8 @@ select.uu-input:focus {
   margin-top: 14px;
 }
 
-.uu-public-inline-meta span {
+.uu-public-inline-meta span,
+.uu-public-inline-link {
   display: inline-flex;
   align-items: center;
   min-height: 34px;
@@ -5645,6 +5646,27 @@ select.uu-input:focus {
   color: var(--uu-public-title);
   font-size: 13px;
   font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.uu-public-inline-link:hover {
+  transform: translateY(-1px);
+  border-color: var(--uu-public-accent-tint-strong);
+  background: color-mix(in srgb, var(--uu-public-accent-tint) 44%, var(--uu-public-surface-soft));
+}
+
+.uu-public-table-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  margin-top: 18px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--uu-public-border);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
 .uu-public-hero-note-grid {
