@@ -137,6 +137,16 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const deskCodes = useMemo(() => parseDeskInput(deskInput), [deskInput]);
   const soldOutCount = formItems.filter((item) => item.soldOut).length;
   const activeCount = formItems.filter((item) => item.name.trim() && !item.soldOut).length;
+  const categorySummary = useMemo(() => {
+    const map = new Map<string, number>();
+    formItems.forEach((item) => {
+      const name = item.name.trim();
+      if (!name) return;
+      const key = item.category.trim() || "精選菜單";
+      map.set(key, (map.get(key) || 0) + 1);
+    });
+    return Array.from(map.entries()).map(([name, count]) => ({ name, count }));
+  }, [formItems]);
   const selectedTheme = THEME_OPTIONS.find((item) => item.value === theme) || THEME_OPTIONS[0];
   const previewTokens = getPreviewTokens(theme);
   const deskStorageKey = `uu-desk-codes:${id}`;
@@ -372,6 +382,28 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               </div>
             </div>
 
+            <div className="uu-menu-editor-quickbar">
+              <div className="uu-menu-editor-quickbar-copy">
+                <strong>目前分類</strong>
+                <span>{categorySummary.length ? `已整理出 ${categorySummary.length} 個分類，新增品項時會沿用最後一個分類。` : "先新增第一個品項，之後會自動整理分類摘要。"}</span>
+              </div>
+              <div className="uu-menu-editor-category-pills">
+                {categorySummary.length ? categorySummary.map((category) => (
+                  <button
+                    key={category.name}
+                    type="button"
+                    className="uu-menu-editor-category-pill"
+                    onClick={() => addItem(category.name)}
+                  >
+                    <strong>{category.name}</strong>
+                    <span>{category.count} 項</span>
+                  </button>
+                )) : (
+                  <span className="uu-menu-editor-empty-pill">尚未建立分類</span>
+                )}
+              </div>
+            </div>
+
             <div className="uu-items-stack uu-menu-editor-stack">
               {formItems.map((item, index) => (
                 <article key={item.uid} className="uu-menu-item-card uu-menu-item-card-simple">
@@ -383,10 +415,13 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                         <small>{item.category.trim() || "精選菜單"}</small>
                       </div>
                     </div>
-                    <label className={`uu-menu-item-status ${item.soldOut ? "is-off" : "is-on"}`}>
-                      <input type="checkbox" checked={item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: e.target.checked })} />
-                      <span>{item.soldOut ? "售完" : "供應中"}</span>
-                    </label>
+                    <div className="uu-menu-item-card-tools">
+                      <span className="uu-menu-item-category-chip">{item.category.trim() || "精選菜單"}</span>
+                      <label className={`uu-menu-item-status ${item.soldOut ? "is-off" : "is-on"}`}>
+                        <input type="checkbox" checked={item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: e.target.checked })} />
+                        <span>{item.soldOut ? "售完" : "供應中"}</span>
+                      </label>
+                    </div>
                   </div>
 
                   <div className="uu-menu-item-grid uu-menu-item-grid-simple">
@@ -408,6 +443,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   </div>
 
                   <div className="uu-menu-item-actions uu-menu-item-actions-simple">
+                    <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem(item.category)}>同分類新增</button>
                     <button type="button" className="uu-btn uu-btn-secondary" onClick={() => duplicateItem(index)}>複製</button>
                     <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
                   </div>
@@ -443,33 +479,27 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   <div className="uu-editor-v4-subhead">
                     <div>
                       <span>主題挑選</span>
-                      <strong>選一個最符合店家氣質的視覺風格</strong>
+                      <strong>改成下拉選單，挑選更快也更乾淨</strong>
                     </div>
                   </div>
-                  <div className="uu-editor-theme-grid">
-                    {THEME_OPTIONS.map((option) => {
-                      const active = option.value === theme;
-                      return (
-                        <button
-                          key={option.value}
-                          type="button"
-                          className={`uu-editor-theme-card ${active ? "is-active" : ""}`}
-                          onClick={() => setTheme(option.value)}
-                        >
-                          <div className="uu-editor-theme-preview">
-                            {option.preview.map((color, index) => (
-                              <span key={`${option.value}-${index}`} style={{ background: color }} />
-                            ))}
-                          </div>
-                          <div className="uu-editor-theme-card-head">
-                            <strong>{option.label}</strong>
-                            {active ? <em>目前使用</em> : null}
-                          </div>
-                          <p>{option.desc}</p>
-                          <i style={{ background: option.accent }} />
-                        </button>
-                      );
-                    })}
+                  <div className="uu-editor-v4-theme-select-wrap">
+                    <label className="uu-field">
+                      <span>選擇公開頁主題</span>
+                      <select className="uu-input uu-theme-select" value={theme} onChange={(e) => setTheme(e.target.value as ThemeType)}>
+                        {THEME_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <div className="uu-editor-v4-theme-select-side">
+                      <div className="uu-editor-theme-preview uu-editor-theme-preview-inline">
+                        {selectedTheme.preview.map((color, index) => (
+                          <span key={`${selectedTheme.value}-${index}`} style={{ background: color }} />
+                        ))}
+                      </div>
+                      <strong>{selectedTheme.label}</strong>
+                      <p>{selectedTheme.desc}</p>
+                    </div>
                   </div>
                 </div>
 
@@ -483,30 +513,37 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   </div>
                   <div className="uu-editor-v4-public-preview" style={{ background: previewTokens.shell, color: previewTokens.text, borderColor: previewTokens.border }}>
                     <div className="uu-editor-v4-public-preview-hero uu-editor-v4-public-preview-hero-themed" style={{ background: previewTokens.hero, borderColor: previewTokens.border }}>
-                      <div className="uu-editor-v4-public-preview-badge" style={{ background: previewTokens.accentSoft, color: previewTokens.accent }}>精選推薦</div>
+                      <div className="uu-editor-v4-public-preview-brand-row">
+                        <div className="uu-editor-v4-public-preview-badge" style={{ background: previewTokens.accentSoft, color: previewTokens.accent }}>UU MENU</div>
+                        <div className="uu-editor-v4-public-preview-theme-dot" style={{ background: selectedTheme.accent }} />
+                      </div>
                       <strong style={{ color: previewTokens.title }}>{restaurant || "未命名店家"}</strong>
                       <span style={{ color: previewTokens.muted }}>{hours || "每日營業 11:00 - 20:00"}</span>
                       <div className="uu-editor-v4-public-preview-mini-meta">
-                        <span style={{ background: previewTokens.panel, borderColor: previewTokens.border, color: previewTokens.muted }}>分類清楚</span>
-                        <span style={{ background: previewTokens.panel, borderColor: previewTokens.border, color: previewTokens.muted }}>手機閱讀佳</span>
+                        <span style={{ background: previewTokens.panel, borderColor: previewTokens.border, color: previewTokens.muted }}>{selectedTheme.label}</span>
+                        <span style={{ background: previewTokens.panel, borderColor: previewTokens.border, color: previewTokens.muted }}>{logoDataUrl ? "品牌 Logo 已套用" : "乾淨文字版"}</span>
                       </div>
                     </div>
-                    <div className="uu-editor-v4-public-preview-section-chip" style={{ background: previewTokens.soft, color: previewTokens.accent }}>主廚推薦</div>
+                    <div className="uu-editor-v4-public-preview-section-chip" style={{ background: previewTokens.soft, color: previewTokens.accent }}>{categorySummary[0]?.name || "主廚推薦"}</div>
                     <div className="uu-editor-v4-public-preview-list">
-                      <div className="uu-editor-v4-public-preview-item" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
-                        <div>
-                          <strong style={{ color: previewTokens.title }}>招牌炒飯</strong>
-                          <span style={{ color: previewTokens.muted }}>人氣推薦</span>
+                      {formItems.filter((item) => item.name.trim()).slice(0, 3).map((item) => (
+                        <div key={item.uid} className="uu-editor-v4-public-preview-item" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
+                          <div>
+                            <strong style={{ color: previewTokens.title }}>{item.name.trim()}</strong>
+                            <span style={{ color: previewTokens.muted }}>{item.note.trim() || item.category.trim() || "人氣推薦"}</span>
+                          </div>
+                          <b style={{ color: previewTokens.accent, background: previewTokens.priceBg }}>{item.price.trim() ? `$${item.price.trim()}` : "$--"}</b>
                         </div>
-                        <b style={{ color: previewTokens.accent, background: previewTokens.priceBg }}>$90</b>
-                      </div>
-                      <div className="uu-editor-v4-public-preview-item" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
-                        <div>
-                          <strong style={{ color: previewTokens.title }}>宮保雞丁</strong>
-                          <span style={{ color: previewTokens.muted }}>微辣</span>
+                      ))}
+                      {!formItems.filter((item) => item.name.trim()).length ? (
+                        <div className="uu-editor-v4-public-preview-item" style={{ background: previewTokens.panel, borderColor: previewTokens.border }}>
+                          <div>
+                            <strong style={{ color: previewTokens.title }}>招牌炒飯</strong>
+                            <span style={{ color: previewTokens.muted }}>先新增品項，這裡會同步預覽</span>
+                          </div>
+                          <b style={{ color: previewTokens.accent, background: previewTokens.priceBg }}>$90</b>
                         </div>
-                        <b style={{ color: previewTokens.accent, background: previewTokens.priceBg }}>$160</b>
-                      </div>
+                      ) : null}
                     </div>
                   </div>
                   <div className="uu-editor-v4-theme-checklist">

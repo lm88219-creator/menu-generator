@@ -151,11 +151,10 @@ export default async function UUDashboardPage({
           </div>
 
           {filteredMenus.length ? (
-            <div className="uu-dashboard-list-v7">
-              <div className="uu-dashboard-column-head-v7" aria-hidden="true">
-                <span>店家資訊</span>
-                <span>聯絡資訊</span>
-                <span>操作</span>
+            <div className="uu-dashboard-list-v7 uu-dashboard-list-v8">
+              <div className="uu-dashboard-column-head-v7 uu-dashboard-column-head-v8" aria-hidden="true">
+                <span>店家列表</span>
+                <span>聯絡與操作</span>
               </div>
 
               {filteredMenus.map((menu) => {
@@ -163,8 +162,8 @@ export default async function UUDashboardPage({
                 const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
 
                 return (
-                  <article key={menu.id} className="uu-dashboard-row-v7">
-                    <div className="uu-dashboard-row-main-v7">
+                  <article key={menu.id} className="uu-dashboard-row-v7 uu-dashboard-row-v8">
+                    <div className="uu-dashboard-row-main-v7 uu-dashboard-row-main-v8">
                       <div className="uu-store-logo uu-dashboard-store-logo-v7">
                         {menu.logoDataUrl ? (
                           <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} />
@@ -180,31 +179,39 @@ export default async function UUDashboardPage({
                             {menu.isPublished === false ? "已下架" : "上架中"}
                           </span>
                         </div>
-                        <div className="uu-dashboard-store-meta-v7">
+                        <div className="uu-dashboard-store-meta-v7 uu-dashboard-store-meta-v8">
                           <code className="uu-table-code">/{menu.slug || menu.id}</code>
                           <span className="uu-dashboard-meta-chip">{getThemeLabel(menu.theme)}</span>
                           <span className="uu-dashboard-meta-chip">更新 {formatShortDate(menu.updatedAt)}</span>
                         </div>
+                        <div className="uu-dashboard-contact-inline-v8">
+                          <div className="uu-dashboard-info-item-v7">
+                            <span>電話</span>
+                            <strong>{menu.phone || "未填電話"}</strong>
+                          </div>
+                          <div className="uu-dashboard-info-item-v7">
+                            <span>地址</span>
+                            <strong>{menu.address || "未填地址"}</strong>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="uu-dashboard-row-contact-v7">
-                      <div className="uu-dashboard-info-item-v7">
-                        <span>電話</span>
-                        <strong>{menu.phone || "未填電話"}</strong>
+                    <div className="uu-dashboard-row-actions-wrap-v8">
+                      <div className="uu-dashboard-row-contact-v7 uu-dashboard-row-contact-v8">
+                        <div className="uu-dashboard-info-item-v7 uu-dashboard-info-item-soft-v8">
+                          <span>公開頁狀態</span>
+                          <strong>{menu.isPublished === false ? "目前不顯示給客人" : "客人可直接開啟"}</strong>
+                        </div>
                       </div>
-                      <div className="uu-dashboard-info-item-v7">
-                        <span>地址</span>
-                        <strong>{menu.address || "未填地址"}</strong>
-                      </div>
-                    </div>
 
-                    <div className="uu-dashboard-row-actions-v7">
-                      <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
-                      <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">公開頁</Link>
-                      <CopyUrlButton url={publicUrl} />
-                      <DeskCardButton restaurant={menu.restaurant} publicUrl={publicPath} />
-                      <DeleteMenuButton id={menu.id} />
+                      <div className="uu-dashboard-row-actions-v7 uu-dashboard-row-actions-v8">
+                        <Link href={`/uu/dashboard/${menu.id}`} className="uu-btn uu-btn-primary">編輯</Link>
+                        <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">公開頁</Link>
+                        <CopyUrlButton url={publicUrl} />
+                        <DeskCardButton restaurant={menu.restaurant} publicUrl={publicPath} />
+                        <DeleteMenuButton id={menu.id} />
+                      </div>
                     </div>
                   </article>
                 );
