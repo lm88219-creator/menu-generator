@@ -3447,3 +3447,260 @@ select.uu-input:focus {
     gap: 8px;
   }
 }
+
+/* ===== Dashboard refinement v6 ===== */
+.uu-dashboard-v6,
+.uu-editor-page-v4 {
+  gap: 18px;
+}
+
+.uu-dashboard-topbar-v6 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 22px 24px;
+}
+
+.uu-dashboard-topbar-main-v6,
+.uu-dashboard-topbar-actions-v6,
+.uu-dashboard-stats-v6,
+.uu-dashboard-list-meta-v6,
+.uu-dashboard-card-title-wrap-v6,
+.uu-dashboard-card-meta-v6,
+.uu-dashboard-card-actions-v6,
+.uu-dashboard-info-grid-v6 {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.uu-dashboard-topbar-main-v6 {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.uu-dashboard-topbar-actions-v6 {
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.uu-dashboard-toolbar-v6 {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.uu-dashboard-searchbar-v6 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+}
+
+.uu-dashboard-stats-v6 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.uu-dashboard-stat-card-v6 {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--uu-line);
+  background: rgba(255,255,255,0.025);
+}
+
+.uu-dashboard-stat-card-v6 span,
+.uu-dashboard-info-item-v6 span {
+  color: var(--uu-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.uu-dashboard-stat-card-v6 strong {
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.uu-dashboard-stat-card-wide-v6 strong {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.uu-dashboard-list-shell-v6 {
+  padding: 18px;
+}
+
+.uu-dashboard-list-head-v6 {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--uu-line);
+}
+
+.uu-dashboard-list-head-v6 h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.uu-dashboard-list-head-v6 p {
+  margin: 8px 0 0;
+  color: var(--uu-muted);
+  line-height: 1.65;
+}
+
+.uu-dashboard-list-meta-v6 {
+  justify-content: flex-end;
+}
+
+.uu-dashboard-list-v6 {
+  display: grid;
+  gap: 12px;
+}
+
+.uu-dashboard-card-v6 {
+  border: 1px solid var(--uu-line);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.012));
+  padding: 16px;
+}
+
+.uu-dashboard-card-head-v6 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.uu-dashboard-store-logo-v6 {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #1a2230, #101722);
+}
+
+.uu-dashboard-card-title-wrap-v6 {
+  align-items: center;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.uu-dashboard-card-title-v6 {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.uu-dashboard-card-name-row-v6 {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.uu-dashboard-card-meta-v6 {
+  align-items: center;
+}
+
+.uu-dashboard-card-actions-v6 {
+  display: grid;
+  grid-template-columns: repeat(5, max-content);
+  gap: 8px;
+  justify-content: end;
+}
+
+.uu-dashboard-card-body-v6 {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--uu-line);
+}
+
+.uu-dashboard-info-grid-v6 {
+  display: grid;
+  grid-template-columns: 180px minmax(240px, 1fr) minmax(320px, 1.1fr);
+  gap: 12px;
+}
+
+.uu-dashboard-info-item-v6 {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--uu-line);
+  background: rgba(255,255,255,0.03);
+}
+
+.uu-dashboard-info-item-v6 strong {
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.uu-dashboard-info-item-url-v6 strong {
+  color: #dfe8ff;
+}
+
+/* 編輯頁上方不要置頂 */
+.uu-editor-v4-topbar {
+  position: static;
+  top: auto;
+}
+
+.uu-editor-v4-savebar {
+  top: 16px;
+}
+
+@media (max-width: 1180px) {
+  .uu-dashboard-topbar-v6,
+  .uu-dashboard-card-head-v6,
+  .uu-dashboard-info-grid-v6 {
+    grid-template-columns: 1fr;
+  }
+
+  .uu-dashboard-card-actions-v6 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    justify-content: stretch;
+  }
+}
+
+@media (max-width: 900px) {
+  .uu-dashboard-stats-v6,
+  .uu-dashboard-info-grid-v6 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .uu-dashboard-list-head-v6 {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 760px) {
+  .uu-dashboard-topbar-v6,
+  .uu-dashboard-toolbar-v6,
+  .uu-dashboard-list-shell-v6 {
+    padding: 16px;
+  }
+
+  .uu-dashboard-searchbar-v6,
+  .uu-dashboard-stats-v6,
+  .uu-dashboard-card-actions-v6,
+  .uu-dashboard-info-grid-v6 {
+    grid-template-columns: 1fr;
+  }
+
+  .uu-dashboard-topbar-actions-v6,
+  .uu-dashboard-card-title-wrap-v6 {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .uu-dashboard-card-title-wrap-v6 {
+    flex-wrap: wrap;
+  }
+}
