@@ -1082,3 +1082,62 @@ select {
     align-self: flex-end;
   }
 }
+
+
+.uu-admin-subhero-simple {
+  padding: 18px 22px;
+}
+
+.uu-stats-strip {
+  padding: 14px;
+}
+
+.uu-editor-simple {
+  display: block;
+}
+
+.uu-simple-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.uu-simple-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.uu-simple-section + .uu-simple-section {
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  padding-top: 16px;
+}
+
+.uu-item-card-simple {
+  padding: 14px;
+}
+
+.uu-item-grid-simple {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.9fr) minmax(220px, 1.3fr) 120px minmax(200px, 1.2fr);
+  gap: 12px;
+}
+
+.uu-card-actions {
+  align-items: center;
+}
+
+@media (max-width: 980px) {
+  .uu-item-grid-simple {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .uu-item-grid-simple {
+    grid-template-columns: 1fr;
+  }
+}

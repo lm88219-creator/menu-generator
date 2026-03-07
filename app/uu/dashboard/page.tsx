@@ -51,26 +51,27 @@ export default async function UUDashboardPage({
   return (
     <main className="uu-admin-shell">
       <div className="uu-admin-container">
-        <section className="uu-admin-hero">
+        <section className="uu-admin-subhero uu-admin-subhero-simple">
           <div>
             <div className="uu-kicker">UU MENU ADMIN</div>
             <h1 className="uu-admin-title">多店菜單控制台</h1>
             <p className="uu-admin-copy">
-              由你統一管理店家菜單、網址與 QR，版面改成更俐落的一列式工作台。
+              改成簡單明瞭的深色後台，重點放在店家管理，不再用太多裝飾色。
             </p>
-            <div className="uu-form-actions">
-              <Link href="/" className="uu-btn uu-btn-primary">建立新菜單</Link>
-              <Link href="/uu/login" className="uu-btn uu-btn-secondary">登入頁</Link>
-              <LogoutButton />
-            </div>
           </div>
-          <div className="uu-admin-hero-panel">
-            <div className="uu-admin-hero-grid">
-              <StatCard label="全部菜單" value={String(menus.length)} sub="目前可管理的餐廳數" />
-              <StatCard label="上架中" value={String(publishedCount)} sub="公開客人可看的菜單" />
-              <StatCard label="有 Logo" value={String(logoCount)} sub="品牌識別更完整" />
-              <StatCard label="最近更新" value={latestUpdate ? formatDateTime(latestUpdate) : "—"} sub="最後異動時間" compact />
-            </div>
+          <div className="uu-form-actions">
+            <Link href="/" className="uu-btn uu-btn-primary">建立新菜單</Link>
+            <Link href="/uu/login" className="uu-btn uu-btn-secondary">登入頁</Link>
+            <LogoutButton />
+          </div>
+        </section>
+
+        <section className="uu-panel uu-stats-strip">
+          <div className="uu-admin-hero-grid">
+            <StatCard label="全部菜單" value={String(menus.length)} sub="目前可管理的餐廳數" />
+            <StatCard label="上架中" value={String(publishedCount)} sub="公開客人可看的菜單" />
+            <StatCard label="有 Logo" value={String(logoCount)} sub="品牌識別更完整" />
+            <StatCard label="最近更新" value={latestUpdate ? formatDateTime(latestUpdate) : "—"} sub="最後異動時間" compact />
           </div>
         </section>
 
@@ -78,7 +79,7 @@ export default async function UUDashboardPage({
           <div className="uu-section-head">
             <div>
               <h2>快速搜尋</h2>
-              <p>可搜尋店名、slug、ID、電話與地址，管理多家店時會快很多。</p>
+              <p>可搜尋店名、slug、電話與地址。</p>
             </div>
           </div>
           <form action="/uu/dashboard" method="GET" className="uu-filter-grid">
@@ -101,7 +102,7 @@ export default async function UUDashboardPage({
           <div className="uu-section-head">
             <div>
               <h2>店家列表</h2>
-              <p>用一排一張的方式顯示店家，方便快速掃讀、編輯與下載 QR。</p>
+              <p>一排一間，讓你快速編輯、複製網址與下載 QR。</p>
             </div>
             <div className="uu-chip">共 {filteredMenus.length} 間</div>
           </div>

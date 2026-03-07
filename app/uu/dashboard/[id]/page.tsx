@@ -29,11 +29,11 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
   return (
     <main className="uu-admin-shell">
       <div className="uu-admin-container">
-        <section className="uu-admin-subhero">
+        <section className="uu-admin-subhero uu-admin-subhero-simple">
           <div>
             <div className="uu-kicker">UU MENU EDITOR</div>
             <h1 className="uu-admin-title">編輯菜單</h1>
-            <p className="uu-admin-copy">左邊專心編輯，右邊看預覽；整體間距與表單尺寸都再收斂一版，操作會更俐落。</p>
+            <p className="uu-admin-copy">已改成簡單型後台：移除右側大預覽，保留最常用的編輯功能。</p>
           </div>
           <div className="uu-form-actions">
             <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回後台</Link>

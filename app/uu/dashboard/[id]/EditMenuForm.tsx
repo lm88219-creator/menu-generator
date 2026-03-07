@@ -1,9 +1,9 @@
 "use client";
 
 import { QRCodeCanvas } from "qrcode.react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { groupMenuItems, parseMenuText, normalizeSlug } from "@/lib/menu";
+import { parseMenuText, normalizeSlug } from "@/lib/menu";
 
 export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
 
@@ -27,13 +27,13 @@ type MenuItemForm = {
   soldOut: boolean;
 };
 
-const THEME_OPTIONS: Array<{ value: ThemeType; label: string; desc: string; accent: string }> = [
-  { value: "dark", label: "黑色餐廳風", desc: "質感、夜店、燈箱感", accent: "#f4d58d" },
-  { value: "light", label: "簡約白色", desc: "乾淨、清楚、百搭", accent: "#cbd5e1" },
-  { value: "warm", label: "溫暖咖啡風", desc: "木質、餐館、溫暖感", accent: "#8b5e34" },
-  { value: "ocean", label: "海洋清新風", desc: "清爽、海味、明亮感", accent: "#118ab2" },
-  { value: "forest", label: "森林自然風", desc: "自然、手作、健康感", accent: "#2f6b3f" },
-  { value: "rose", label: "玫瑰奶茶風", desc: "柔和、甜點、質感感", accent: "#b35c7a" },
+const THEME_OPTIONS: Array<{ value: ThemeType; label: string }> = [
+  { value: "dark", label: "深色經典" },
+  { value: "light", label: "簡約白" },
+  { value: "warm", label: "暖木咖啡" },
+  { value: "ocean", label: "海洋清新" },
+  { value: "forest", label: "森林自然" },
+  { value: "rose", label: "玫瑰奶茶" },
 ];
 
 function toFormItems(menuText: string): MenuItemForm[] {
@@ -106,25 +106,26 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const [phone, setPhone] = useState(initialData.phone);
   const [address, setAddress] = useState(initialData.address);
   const [hours, setHours] = useState(initialData.hours);
-  const [menuText, setMenuText] = useState(initialData.menuText);
   const [formItems, setFormItems] = useState<MenuItemForm[]>(() => toFormItems(initialData.menuText));
+  const [menuText, setMenuText] = useState(initialData.menuText);
   const [theme, setTheme] = useState<ThemeType>(initialData.theme || "dark");
   const [logoDataUrl, setLogoDataUrl] = useState(initialData.logoDataUrl || "");
   const [slug, setSlug] = useState(initialData.slug || "");
   const [isPublished, setIsPublished] = useState(initialData.isPublished !== false);
-  const [mode, setMode] = useState<"form" | "text">("form");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [deskInput, setDeskInput] = useState("A1 A2 A3 A4");
   const [deskStart, setDeskStart] = useState("1");
   const [deskEnd, setDeskEnd] = useState("12");
-  const [mobileView, setMobileView] = useState<"edit" | "preview">("edit");
 
   const safeSlug = normalizeSlug(slug || restaurant) || id;
   const publicPath = `/uu/menu/${safeSlug}`;
   const publicUrl = `${getBaseUrl()}${publicPath}`;
-  const groupedPreview = useMemo(() => groupMenuItems(menuText || "精選菜單\n招牌菜 100"), [menuText]);
   const deskCodes = useMemo(() => parseDeskInput(deskInput, deskStart, deskEnd), [deskInput, deskStart, deskEnd]);
+
+  useEffect(() => {
+    setMenuText(toMenuText(formItems));
+  }, [formItems]);
 
   function pushMessage(text: string) {
     setMessage(text);
@@ -132,47 +133,32 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   function updateFormItem(index: number, patch: Partial<MenuItemForm>) {
-    setFormItems((current) => {
-      const next = current.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item));
-      setMenuText(toMenuText(next));
-      return next;
-    });
+    setFormItems((current) => current.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)));
   }
 
   function addItem(afterCategory?: string) {
-    setFormItems((current) => {
-      const next = [...current, { category: afterCategory || current[current.length - 1]?.category || "精選菜單", name: "", price: "", note: "", soldOut: false }];
-      return next;
-    });
+    setFormItems((current) => [
+      ...current,
+      { category: afterCategory || current[current.length - 1]?.category || "精選菜單", name: "", price: "", note: "", soldOut: false },
+    ]);
   }
 
   function removeItem(index: number) {
     setFormItems((current) => {
       const next = current.filter((_, itemIndex) => itemIndex !== index);
-      setMenuText(toMenuText(next));
       return next.length ? next : [{ category: "精選菜單", name: "", price: "", note: "", soldOut: false }];
     });
   }
 
-  function syncTextToForm() {
-    const next = toFormItems(menuText);
-    setFormItems(next);
-    pushMessage("已從文字同步到表單");
-  }
-
-  function syncFormToText() {
-    const next = toMenuText(formItems);
-    setMenuText(next);
-    pushMessage("已從表單同步到文字");
-  }
-
   async function handleSave() {
+    const finalMenuText = toMenuText(formItems);
+
     if (!restaurant.trim()) {
       alert("請輸入餐廳名稱");
       return;
     }
-    if (!menuText.trim()) {
-      alert("請輸入菜單內容");
+    if (!finalMenuText.trim()) {
+      alert("請至少新增一個菜單品項");
       return;
     }
 
@@ -186,7 +172,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
           phone,
           address,
           hours,
-          menuText,
+          menuText: finalMenuText,
           theme,
           logoDataUrl,
           customSlug: slug,
@@ -200,6 +186,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
         return;
       }
       if (data?.data?.slug) setSlug(data.data.slug);
+      setMenuText(finalMenuText);
       pushMessage("已成功儲存");
       router.refresh();
     } catch {
@@ -222,17 +209,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   return (
-    <>
-    <div className="uu-mobile-preview-switch">
-      <button type="button" className={`uu-tab-btn ${mobileView === "edit" ? "is-active" : ""}`} onClick={() => setMobileView("edit")}>編輯</button>
-      <button type="button" className={`uu-tab-btn ${mobileView === "preview" ? "is-active" : ""}`} onClick={() => setMobileView("preview")}>預覽</button>
-    </div>
-    <div className={`uu-editor-layout ${mobileView === "preview" ? "is-preview-active" : "is-edit-active"}`}>
-      <section className="uu-panel uu-editor-main-panel">
-        <div className="uu-sticky-toolbar">
-          <div className="uu-form-actions">
-            <button type="button" className={`uu-tab-btn ${mode === "form" ? "is-active" : ""}`} onClick={() => setMode("form")}>表單模式</button>
-            <button type="button" className={`uu-tab-btn ${mode === "text" ? "is-active" : ""}`} onClick={() => setMode("text")}>文字模式</button>
+    <div className="uu-editor-simple">
+      <section className="uu-panel uu-subpanel">
+        <div className="uu-simple-toolbar">
+          <div>
+            <h2 className="uu-simple-title">基本資料</h2>
+            <p className="uu-admin-copy">後台改成單欄編輯，直接改資料就好，不再放預覽區。</p>
           </div>
           <div className="uu-form-actions">
             {message ? <span className="uu-inline-hint is-success">{message}</span> : null}
@@ -242,11 +224,11 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
         </div>
 
         <div className="uu-editor-stack">
-          <section className="uu-panel uu-subpanel">
+          <section className="uu-simple-section">
             <div className="uu-section-head">
               <div>
                 <h2>店家資訊</h2>
-                <p>先把店名、電話、地址、營業時間與公開狀態整理好。</p>
+                <p>只保留常用欄位，畫面更簡單。</p>
               </div>
               <label className="uu-switch-row">
                 <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
@@ -263,24 +245,24 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-preview-url-box">公開網址：<strong>{publicUrl}</strong></div>
           </section>
 
-          <section className="uu-panel uu-subpanel">
+          <section className="uu-simple-section">
             <div className="uu-section-head">
               <div>
-                <h2>品牌與風格</h2>
-                <p>後台維持深色專業感，公開菜單頁則偏亮色、客人閱讀更舒服。</p>
+                <h2>風格與 Logo</h2>
+                <p>簡化成下拉選單，不再用大面積風格卡片。</p>
               </div>
             </div>
-            <div className="uu-theme-grid">
-              {THEME_OPTIONS.map((option) => (
-                <button key={option.value} type="button" className={`uu-theme-card ${theme === option.value ? "is-active" : ""}`} onClick={() => setTheme(option.value)}>
-                  <div className="uu-theme-card-top">
-                    <span className="uu-theme-accent" style={{ background: option.accent }} />
-                    <strong>{option.label}</strong>
-                    {theme === option.value ? <em>已選擇</em> : null}
-                  </div>
-                  <span>{option.desc}</span>
-                </button>
-              ))}
+            <div className="uu-form-grid-2">
+              <Field label="菜單風格">
+                <select className="uu-input" value={theme} onChange={(e) => setTheme(e.target.value as ThemeType)}>
+                  {THEME_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="目前輸出格式">
+                <div className="uu-inline-hint">一列一項，適合你平常快速編輯。</div>
+              </Field>
             </div>
             <div className="uu-logo-row">
               <label className="uu-upload-box">
@@ -293,60 +275,49 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   <button type="button" className="uu-btn uu-btn-secondary" onClick={() => setLogoDataUrl("")}>移除 Logo</button>
                 </div>
               ) : (
-                <div className="uu-inline-hint">建議用正方形圖片，客人看起來會更完整。</div>
+                <div className="uu-inline-hint">建議用正方形圖片。</div>
               )}
             </div>
           </section>
 
-          <section className="uu-panel uu-subpanel">
+          <section className="uu-simple-section">
             <div className="uu-section-head">
               <div>
-                <h2>菜單編輯器</h2>
-                <p>這一版改成比較舒服的兩段式排版，不再把所有欄位硬擠在同一排。</p>
-              </div>
-              <div className="uu-form-actions">
-                <button type="button" className="uu-btn uu-btn-secondary" onClick={syncTextToForm}>文字 → 表單</button>
-                <button type="button" className="uu-btn uu-btn-secondary" onClick={syncFormToText}>表單 → 文字</button>
+                <h2>菜單品項</h2>
+                <p>直接一列一列新增，後台更直覺。</p>
               </div>
             </div>
 
-            {mode === "form" ? (
-              <div className="uu-items-stack">
-                {formItems.map((item, index) => (
-                  <article key={`${index}-${item.category}-${item.name}`} className="uu-item-card">
-                    <div className="uu-item-grid-top">
-                      <Field label="分類"><input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="例如：熱炒" /></Field>
-                      <Field label="價格"><input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="例如：120" /></Field>
-                    </div>
+            <div className="uu-items-stack">
+              {formItems.map((item, index) => (
+                <article key={`${index}-${item.category}-${item.name}`} className="uu-item-card uu-item-card-simple">
+                  <div className="uu-item-grid-simple">
+                    <Field label="分類"><input className="uu-input" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="例如：熱炒" /></Field>
                     <Field label="菜名"><input className="uu-input" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="例如：炒螺肉" /></Field>
-                    <Field label="備註"><input className="uu-input" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="例如：小辣 / 限量供應 / 推薦" /></Field>
-                    <div className="uu-item-footer">
-                      <label className="uu-switch-row">
-                        <input type="checkbox" checked={item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: e.target.checked })} />
-                        <span>{item.soldOut ? "已售完" : "供應中"}</span>
-                      </label>
-                      <div className="uu-form-actions">
-                        <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem(item.category)}>新增同分類</button>
-                        <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
-                      </div>
+                    <Field label="價格"><input className="uu-input" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="例如：120" /></Field>
+                    <Field label="備註"><input className="uu-input" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="例如：小辣 / 限量供應" /></Field>
+                  </div>
+                  <div className="uu-item-footer">
+                    <label className="uu-switch-row">
+                      <input type="checkbox" checked={item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: e.target.checked })} />
+                      <span>{item.soldOut ? "已售完" : "供應中"}</span>
+                    </label>
+                    <div className="uu-form-actions">
+                      <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem(item.category)}>新增同分類</button>
+                      <button type="button" className="uu-btn uu-btn-danger" onClick={() => removeItem(index)}>刪除</button>
                     </div>
-                  </article>
-                ))}
-                <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => addItem()}>＋ 新增品項</button>
-              </div>
-            ) : (
-              <div className="uu-text-editor-wrap">
-                <textarea className="uu-textarea" value={menuText} onChange={(e) => setMenuText(e.target.value)} placeholder={"熱炒\n炒蝦球 200\n炒螺肉 120\n\n主食\n炒飯 80"} />
-                <p className="uu-inline-hint">文字模式適合你快速貼上舊菜單；表單模式則適合日常微調。</p>
-              </div>
-            )}
+                  </div>
+                </article>
+              ))}
+              <button type="button" className="uu-btn uu-btn-secondary uu-full-width" onClick={() => addItem()}>＋ 新增品項</button>
+            </div>
           </section>
 
-          <section className="uu-panel uu-subpanel">
+          <section className="uu-simple-section">
             <div className="uu-section-head">
               <div>
                 <h2>桌號 QR 工具</h2>
-                <p>你現在是自己幫店家管理，這區讓你能先把桌號版網址與 QR 一次準備好。</p>
+                <p>保留實用功能，但版面縮小更整齊。</p>
               </div>
             </div>
             <div className="uu-form-grid-2">
@@ -364,48 +335,22 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   </div>
                 );
               })}
-              {!deskCodes.length ? <div className="uu-inline-hint">輸入桌號後，這裡就會顯示可直接複製的桌號 QR。</div> : null}
+              {!deskCodes.length ? <div className="uu-inline-hint">輸入桌號後，這裡會顯示 QR。</div> : null}
             </div>
+          </section>
+
+          <section className="uu-simple-section">
+            <div className="uu-section-head">
+              <div>
+                <h2>文字輸出</h2>
+                <p>這裡是系統儲存用內容，方便你快速確認。</p>
+              </div>
+            </div>
+            <textarea className="uu-textarea" value={menuText} readOnly />
           </section>
         </div>
       </section>
-
-      <aside className="uu-preview-panel">
-        <div className="uu-preview-shell">
-          <div className="uu-preview-head">
-            <div className="uu-chip is-light">{THEME_OPTIONS.find((option) => option.value === theme)?.label}</div>
-            <div className="uu-chip is-light">{isPublished ? "上架中" : "已下架"}</div>
-          </div>
-          <div className={`uu-menu-preview theme-${theme}`}>
-            <div className="uu-menu-hero">
-              {logoDataUrl ? <img src={logoDataUrl} alt="logo preview" className="uu-menu-logo" /> : null}
-              <h3>{restaurant || "餐廳名稱"}</h3>
-              <p>電話 {phone || "未填寫"} ・ {hours || "營業時間未填寫"}</p>
-              <span>{address || "地址未填寫"}</span>
-            </div>
-            <div className="uu-menu-section-wrap">
-              {groupedPreview.map((group) => (
-                <section key={group.category} className="uu-menu-section">
-                  <div className="uu-menu-category">{group.category}</div>
-                  <div className="uu-menu-items">
-                    {group.items.map((item, index) => (
-                      <div key={`${group.category}-${item.name}-${index}`} className={`uu-menu-item ${item.soldOut ? "is-soldout" : ""}`}>
-                        <div>
-                          <strong>{item.name}</strong>
-                          {item.note ? <p>{item.note}</p> : null}
-                        </div>
-                        <div className="uu-menu-price">{item.price ? `$${item.price}` : "時價"}</div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              ))}
-            </div>
-          </div>
-        </div>
-      </aside>
     </div>
-    </>
   );
 }
 
