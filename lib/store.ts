@@ -120,7 +120,7 @@ export async function listMenus(): Promise<MenuRecord[]> {
       .map((key) => key.replace("menu:", ""));
 
     if (ids.length) {
-      await redis.sadd(MENU_INDEX_KEY, ...ids);
+    await redis.sadd(MENU_INDEX_KEY, ...(ids as [string, ...string[]]));
     }
   }
 
