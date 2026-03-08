@@ -9,38 +9,8 @@ import { requireAdmin } from "@/lib/auth";
 import { listMenus } from "@/lib/store";
 import { getConfiguredSiteUrl } from "@/lib/site";
 
-function getThemeLabel(theme?: string) {
-  if (theme === "light") return "簡約白";
-  if (theme === "warm") return "暖木咖啡";
-  if (theme === "ocean") return "海洋清新";
-  if (theme === "forest") return "森林自然";
-  if (theme === "rose") return "玫瑰奶茶";
-  if (theme === "classic") return "經典餐館";
-  return "深色經典";
-}
+import { getThemeLabel } from "@/lib/theme";
 
-function formatDateTime(value?: number) {
-  if (!value) return "—";
-  return new Date(value).toLocaleString("zh-TW", {
-    hour12: false,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function formatShortDate(value?: number) {
-  if (!value) return "尚未更新";
-  return new Date(value).toLocaleString("zh-TW", {
-    hour12: false,
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 export default async function UUDashboardPage({
   searchParams,

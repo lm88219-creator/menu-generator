@@ -6,6 +6,7 @@ import { getMenu } from "@/lib/store";
 import EditMenuForm from "./EditMenuForm";
 import CopyUrlButton from "@/components/admin/CopyUrlButton";
 import { getConfiguredSiteUrl } from "@/lib/site";
+import { normalizeTheme } from "@/lib/theme";
 
 export default async function UUDashboardEditPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
@@ -66,7 +67,7 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
             address: menu.address ?? "",
             hours: menu.hours ?? "",
             menuText: menu.menuText ?? "",
-            theme: (menu.theme ?? "dark") as "dark" | "light" | "warm" | "ocean" | "forest" | "rose",
+            theme: normalizeTheme(menu.theme),
             logoDataUrl: menu.logoDataUrl ?? "",
             slug: menu.slug ?? "",
             isPublished: menu.isPublished !== false,

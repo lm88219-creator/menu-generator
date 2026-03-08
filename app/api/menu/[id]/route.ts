@@ -4,6 +4,7 @@ import { isAdminAuthenticated } from "@/lib/auth";
 import { deleteMenu, getMenu, isSlugAvailable, updateMenu } from "@/lib/store";
 import { resolvePublicBaseUrl } from "@/lib/site";
 import { buildMenuPathSegment } from "@/lib/menu";
+import { normalizeTheme } from "@/lib/theme";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -42,8 +43,7 @@ export async function PATCH(req: Request, { params }: Params) {
     if (!menuText) return Response.json({ error: "請輸入菜單內容" }, { status: 400 });
     if (slug && !(await isSlugAvailable(slug, id))) return Response.json({ error: "這個菜單網址已被使用" }, { status: 409 });
 
-    const allowedThemes = ["dark", "light", "warm", "ocean", "forest", "rose"];
-    const safeTheme = allowedThemes.includes(theme) ? theme : "dark";
+    const safeTheme = normalizeTheme(theme);
     const updated = await updateMenu(id, { restaurant, phone, address, hours, menuText, theme: safeTheme as any, logoDataUrl, slug, isPublished });
     if (!updated) return Response.json({ error: "找不到菜單" }, { status: 404 });
 

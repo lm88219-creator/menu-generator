@@ -1,9 +1,9 @@
 import { Redis } from "@upstash/redis";
 import { normalizeSlug } from "@/lib/menu";
+import type { ThemeType } from "@/lib/theme";
 
 const redis = Redis.fromEnv();
 
-export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "classic";
 
 export type MenuData = {
   restaurant: string;
