@@ -201,3 +201,28 @@ export default async function UUDashboardPage({
     </main>
   );
 }
+
+
+function formatDateTime(value?: string | number | null) {
+  const timestamp = Number(value ?? 0);
+  if (!timestamp) return "尚無資料";
+
+  return new Intl.DateTimeFormat("zh-TW", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(timestamp));
+}
+
+function formatShortDate(value?: string | number | null) {
+  const timestamp = Number(value ?? 0);
+  if (!timestamp) return "尚無資料";
+
+  return new Intl.DateTimeFormat("zh-TW", {
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(timestamp));
+}
