@@ -241,7 +241,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const [menuText, setMenuText] = useState(initialData.menuText);
   const [quickInput, setQuickInput] = useState(initialData.menuText);
   const [bulkDirty, setBulkDirty] = useState(false);
-  const [editorMode, setEditorMode] = useState<"quick" | "detail">("quick");
   const [theme, setTheme] = useState<ThemeType>(initialData.theme || "dark");
   const [logoDataUrl, setLogoDataUrl] = useState(initialData.logoDataUrl || "");
   const [slug, setSlug] = useState(initialData.slug || "");
@@ -327,31 +326,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
     pushMessage("已套用整排輸入");
   }
 
-  function syncQuickInputFromItems() {
-    const nextMenuText = toMenuText(formItems);
-    setMenuText(nextMenuText);
-    setQuickInput(nextMenuText);
-    setBulkDirty(false);
-    pushMessage("已同步右側內容");
-  }
-
-  function fillQuickInputExample() {
-    const example = `鵝肉
-鹽水鵝肉 200
-麻油鵝肉 220
-
-主食
-炒飯 80
-炒麵 80`;
-    setEditorMode("quick");
-    setQuickInput(example);
-    setBulkDirty(true);
-  }
-
-  function clearQuickInput() {
-    setQuickInput("");
-    setBulkDirty(true);
-  }
 
   function addItem(afterCategory?: string) {
     setFormItems((current) => [
@@ -564,30 +538,28 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               </div>
             </div>
 
-            <div className="uu-menu-editor-modebar">
-              <button type="button" className={`uu-mode-tab ${editorMode === "quick" ? "is-active" : ""}`} onClick={() => setEditorMode("quick")}>快速輸入</button>
-              <button type="button" className={`uu-mode-tab ${editorMode === "detail" ? "is-active" : ""}`} onClick={() => setEditorMode("detail")}>逐項編輯</button>
-              <span className={`uu-menu-editor-sync-hint ${bulkDirty ? "is-warning" : ""}`}>{bulkDirty ? "左側內容尚未套用到右側" : "左右內容已同步"}</span>
-            </div>
+            <div className={`uu-menu-editor-sync-hint uu-menu-editor-sync-hint-standalone ${bulkDirty ? "is-warning" : ""}`}>{bulkDirty ? "左側內容尚未套用到逐項編輯" : "左側與逐項編輯已同步"}</div>
 
             <div className="uu-menu-editor-dual-layout uu-menu-editor-dual-layout-a">
               <section className="uu-menu-editor-bulk-card uu-menu-editor-bulk-card-a">
-                <div className="uu-menu-editor-bulk-head uu-menu-editor-bulk-head-a">
-                  <div>
-                    <strong>快速輸入整份菜單</strong>
-                    <span>先把原始菜單貼在這裡，確認後按「套用到右側」，系統會自動拆成分類、菜名與價格。</span>
+                <div className="uu-menu-editor-bulk-innerbox">
+                  <div className="uu-menu-editor-bulk-head uu-menu-editor-bulk-head-a">
+                    <div>
+                      <strong>快速輸入整份菜單</strong>
+                      <span>先把原始菜單貼在這裡，確認後按「套用到逐項編輯」，系統會自動拆成分類、菜名與價格。</span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="uu-menu-editor-toolbar uu-menu-editor-toolbar-a uu-menu-editor-toolbar-a-single">
-                  <button type="button" className="uu-btn uu-btn-primary uu-btn-compact" onClick={applyQuickInput}>套用到右側</button>
-                </div>
+                  <div className="uu-menu-editor-toolbar uu-menu-editor-toolbar-a uu-menu-editor-toolbar-a-dual">
+                    <button type="button" className="uu-btn uu-btn-primary uu-btn-compact" onClick={applyQuickInput}>套用到逐項編輯</button>
+                    <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
+                  </div>
 
-                <textarea
-                  className="uu-textarea uu-menu-editor-bulk-textarea uu-menu-editor-bulk-textarea-a"
-                  value={quickInput}
-                  onChange={(e) => handleQuickInputChange(e.target.value)}
-                  placeholder={`例如：
+                  <textarea
+                    className="uu-textarea uu-menu-editor-bulk-textarea uu-menu-editor-bulk-textarea-a"
+                    value={quickInput}
+                    onChange={(e) => handleQuickInputChange(e.target.value)}
+                    placeholder={`例如：
 鵝肉
 鹽水鵝肉 200
 麻油鵝肉 220
@@ -595,11 +567,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 主食
 炒飯 80
 炒麵 80`}
-                />
+                  />
 
-                <div className="uu-menu-editor-bulk-footnote uu-menu-editor-bulk-footnote-a">
-                  <span>分類請獨立一行，品項後面接價格，備註可用「|」分隔。</span>
-                  <span>儲存時若左側有未套用內容，系統會自動先套用再儲存。</span>
+                  <div className="uu-menu-editor-bulk-footnote uu-menu-editor-bulk-footnote-a">
+                    <span>分類請獨立一行，品項後面接價格，備註可用「|」分隔。</span>
+                    <span>儲存時若左側有未套用內容，系統會自動先套用再儲存。</span>
+                  </div>
                 </div>
               </section>
 
@@ -617,7 +590,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
                 <div className="uu-items-stack uu-menu-editor-stack uu-menu-editor-stack-refined">
                   {formItems.map((item, index) => (
-                    <article key={item.uid} className={`uu-menu-item-row-card uu-menu-item-row-card-minimal ${editorMode === "detail" ? "is-focused" : ""}`}>
+                    <article key={item.uid} className="uu-menu-item-row-card uu-menu-item-row-card-minimal is-focused">
                       <div className="uu-menu-item-row-grid uu-menu-item-row-grid-minimal">
                         <input className="uu-input uu-input-compact" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="分類" aria-label={`第 ${index + 1} 項分類`} />
                         <input className="uu-input uu-input-compact uu-menu-item-name-input-minimal" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="菜名" aria-label={`第 ${index + 1} 項菜名`} />

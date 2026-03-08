@@ -8135,3 +8135,41 @@ select.uu-input:focus {
     padding: 8px 9px;
   }
 }
+
+
+/* menu editor refined adjustments */
+.uu-menu-editor-sync-hint-standalone {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 14px;
+}
+
+.uu-menu-editor-bulk-innerbox {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 22px;
+  background: rgba(7, 12, 20, 0.28);
+  padding: 16px;
+}
+
+.uu-menu-editor-toolbar-a-dual {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.uu-menu-editor-toolbar-a-dual .uu-btn {
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .uu-menu-editor-bulk-innerbox {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .uu-menu-editor-toolbar-a-dual {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
