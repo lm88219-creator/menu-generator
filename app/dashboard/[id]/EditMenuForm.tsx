@@ -344,7 +344,7 @@ export default function EditMenuForm({
         <section style={sectionCardStyle}>
           <SectionTitle title="基本資料" subtitle="先把店名、聯絡資訊與營業時間整理好。" color={currentTheme.text} muted={currentTheme.subText} />
 
-          <div style={{ marginTop: 18 }}>
+          <div style={{ marginTop: 18, maxWidth: 620 }}>
             <div className="admin-field-label" style={{ color: currentTheme.text }}>餐廳名稱</div>
             <input value={restaurant} onChange={(e) => setRestaurant(e.target.value)} style={inputStyle} placeholder="例如：友愛熱炒" />
           </div>
@@ -441,12 +441,12 @@ export default function EditMenuForm({
         <section style={sectionCardStyle}>
           <SectionTitle title="菜單內容" subtitle="建議用一個分類接多個菜名的方式，後台維護最輕鬆。" color={currentTheme.text} muted={currentTheme.subText} />
 
-          <div style={{ marginTop: 18 }}>
+          <div style={{ marginTop: 18, maxWidth: 620 }}>
             <textarea
               rows={16}
               value={menuText}
               onChange={(e) => setMenuText(e.target.value)}
-              style={{ ...inputStyle, resize: "vertical", lineHeight: 1.8, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
+              style={{ ...inputStyle, resize: "vertical", lineHeight: 1.8, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", maxWidth: 620 }}
               placeholder={`例如：\n鵝肉\n鹽水鵝肉 200\n麻油鵝肉 220\n\n主食\n炒飯 80\n炒麵 80`}
             />
             <div style={{ marginTop: 10, color: currentTheme.subText, fontSize: 13, lineHeight: 1.7 }}>
