@@ -579,10 +579,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   </div>
                 </div>
 
-                <div className="uu-menu-editor-toolbar uu-menu-editor-toolbar-a">
-                  <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={fillQuickInputExample}>載入範例</button>
-                  <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={syncQuickInputFromItems}>從右側回填</button>
-                  <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={clearQuickInput}>清空</button>
+                <div className="uu-menu-editor-toolbar uu-menu-editor-toolbar-a uu-menu-editor-toolbar-a-single">
                   <button type="button" className="uu-btn uu-btn-primary uu-btn-compact" onClick={applyQuickInput}>套用到右側</button>
                 </div>
 
@@ -610,7 +607,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                 <div className="uu-menu-editor-structured-head">
                   <div>
                     <strong>右側結果預覽與微調</strong>
-                    <span>快速輸入後會在這裡生成品項，適合改價格、改備註、補單一品項。</span>
+                    <span>保留精簡微調區，讓你快速改價格、備註或臨時補一兩項。</span>
                   </div>
                   <div className="uu-menu-editor-structured-actions">
                     <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={() => addItem()}>＋ 新增品項</button>

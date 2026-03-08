@@ -8075,3 +8075,63 @@ select.uu-input:focus {
     min-height: 300px;
   }
 }
+
+
+.uu-menu-editor-toolbar-a-single {
+  justify-content: flex-end;
+}
+
+.uu-menu-editor-structured-panel-a {
+  padding: 16px 16px 14px;
+}
+
+.uu-menu-editor-structured-head {
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.uu-menu-editor-structured-head span {
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.uu-menu-editor-stack-refined {
+  gap: 8px;
+}
+
+.uu-menu-item-row-card-minimal {
+  padding: 8px 10px;
+  border-radius: 16px;
+}
+
+.uu-menu-item-row-grid-minimal .uu-input,
+.uu-menu-item-row-grid-minimal .uu-price-input-wrap {
+  min-height: 36px;
+}
+
+.uu-menu-item-delete-cell-minimal .uu-btn-icon-only {
+  min-height: 36px;
+}
+
+@media (min-width: 981px) {
+  .uu-menu-editor-structured-panel-a {
+    max-height: 650px;
+    overflow: hidden;
+  }
+
+  .uu-menu-editor-stack-refined {
+    max-height: 560px;
+    overflow: auto;
+    padding-right: 4px;
+  }
+}
+
+@media (max-width: 760px) {
+  .uu-menu-editor-structured-panel-a {
+    padding: 14px 14px 12px;
+  }
+
+  .uu-menu-item-row-card-minimal {
+    padding: 8px 9px;
+  }
+}
