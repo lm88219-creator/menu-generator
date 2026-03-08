@@ -281,6 +281,18 @@ export default async function UuMenuPage({
     boxShadow: tokens.shadow,
   };
 
+  const categoryTagStyle: CSSProperties = {
+    background: "#fff3e8",
+    borderColor: "rgba(185, 28, 28, 0.35)",
+    color: "#7a1212",
+  };
+
+  const categoryNavChipStyle: CSSProperties = {
+    background: "#fff8f2",
+    borderColor: "rgba(185, 28, 28, 0.22)",
+    color: "#7a1212",
+  };
+
   return (
     <main className="uu-public-shell" style={shellStyle}>
       <div className="uu-public-container uu-public-container-refined">
@@ -330,7 +342,7 @@ export default async function UuMenuPage({
                     key={link.id}
                     href={`#${link.id}`}
                     className="uu-public-mobile-nav-chip"
-                    style={{ borderColor: tokens.border, color: tokens.accentStrong }}
+                    style={categoryNavChipStyle}
                   >
                     {link.label}
                   </a>
@@ -350,7 +362,7 @@ export default async function UuMenuPage({
             grouped.map((group, index) => (
               <section key={`${group.category}-${index}`} id={categoryLinks[index]?.id} className="uu-public-section uu-public-section-refined">
                 <div className="uu-public-section-title-row">
-                  <div className="uu-public-section-title uu-public-section-title-refined" style={{ color: tokens.accentStrong, background: tokens.badge, borderColor: tokens.border }}>
+                  <div className="uu-public-section-title uu-public-section-title-refined" style={categoryTagStyle}>
                     <span className="uu-public-section-dot" />
                     {group.category}
                   </div>
