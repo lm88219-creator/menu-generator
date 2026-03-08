@@ -8343,3 +8343,288 @@ select.uu-input:focus {
 .uu-menu-editor-structured-head span:empty {
   display: none;
 }
+
+/* === editor page layout polish pack === */
+.uu-editor-page-v4 {
+  gap: 20px;
+}
+
+.uu-editor-page-hero-v5 {
+  padding: 20px 22px;
+  overflow: hidden;
+}
+
+.uu-editor-page-hero-layout-v6 {
+  grid-template-columns: minmax(360px, 1fr) minmax(520px, 0.92fr);
+  gap: 24px;
+  align-items: end;
+  min-height: 0;
+}
+
+.uu-editor-page-hero-copy-v5 {
+  gap: 16px;
+  max-width: 560px;
+}
+
+.uu-kicker {
+  width: fit-content;
+  min-width: 0;
+  padding: 9px 16px;
+  border-radius: 999px;
+}
+
+.uu-dashboard-title {
+  margin: 0;
+  line-height: 1.06;
+}
+
+.uu-editor-page-actions,
+.uu-editor-page-actions-v6 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.uu-editor-page-actions-v6 .uu-btn,
+.uu-editor-page-actions-v6 > button {
+  min-height: 44px;
+}
+
+.uu-editor-page-anchor-card-v6 {
+  width: min(720px, 100%);
+  padding: 18px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(110, 168, 255, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(10, 16, 27, 0.94), rgba(11, 19, 32, 0.86));
+  border: 1px solid rgba(110, 168, 255, 0.16);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.28);
+}
+
+.uu-editor-page-anchor-card-head {
+  margin-bottom: 12px;
+}
+
+.uu-editor-page-anchor-card-head span {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+
+.uu-editor-page-anchor-nav-v6 {
+  gap: 12px;
+}
+
+.uu-editor-page-anchor-nav-v6 .uu-editor-v4-anchor-link {
+  min-height: 58px;
+  padding: 12px 14px;
+  border-radius: 20px;
+}
+
+.uu-editor-v4-anchor-link span {
+  width: 30px;
+  height: 30px;
+  font-size: 12px;
+}
+
+.uu-editor-v4-anchor-link strong {
+  font-size: 15px;
+}
+
+.uu-editor-floating-message {
+  margin: 0 0 10px;
+}
+
+.uu-editor-v4-section {
+  padding: 20px;
+  border-radius: 26px;
+}
+
+.uu-section-head.uu-editor-v4-section-head-pro {
+  margin-bottom: 16px;
+}
+
+.uu-section-head h2 {
+  line-height: 1.08;
+}
+
+.uu-editor-v4-shop-grid,
+.uu-editor-v4-appearance-grid,
+.uu-editor-v4-tools-grid,
+.uu-menu-editor-dual-layout-a {
+  gap: 18px;
+}
+
+.uu-editor-v4-shop-maincard,
+.uu-editor-v4-shop-sidecard,
+.uu-editor-v4-theme-selector-card-pro,
+.uu-editor-v4-theme-note-card,
+.uu-editor-v4-asset-card,
+.uu-editor-v4-advanced-card,
+.uu-menu-editor-bulk-innerbox,
+.uu-menu-editor-structured-innerbox {
+  border-radius: 24px;
+}
+
+.uu-editor-v4-shop-maincard,
+.uu-editor-v4-shop-sidecard,
+.uu-editor-v4-theme-selector-card-pro,
+.uu-editor-v4-theme-note-card,
+.uu-editor-v4-asset-card,
+.uu-editor-v4-advanced-card {
+  padding: 18px;
+}
+
+.uu-editor-v4-shop-formgrid .uu-field,
+.uu-editor-v4-shop-maincard > .uu-field {
+  padding: 12px 14px;
+}
+
+.uu-editor-v4-shop-sidegrid {
+  gap: 10px;
+}
+
+.uu-editor-v4-shop-sidegrid div {
+  padding: 11px 13px;
+}
+
+.uu-menu-editor-slimbar-refined {
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border-radius: 20px;
+}
+
+.uu-menu-editor-slimbar-copy strong {
+  font-size: 17px;
+}
+
+.uu-menu-editor-category-tags {
+  gap: 7px;
+}
+
+.uu-menu-editor-category-tags span {
+  padding: 7px 11px;
+}
+
+.uu-menu-editor-bulk-innerbox,
+.uu-menu-editor-structured-innerbox {
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(8, 13, 22, 0.34), rgba(7, 12, 20, 0.24));
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.uu-menu-editor-bulk-head-a,
+.uu-menu-editor-structured-head {
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.uu-menu-editor-bulk-textarea-a {
+  min-height: 380px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  font-size: 17px;
+  line-height: 1.82;
+}
+
+.uu-menu-editor-bulk-footnote-a {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.uu-menu-editor-stack-refined {
+  gap: 10px;
+}
+
+.uu-menu-item-row-card-minimal {
+  padding: 9px 10px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(13, 19, 31, 0.94), rgba(10, 15, 24, 0.98));
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.uu-menu-item-row-grid-minimal {
+  grid-template-columns: 88px minmax(140px, 0.94fr) 82px minmax(112px, 0.52fr) 54px 68px;
+  gap: 7px;
+}
+
+.uu-menu-item-row-grid-minimal .uu-input,
+.uu-menu-item-row-grid-minimal .uu-price-input-wrap {
+  min-height: 34px;
+  border-radius: 14px;
+}
+
+.uu-menu-item-delete-cell-minimal .uu-btn-icon-only {
+  min-height: 34px;
+}
+
+.uu-editor-v4-theme-select-wrap-pro {
+  gap: 16px;
+}
+
+.uu-editor-v4-public-preview-device {
+  border-radius: 30px;
+}
+
+.uu-editor-v4-theme-checklist {
+  gap: 10px;
+}
+
+.uu-editor-v4-theme-checklist > div {
+  padding: 12px 14px;
+  border-radius: 16px;
+}
+
+.uu-editor-v4-tip-list,
+.uu-editor-v4-quick-actions-stacked {
+  gap: 10px;
+}
+
+.uu-editor-v4-tools-grid {
+  align-items: start;
+}
+
+@media (max-width: 1180px) {
+  .uu-editor-page-hero-layout-v6 {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .uu-editor-page-anchor-card-v6 {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .uu-editor-page-hero-v5,
+  .uu-editor-v4-section,
+  .uu-editor-v4-shop-maincard,
+  .uu-editor-v4-shop-sidecard,
+  .uu-editor-v4-theme-selector-card-pro,
+  .uu-editor-v4-theme-note-card,
+  .uu-editor-v4-asset-card,
+  .uu-editor-v4-advanced-card,
+  .uu-menu-editor-bulk-innerbox,
+  .uu-menu-editor-structured-innerbox {
+    padding: 16px;
+  }
+
+  .uu-editor-page-actions-v6 {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .uu-editor-page-actions-v6 .uu-btn,
+  .uu-editor-page-actions-v6 > button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .uu-menu-editor-bulk-textarea-a {
+    min-height: 300px;
+    font-size: 16px;
+    line-height: 1.72;
+  }
+}
