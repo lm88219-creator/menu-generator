@@ -538,8 +538,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               </div>
             </div>
 
-            <div className={`uu-menu-editor-sync-hint uu-menu-editor-sync-hint-standalone ${bulkDirty ? "is-warning" : ""}`}>{bulkDirty ? "左側內容尚未套用到逐項編輯" : "左側與逐項編輯已同步"}</div>
-
             <div className="uu-menu-editor-dual-layout uu-menu-editor-dual-layout-a">
               <section className="uu-menu-editor-bulk-card uu-menu-editor-bulk-card-a">
                 <div className="uu-menu-editor-bulk-innerbox">
@@ -548,12 +546,13 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                       <strong>快速輸入整份菜單</strong>
                       <span>先把原始菜單貼在這裡，確認後按「套用到逐項編輯」，系統會自動拆成分類、菜名與價格。</span>
                     </div>
+                    <div className="uu-menu-editor-toolbar uu-menu-editor-toolbar-a uu-menu-editor-toolbar-a-dual">
+                      <button type="button" className="uu-btn uu-btn-primary uu-btn-compact" onClick={applyQuickInput}>套用到逐項編輯</button>
+                      <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
+                    </div>
                   </div>
 
-                  <div className="uu-menu-editor-toolbar uu-menu-editor-toolbar-a uu-menu-editor-toolbar-a-dual">
-                    <button type="button" className="uu-btn uu-btn-primary uu-btn-compact" onClick={applyQuickInput}>套用到逐項編輯</button>
-                    <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
-                  </div>
+                  <div className={`uu-menu-editor-sync-hint uu-menu-editor-sync-hint-standalone uu-menu-editor-sync-hint-inline ${bulkDirty ? "is-warning" : ""}`}>{bulkDirty ? "左側內容尚未套用到逐項編輯" : "左側與逐項編輯已同步"}</div>
 
                   <textarea
                     className="uu-textarea uu-menu-editor-bulk-textarea uu-menu-editor-bulk-textarea-a"
@@ -577,18 +576,15 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               </section>
 
               <div className="uu-menu-editor-structured-panel uu-menu-editor-structured-panel-a">
-                <div className="uu-menu-editor-structured-head">
-                  <div>
-                    <strong>右側結果預覽與微調</strong>
-                    <span>保留精簡微調區，讓你快速改價格、備註或臨時補一兩項。</span>
+                <div className="uu-menu-editor-structured-innerbox">
+                  <div className="uu-menu-editor-structured-head">
+                    <div>
+                      <strong>右側結果預覽與微調</strong>
+                      <span>保留精簡微調區，讓你快速改價格、備註或臨時補一兩項。</span>
+                    </div>
                   </div>
-                  <div className="uu-menu-editor-structured-actions">
-                    <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={() => addItem()}>＋ 新增品項</button>
-                    <button type="button" className="uu-btn uu-btn-primary uu-btn-compact" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
-                  </div>
-                </div>
 
-                <div className="uu-items-stack uu-menu-editor-stack uu-menu-editor-stack-refined">
+                  <div className="uu-items-stack uu-menu-editor-stack uu-menu-editor-stack-refined">
                   {formItems.map((item, index) => (
                     <article key={item.uid} className="uu-menu-item-row-card uu-menu-item-row-card-minimal is-focused">
                       <div className="uu-menu-item-row-grid uu-menu-item-row-grid-minimal">
@@ -609,6 +605,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                       </div>
                     </article>
                   ))}
+                  </div>
+
+                  <div className="uu-menu-editor-structured-actions uu-menu-editor-structured-actions-bottom">
+                    <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={() => addItem()}>＋ 新增品項</button>
+                    <button type="button" className="uu-btn uu-btn-primary uu-btn-compact" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
+                  </div>
                 </div>
               </div>
             </div>

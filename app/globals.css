@@ -8082,12 +8082,12 @@ select.uu-input:focus {
 }
 
 .uu-menu-editor-structured-panel-a {
-  padding: 16px 16px 14px;
+  padding: 0;
 }
 
 .uu-menu-editor-structured-head {
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .uu-menu-editor-structured-head span {
@@ -8097,6 +8097,7 @@ select.uu-input:focus {
 
 .uu-menu-editor-stack-refined {
   gap: 8px;
+  flex: 1;
 }
 
 .uu-menu-item-row-card-minimal {
@@ -8162,13 +8163,42 @@ select.uu-input:focus {
   min-width: 0;
 }
 
+.uu-menu-editor-sync-hint-inline {
+  display: inline-flex;
+  margin: 0 0 12px;
+}
+
+.uu-menu-editor-toolbar-a-dual {
+  justify-content: flex-end;
+  margin: 0;
+}
+
+.uu-menu-editor-structured-innerbox {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 22px;
+  background: rgba(7, 12, 20, 0.28);
+  padding: 16px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.uu-menu-editor-structured-actions-bottom {
+  margin-top: 12px;
+  justify-content: flex-end;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
 @media (max-width: 720px) {
-  .uu-menu-editor-bulk-innerbox {
+  .uu-menu-editor-bulk-innerbox,
+  .uu-menu-editor-structured-innerbox {
     padding: 14px;
     border-radius: 18px;
   }
 
-  .uu-menu-editor-toolbar-a-dual {
+  .uu-menu-editor-toolbar-a-dual,
+  .uu-menu-editor-structured-actions-bottom {
     display: grid;
     grid-template-columns: 1fr;
   }
