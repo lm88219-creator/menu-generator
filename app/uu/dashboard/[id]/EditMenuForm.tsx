@@ -1,7 +1,7 @@
 "use client";
 
 import { QRCodeCanvas } from "qrcode.react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { parseMenuText, normalizeSlug } from "@/lib/menu";
 
 export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "classic";
@@ -247,6 +247,8 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const [message, setMessage] = useState("");
   const [deskInput, setDeskInput] = useState("");
   const [selectedDesk, setSelectedDesk] = useState("");
+  const syncSourceRef = useRef<"structured" | "manual" | null>(null);
+  const manualSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const safeSlug = normalizeSlug(slug || restaurant) || id;
   const publicPath = `/uu/menu/${safeSlug}`;
@@ -273,8 +275,27 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const selectedDeskUrl = selectedDesk ? `${publicUrl}?table=${encodeURIComponent(selectedDesk)}` : "";
 
   useEffect(() => {
-    setMenuText(toMenuText(formItems));
-  }, [formItems]);
+    if (syncSourceRef.current === "manual") return;
+    const nextMenuText = toMenuText(formItems);
+    if (nextMenuText !== menuText) {
+      syncSourceRef.current = "structured";
+      setMenuText(nextMenuText);
+    }
+  }, [formItems, menuText]);
+
+  useEffect(() => {
+    if (syncSourceRef.current !== "manual") return;
+    if (manualSyncTimerRef.current) clearTimeout(manualSyncTimerRef.current);
+
+    manualSyncTimerRef.current = setTimeout(() => {
+      setFormItems(toFormItems(menuText));
+      syncSourceRef.current = null;
+    }, 220);
+
+    return () => {
+      if (manualSyncTimerRef.current) clearTimeout(manualSyncTimerRef.current);
+    };
+  }, [menuText]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -304,10 +325,24 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   function updateFormItem(index: number, patch: Partial<MenuItemForm>) {
+    syncSourceRef.current = "structured";
     setFormItems((current) => current.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)));
   }
 
+  function handleMenuTextInput(value: string) {
+    syncSourceRef.current = "manual";
+    setMenuText(value);
+  }
+
+  function handleMenuTextBlur() {
+    if (manualSyncTimerRef.current) clearTimeout(manualSyncTimerRef.current);
+    syncSourceRef.current = "manual";
+    setFormItems(toFormItems(menuText));
+    syncSourceRef.current = null;
+  }
+
   function addItem(afterCategory?: string) {
+    syncSourceRef.current = "structured";
     setFormItems((current) => [
       ...current,
       createFormItem({ category: afterCategory || current[current.length - 1]?.category || "精選菜單" }),
@@ -315,6 +350,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   function duplicateItem(index: number) {
+    syncSourceRef.current = "structured";
     setFormItems((current) => {
       const target = current[index];
       if (!target) return current;
@@ -325,6 +361,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   function removeItem(index: number) {
+    syncSourceRef.current = "structured";
     setFormItems((current) => {
       const next = current.filter((_, itemIndex) => itemIndex !== index);
       return next.length ? next : [createFormItem()];
@@ -332,7 +369,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   async function handleSave() {
-    const finalMenuText = toMenuText(formItems);
+    const latestItems = syncSourceRef.current === "manual" ? toFormItems(menuText) : formItems;
+    if (syncSourceRef.current === "manual") {
+      setFormItems(latestItems);
+      syncSourceRef.current = null;
+    }
+    const finalMenuText = toMenuText(latestItems);
 
     if (!restaurant.trim()) {
       alert("請輸入餐廳名稱");
@@ -510,31 +552,65 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               </div>
             </div>
 
-            <div className="uu-items-stack uu-menu-editor-stack uu-menu-editor-stack-refined">
-              {formItems.map((item, index) => (
-                <article key={item.uid} className="uu-menu-item-row-card uu-menu-item-row-card-minimal">
-                  <div className="uu-menu-item-row-grid uu-menu-item-row-grid-minimal">
-                    <input className="uu-input uu-input-compact" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="分類" aria-label={`第 ${index + 1} 項分類`} />
-                    <input className="uu-input uu-input-compact uu-menu-item-name-input-minimal" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="菜名" aria-label={`第 ${index + 1} 項菜名`} />
-                    <div className="uu-price-input-wrap uu-price-input-wrap-pro uu-price-input-wrap-compact">
-                      <span>$</span>
-                      <input className="uu-input uu-input-compact" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="價格" aria-label={`第 ${index + 1} 項價格`} />
-                    </div>
-                    <input className="uu-input uu-input-compact" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="備註" aria-label={`第 ${index + 1} 項備註`} />
-                    <label className="uu-menu-item-toggle-cell uu-menu-item-toggle-cell-minimal" aria-label={`第 ${index + 1} 項供應中`}>
-                      <input type="checkbox" checked={!item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: !e.target.checked })} />
-                    </label>
-                    <div className="uu-menu-item-delete-cell uu-menu-item-delete-cell-minimal">
-                      <button type="button" className="uu-btn uu-btn-danger uu-btn-icon-only" onClick={() => removeItem(index)} aria-label={`刪除第 ${index + 1} 項`}>刪除</button>
-                    </div>
+            <div className="uu-menu-editor-dual-layout">
+              <section className="uu-menu-editor-bulk-card">
+                <div className="uu-menu-editor-bulk-head">
+                  <div>
+                    <strong>整排輸入區</strong>
+                    <span>左邊直接貼上或輸入完整菜單，右邊品項卡會自動同步。</span>
                   </div>
-                </article>
-              ))}
-            </div>
+                  <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={() => addItem(categorySummary[0]?.name || "精選菜單")}>＋ 新增品項</button>
+                </div>
 
-            <div className="uu-menu-editor-savebar-inline uu-menu-editor-actionbar">
-              <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
-              <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
+                <textarea
+                  className="uu-textarea uu-menu-editor-bulk-textarea"
+                  value={menuText}
+                  onChange={(e) => handleMenuTextInput(e.target.value)}
+                  onBlur={handleMenuTextBlur}
+                  placeholder={`例如：
+鵝肉
+鹽水鵝肉 200
+麻油鵝肉 220
+
+主食
+炒飯 80
+炒麵 80`}
+                />
+
+                <div className="uu-menu-editor-bulk-footnote">
+                  <span>分類單獨一行，品項後面接價格，備註可用「|」分隔。</span>
+                  <span>右側新增、刪除或修改內容後，左邊也會自動同步。</span>
+                </div>
+              </section>
+
+              <div className="uu-menu-editor-structured-panel">
+                <div className="uu-items-stack uu-menu-editor-stack uu-menu-editor-stack-refined">
+                  {formItems.map((item, index) => (
+                    <article key={item.uid} className="uu-menu-item-row-card uu-menu-item-row-card-minimal">
+                      <div className="uu-menu-item-row-grid uu-menu-item-row-grid-minimal">
+                        <input className="uu-input uu-input-compact" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="分類" aria-label={`第 ${index + 1} 項分類`} />
+                        <input className="uu-input uu-input-compact uu-menu-item-name-input-minimal" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="菜名" aria-label={`第 ${index + 1} 項菜名`} />
+                        <div className="uu-price-input-wrap uu-price-input-wrap-pro uu-price-input-wrap-compact">
+                          <span>$</span>
+                          <input className="uu-input uu-input-compact" value={item.price} onChange={(e) => updateFormItem(index, { price: e.target.value.replace(/[^0-9]/g, "") })} placeholder="價格" aria-label={`第 ${index + 1} 項價格`} />
+                        </div>
+                        <input className="uu-input uu-input-compact" value={item.note} onChange={(e) => updateFormItem(index, { note: e.target.value })} placeholder="備註" aria-label={`第 ${index + 1} 項備註`} />
+                        <label className="uu-menu-item-toggle-cell uu-menu-item-toggle-cell-minimal" aria-label={`第 ${index + 1} 項供應中`}>
+                          <input type="checkbox" checked={!item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: !e.target.checked })} />
+                        </label>
+                        <div className="uu-menu-item-delete-cell uu-menu-item-delete-cell-minimal">
+                          <button type="button" className="uu-btn uu-btn-danger uu-btn-icon-only" onClick={() => removeItem(index)} aria-label={`刪除第 ${index + 1} 項`}>刪除</button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                <div className="uu-menu-editor-savebar-inline uu-menu-editor-actionbar">
+                  <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
+                  <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
+                </div>
+              </div>
             </div>
           </section>
 

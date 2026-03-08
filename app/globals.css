@@ -7962,3 +7962,95 @@ select.uu-input:focus {
     min-width: 88px;
   }
 }
+
+.uu-btn-compact {
+  min-height: 38px;
+  padding: 0 14px;
+}
+
+.uu-menu-editor-dual-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.95fr) minmax(0, 1.35fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.uu-menu-editor-bulk-card,
+.uu-menu-editor-structured-panel {
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.02));
+}
+
+.uu-menu-editor-bulk-card {
+  padding: 16px;
+  position: sticky;
+  top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.uu-menu-editor-bulk-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.uu-menu-editor-bulk-head strong {
+  display: block;
+  color: #f5f7fb;
+  font-size: 15px;
+}
+
+.uu-menu-editor-bulk-head span {
+  display: block;
+  margin-top: 4px;
+  color: #8ea0b6;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.uu-menu-editor-bulk-textarea {
+  min-height: 420px;
+  resize: vertical;
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+.uu-menu-editor-bulk-footnote {
+  display: grid;
+  gap: 6px;
+  color: #9fb0c4;
+  font-size: 12px;
+}
+
+.uu-menu-editor-structured-panel {
+  padding: 12px;
+}
+
+@media (max-width: 1180px) {
+  .uu-menu-editor-dual-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .uu-menu-editor-bulk-card {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .uu-menu-editor-bulk-card,
+  .uu-menu-editor-structured-panel {
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .uu-menu-editor-bulk-head {
+    flex-direction: column;
+  }
+
+  .uu-menu-editor-bulk-textarea {
+    min-height: 280px;
+  }
+}
