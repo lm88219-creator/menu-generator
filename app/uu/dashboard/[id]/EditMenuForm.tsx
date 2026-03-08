@@ -435,27 +435,11 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
           </div>
         </div>
 
-        <div className="uu-editor-v4-topbar-side">
-          <div className="uu-editor-v4-anchor-nav uu-editor-v4-anchor-nav-refined">
-            <a href="#shop-info" className="uu-editor-v4-anchor-link is-primary">
-              <span>01</span>
-              <strong>店家資訊</strong>
-            </a>
-            <a href="#menu-items" className="uu-editor-v4-anchor-link is-primary">
-              <span>02</span>
-              <strong>菜單品項</strong>
-            </a>
-            <a href="#appearance-settings" className="uu-editor-v4-anchor-link is-primary">
-              <span>03</span>
-              <strong>外觀設定</strong>
-            </a>
-            <a href="#advanced-tools" className="uu-editor-v4-anchor-link is-primary">
-              <span>04</span>
-              <strong>進階工具</strong>
-            </a>
+        {message ? (
+          <div className="uu-editor-v4-topbar-message uu-editor-v4-topbar-message-inline">
+            <span className="uu-inline-hint is-success">{message}</span>
           </div>
-          {message ? <div className="uu-editor-v4-topbar-message"><span className="uu-inline-hint is-success">{message}</span></div> : null}
-        </div>
+        ) : null}
       </section>
 
       <div className="uu-editor-v4-layout uu-editor-v4-layout-single">

@@ -46,10 +46,31 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
             <p className="uu-dashboard-copy">把店家資訊、品項整理與公開頁外觀收成更清楚的編輯流程，桌機與手機閱讀都更順。</p>
           </div>
 
-          <div className="uu-editor-page-meta uu-editor-page-meta-v5">
-            <span className="uu-chip">{menu.restaurant || "未命名店家"}</span>
-            <span className="uu-chip">{menu.theme ? "主題已設定" : "預設主題"}</span>
-            <span className="uu-chip">{itemCount} 個品項</span>
+          <div className="uu-editor-page-hero-topline">
+            <div className="uu-editor-page-meta uu-editor-page-meta-v5">
+              <span className="uu-chip">{menu.restaurant || "未命名店家"}</span>
+              <span className="uu-chip">{menu.theme ? "主題已設定" : "預設主題"}</span>
+              <span className="uu-chip">{itemCount} 個品項</span>
+            </div>
+
+            <div className="uu-editor-v4-anchor-nav uu-editor-v4-anchor-nav-refined uu-editor-page-anchor-nav">
+              <a href="#shop-info" className="uu-editor-v4-anchor-link is-primary">
+                <span>01</span>
+                <strong>店家資訊</strong>
+              </a>
+              <a href="#menu-items" className="uu-editor-v4-anchor-link is-primary">
+                <span>02</span>
+                <strong>菜單品項</strong>
+              </a>
+              <a href="#appearance-settings" className="uu-editor-v4-anchor-link is-primary">
+                <span>03</span>
+                <strong>外觀設定</strong>
+              </a>
+              <a href="#advanced-tools" className="uu-editor-v4-anchor-link is-primary">
+                <span>04</span>
+                <strong>進階工具</strong>
+              </a>
+            </div>
           </div>
 
           <div className="uu-editor-page-actions">

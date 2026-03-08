@@ -8249,3 +8249,33 @@ select.uu-input:focus {
     max-width: none;
   }
 }
+
+
+.uu-editor-page-hero-topline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(560px, 720px);
+  gap: 18px;
+  align-items: start;
+}
+
+.uu-editor-page-anchor-nav {
+  width: auto;
+}
+
+.uu-editor-page-anchor-nav .uu-editor-v4-anchor-link {
+  min-height: 62px;
+}
+
+.uu-editor-v4-topbar-message-inline {
+  margin-top: 4px;
+}
+
+@media (max-width: 1100px) {
+  .uu-editor-page-hero-topline {
+    grid-template-columns: 1fr;
+  }
+
+  .uu-editor-page-anchor-nav {
+    width: 100%;
+  }
+}
