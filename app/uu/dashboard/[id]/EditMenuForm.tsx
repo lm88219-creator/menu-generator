@@ -427,20 +427,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
   return (
     <div className="uu-editor-v4-shell">
-      <section className="uu-panel uu-editor-v4-topbar">
-        <div className="uu-editor-v4-topbar-main">
-          <div>
-            <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
-            <p className="uu-admin-copy">把主要編輯步驟集中成清楚的四段，滑動時更容易知道自己改到哪裡。</p>
-          </div>
-        </div>
-
-        {message ? (
-          <div className="uu-editor-v4-topbar-message uu-editor-v4-topbar-message-inline">
-            <span className="uu-inline-hint is-success">{message}</span>
-          </div>
-        ) : null}
-      </section>
+      {message ? <div className="uu-editor-floating-message"><span className="uu-inline-hint is-success">{message}</span></div> : null}
 
       <div className="uu-editor-v4-layout uu-editor-v4-layout-single">
         <div className="uu-editor-v4-main">
@@ -493,20 +480,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               <div>
                 <h2>菜單品項</h2>
                 <p>改成以「快速輸入」為主流程，先貼整份菜單再批次整理，最後再到右邊微調單一品項。</p>
-                <div className="uu-editor-v4-stats uu-editor-v4-stats-refined uu-editor-v4-stats-inline-menu">
-                  <div className="uu-editor-v4-stat-card">
-                    <span>全部品項</span>
-                    <strong>{formItems.length}</strong>
-                  </div>
-                  <div className="uu-editor-v4-stat-card">
-                    <span>供應中</span>
-                    <strong>{activeCount}</strong>
-                  </div>
-                  <div className="uu-editor-v4-stat-card">
-                    <span>售完</span>
-                    <strong>{soldOutCount}</strong>
-                  </div>
-                </div>
               </div>
             </div>
 
