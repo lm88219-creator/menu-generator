@@ -44,7 +44,6 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
             <div className="uu-editor-page-hero-copy-v5">
               <div className="uu-kicker">UU MENU EDITOR</div>
               <h1 className="uu-dashboard-title">編輯菜單</h1>
-              <p className="uu-dashboard-copy">把店家資訊、品項整理與公開頁外觀收成更清楚的編輯流程，桌機與手機閱讀都更順。</p>
 
               <div className="uu-editor-page-actions uu-editor-page-actions-v6">
                 <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回後台</Link>
@@ -56,7 +55,6 @@ export default async function UUDashboardEditPage({ params }: { params: Promise<
             <div className="uu-editor-page-anchor-card uu-editor-page-anchor-card-v6">
               <div className="uu-editor-page-anchor-card-head">
                 <span>快速導覽</span>
-                <strong>依序完成四個編輯區塊</strong>
               </div>
               <div className="uu-editor-v4-anchor-nav uu-editor-v4-anchor-nav-refined uu-editor-page-anchor-nav uu-editor-page-anchor-nav-v6">
                 <a href="#shop-info" className="uu-editor-v4-anchor-link is-primary">

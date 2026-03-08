@@ -7888,7 +7888,7 @@ select.uu-input:focus {
 }
 
 .uu-menu-item-row-grid-minimal {
-  grid-template-columns: minmax(110px, 0.82fr) minmax(200px, 1.45fr) minmax(100px, 0.72fr) minmax(170px, 1fr) 72px 74px;
+  grid-template-columns: 92px minmax(150px, 1fr) 86px minmax(140px, 0.82fr) 64px 74px;
   gap: 8px;
   align-items: center;
 }
@@ -8222,6 +8222,7 @@ select.uu-input:focus {
   display: flex;
   flex-direction: column;
   align-self: stretch;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
   max-width: 720px;
@@ -8245,7 +8246,7 @@ select.uu-input:focus {
 .uu-editor-page-anchor-card-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 10px;
   margin-bottom: 14px;
 }
@@ -8266,7 +8267,7 @@ select.uu-input:focus {
 .uu-editor-page-anchor-nav-v6 {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .uu-editor-page-anchor-nav-v6 .uu-editor-v4-anchor-link {
@@ -8305,4 +8306,40 @@ select.uu-input:focus {
   .uu-editor-floating-message {
     justify-content: flex-start;
   }
+}
+
+.uu-kicker {
+  align-self: flex-start;
+}
+
+.uu-dashboard-copy:empty {
+  display: none;
+}
+
+.uu-menu-editor-slimbar-refined {
+  align-items: center;
+}
+
+.uu-menu-editor-slimbar-copy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.uu-menu-editor-slimbar-copy strong {
+  line-height: 1;
+}
+
+.uu-menu-editor-bulk-head-a > div:first-child,
+.uu-menu-editor-structured-head > div:first-child {
+  min-width: 0;
+}
+
+.uu-menu-editor-bulk-head-a strong,
+.uu-menu-editor-structured-head strong {
+  line-height: 1.2;
+}
+
+.uu-menu-editor-structured-head span:empty {
+  display: none;
 }

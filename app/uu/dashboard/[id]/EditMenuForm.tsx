@@ -479,14 +479,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head uu-editor-v4-section-head-pro uu-menu-editor-section-head-refined">
               <div>
                 <h2>菜單品項</h2>
-                <p>改成以「快速輸入」為主流程，先貼整份菜單再批次整理，最後再到右邊微調單一品項。</p>
               </div>
             </div>
 
             <div className="uu-menu-editor-slimbar uu-menu-editor-slimbar-refined">
               <div className="uu-menu-editor-slimbar-copy">
                 <strong>{activeCount} 項供應中</strong>
-                <span>{categorySummary.length ? `已整理 ${categorySummary.length} 個分類` : "新增第一個品項後，這裡會自動整理分類"}</span>
               </div>
               <div className="uu-menu-editor-category-tags">
                 {categorySummary.length ? categorySummary.slice(0, 6).map((category) => (
@@ -501,7 +499,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                   <div className="uu-menu-editor-bulk-head uu-menu-editor-bulk-head-a">
                     <div>
                       <strong>快速輸入整份菜單</strong>
-                      <span>先把原始菜單貼在這裡，確認後按「套用到逐項編輯」，系統會自動拆成分類、菜名與價格。</span>
                     </div>
                     <div className="uu-menu-editor-toolbar uu-menu-editor-toolbar-a uu-menu-editor-toolbar-a-dual">
                       <button type="button" className="uu-btn uu-btn-primary uu-btn-compact" onClick={applyQuickInput}>套用到逐項編輯</button>
