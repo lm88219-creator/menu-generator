@@ -12,7 +12,7 @@ function getPublicBaseUrl() {
 }
 
 
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "classic";
 
 export default function DeskCardButton({
   restaurant,
@@ -84,6 +84,17 @@ export default function DeskCardButton({
         sub: "#8b6573",
         accent: "#b35c7a",
         border: "#ebc8d5",
+      };
+    }
+
+    if (selectedTheme === "classic") {
+      return {
+        bg: "#f6f0e6",
+        card: "#ffffff",
+        title: "#111827",
+        sub: "#6b7280",
+        accent: "#b91c1c",
+        border: "#ead9cf",
       };
     }
 

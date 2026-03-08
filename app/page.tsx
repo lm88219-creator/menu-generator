@@ -12,7 +12,7 @@ function getPublicBaseUrl() {
 }
 
 
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "classic";
 
 function generateSlug(name: string) {
   return name
@@ -128,6 +128,21 @@ export default function Home() {
         buttonMainText: "#fff",
         buttonGhostBg: "rgba(255,255,255,0.72)",
         buttonGhostText: "#5a3141",
+      },
+      classic: {
+        name: "經典餐館",
+        pageBg: "radial-gradient(circle at top,#ffffff 0%,#fbf7f1 42%,#f6f0e6 100%)",
+        cardBg: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,251,246,0.96) 100%)",
+        cardBorder: "1px solid rgba(17,24,39,0.08)",
+        text: "#111827",
+        subText: "#6b7280",
+        accent: "#b91c1c",
+        inputBg: "rgba(255,255,255,0.88)",
+        inputBorder: "1px solid rgba(17,24,39,0.1)",
+        buttonMainBg: "linear-gradient(180deg,#b91c1c 0%,#991b1b 100%)",
+        buttonMainText: "#fff",
+        buttonGhostBg: "rgba(255,255,255,0.78)",
+        buttonGhostText: "#111827",
       },
     }),
     []
@@ -317,6 +332,18 @@ export default function Home() {
         muted: "#7b6756",
         line: "#d9c3ae",
         accent: "#8b5e34",
+      };
+    }
+
+    if (selectedTheme === "classic") {
+      return {
+        bg: "#f6f0e6",
+        card: "#ffffff",
+        title: "#111827",
+        text: "#1f2937",
+        muted: "#6b7280",
+        line: "rgba(17,24,39,0.12)",
+        accent: "#b91c1c",
       };
     }
 
@@ -575,7 +602,7 @@ y += 150;
     padding: "10px 16px",
     borderRadius: 12,
     border: "none",
-    background: theme === "warm" ? "linear-gradient(180deg, #8b5e34, #6f4623)" : "linear-gradient(180deg, #2563eb, #1d4ed8)",
+    background: theme === "warm" ? "linear-gradient(180deg, #8b5e34, #6f4623)" : theme === "classic" ? "linear-gradient(180deg, #b91c1c, #991b1b)" : "linear-gradient(180deg, #2563eb, #1d4ed8)",
     color: currentTheme.buttonMainText,
     cursor: "pointer",
     fontSize: 15,
@@ -590,6 +617,7 @@ y += 150;
     ocean: "#53a8c9",
     forest: "#5e9468",
     rose: "#c78a9f",
+    classic: "#b91c1c",
   };
 
   const themeSurfaceMap: Record<ThemeType, { bg: string; text: string; muted: string; border: string }> = {
@@ -599,6 +627,7 @@ y += 150;
     ocean: { bg: "#e2f3f8", text: "#214d63", muted: "#5d7f90", border: "rgba(83,168,201,0.26)" },
     forest: { bg: "#e7f1e5", text: "#274332", muted: "#667a6c", border: "rgba(94,148,104,0.26)" },
     rose: { bg: "#f7e7eb", text: "#623d49", muted: "#8d6b76", border: "rgba(199,138,159,0.28)" },
+    classic: { bg: "#fbf7f1", text: "#111827", muted: "#6b7280", border: "rgba(185,28,28,0.22)" },
   };
 
   const themeCardStyle = (value: ThemeType): React.CSSProperties => ({
@@ -863,6 +892,7 @@ y += 150;
                   ["ocean", "海洋清新風", "清爽、海味、明亮感"],
                   ["forest", "森林自然風", "自然、手作、健康感"],
                   ["rose", "玫瑰奶茶風", "柔和、甜點、質感感"],
+                  ["classic", "經典餐館", "米白、餐館、紙本感"],
                 ] as const).map(([value, title, desc]) => (
                   <button
                     key={value}
@@ -946,12 +976,14 @@ y += 150;
                     ? "radial-gradient(circle at top,#1b1b1b 0%,#080808 70%)"
                     : theme === "light"
                     ? "linear-gradient(180deg,#ffffff 0%,#f3f3f3 100%)"
+                    : theme === "classic"
+                    ? "radial-gradient(circle at top,#ffffff 0%,#fbf7f1 55%,#f6f0e6 100%)"
                     : "linear-gradient(180deg,#fffaf3 0%,#f1e0cb 100%)",
                 border:
                   theme === "dark"
                     ? "1px solid rgba(255,255,255,0.08)"
                     : "1px solid rgba(0,0,0,0.08)",
-                color: theme === "dark" ? "#fff" : theme === "light" ? "#111" : theme === "warm" ? "#4e3426" : theme === "ocean" ? "#0f3550" : theme === "forest" ? "#233b2c" : "#5a3141",
+                color: theme === "dark" ? "#fff" : theme === "light" ? "#111" : theme === "warm" ? "#4e3426" : theme === "ocean" ? "#0f3550" : theme === "forest" ? "#233b2c" : theme === "classic" ? "#111827" : "#5a3141",
                 minHeight: isMobile ? "auto" : 520,
                 maxWidth: 390,
                 margin: "0 auto",
@@ -1059,6 +1091,8 @@ y += 150;
                             ? "#f4d58d"
                             : theme === "light"
                             ? "#0b57d0"
+                            : theme === "classic"
+                            ? "#b91c1c"
                             : "#8b5e34",
                       }}
                     >

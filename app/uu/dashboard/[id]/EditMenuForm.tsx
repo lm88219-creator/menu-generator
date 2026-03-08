@@ -4,7 +4,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { useEffect, useMemo, useState } from "react";
 import { parseMenuText, normalizeSlug } from "@/lib/menu";
 
-export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "classic";
 
 type InitialData = {
   restaurant: string;
@@ -34,6 +34,7 @@ const THEME_OPTIONS: Array<{ value: ThemeType; label: string; desc: string; acce
   { value: "ocean", label: "海洋清新", desc: "色調明亮清爽，適合海鮮、健康餐、早午餐。", accent: "#4da3ff", preview: ["#10202d", "#173247", "#0d1923"] },
   { value: "forest", label: "森林自然", desc: "較有自然感，適合便當、蔬食、手作餐飲。", accent: "#6fb17a", preview: ["#142118", "#203126", "#101813"] },
   { value: "rose", label: "玫瑰奶茶", desc: "較柔和有質感，適合甜點、飲料與輕食。", accent: "#d78aa4", preview: ["#2b1a21", "#3a222b", "#1f1418"] },
+  { value: "classic", label: "經典餐館", desc: "米白紙感搭配餐館紅，適合熱炒、鵝肉、小吃與家常菜。", accent: "#b91c1c", preview: ["#fbf7f1", "#ffffff", "#f6ebe6"] },
 ];
 
 function createFormItem(partial?: Partial<MenuItemForm>): MenuItemForm {
@@ -196,6 +197,22 @@ function getPreviewTokens(theme: ThemeType) {
     surface: "rgba(28, 17, 22, 0.56)",
     section: "#ffe2eb",
     line: "rgba(255,255,255,0.06)",
+  };
+  if (theme === "classic") return {
+    shell: "radial-gradient(circle at top, #ffffff 0%, #fbf7f1 45%, #f6f0e6 100%)",
+    panel: "rgba(255, 255, 255, 0.92)",
+    soft: "rgba(185, 28, 28, 0.08)",
+    border: "rgba(17,24,39,0.08)",
+    accent: "#b91c1c",
+    accentSoft: "rgba(185,28,28,0.12)",
+    title: "#111827",
+    text: "#1f2937",
+    muted: "#6b7280",
+    hero: "linear-gradient(135deg, rgba(255,255,255,0.88), rgba(255,255,255,0.70))",
+    priceBg: "rgba(185,28,28,0.08)",
+    surface: "rgba(246, 235, 230, 0.72)",
+    section: "#7a1212",
+    line: "rgba(17,24,39,0.08)",
   };
   return {
     shell: "linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%)",
@@ -689,7 +706,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                     <div><strong>深色經典</strong><span>熱炒、宵夜、酒吧</span></div>
                     <div><strong>簡約白</strong><span>一般餐廳、字多的菜單</span></div>
                     <div><strong>暖木咖啡</strong><span>咖啡店、家常餐飲</span></div>
-                    <div><strong>海洋 / 森林 / 玫瑰</strong><span>需要更鮮明品牌感時使用</span></div>
+                    <div><strong>海洋 / 森林 / 玫瑰 / 經典餐館</strong><span>需要更明確品牌調性或紙本餐館感時使用</span></div>
                   </div>
                 </section>
               </div>

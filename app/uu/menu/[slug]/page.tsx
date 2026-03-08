@@ -162,6 +162,30 @@ function getThemeTokens(theme: ThemeType): ThemeTokens {
       shadow: "0 24px 54px rgba(120, 63, 85, 0.11)",
     };
   }
+  if (theme === "classic") {
+    return {
+      accent: "#b91c1c",
+      accentStrong: "#7a1212",
+      accentSoft: "#fff3e8",
+      accentTint: "rgba(185, 28, 28, 0.08)",
+      accentTintStrong: "rgba(185, 28, 28, 0.16)",
+      badge: "rgba(255, 255, 255, 0.82)",
+      border: "rgba(17, 24, 39, 0.10)",
+      bg: "#fbf7f1",
+      bgSoft: "#fffdfa",
+      bgDeep: "#f6f0e6",
+      surface: "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,251,246,0.98))",
+      surfaceSoft: "rgba(255, 255, 255, 0.88)",
+      text: "#111827",
+      title: "#111827",
+      muted: "#6b7280",
+      priceBg: "rgba(185, 28, 28, 0.08)",
+      priceText: "#9f1d1d",
+      soldoutBg: "rgba(127, 29, 29, 0.08)",
+      soldoutText: "#7f1d1d",
+      shadow: "0 24px 54px rgba(17, 24, 39, 0.08)",
+    };
+  }
   return {
     accent: "#b69b74",
     accentStrong: "#7d6543",

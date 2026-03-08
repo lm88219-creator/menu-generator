@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose";
+type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "classic";
 
 type InitialData = {
   restaurant: string;
@@ -143,6 +143,23 @@ export default function EditMenuForm({
         previewBg: "linear-gradient(180deg,#fffafc 0%,#fdebf1 100%)",
         previewBorder: "1px solid rgba(145,78,101,0.08)",
       },
+      classic: {
+        name: "經典餐館",
+        pageBg: "radial-gradient(circle at top,#ffffff 0%,#fbf7f1 42%,#f6f0e6 100%)",
+        cardBg: "rgba(255,255,255,0.94)",
+        cardBorder: "1px solid rgba(17,24,39,0.08)",
+        text: "#111827",
+        subText: "#6b7280",
+        accent: "#b91c1c",
+        inputBg: "rgba(255,255,255,0.88)",
+        inputBorder: "1px solid rgba(17,24,39,0.1)",
+        buttonMainBg: "#b91c1c",
+        buttonMainText: "#fff",
+        buttonGhostBg: "rgba(255,255,255,0.78)",
+        buttonGhostText: "#111827",
+        previewBg: "radial-gradient(circle at top,#ffffff 0%,#fbf7f1 50%,#f6f0e6 100%)",
+        previewBorder: "1px solid rgba(185,28,28,0.14)",
+      },
     }),
     []
   );
@@ -277,6 +294,8 @@ export default function EditMenuForm({
         ? "linear-gradient(180deg,#f5fdff 0%,#d8eef7 100%)"
         : value === "forest"
         ? "linear-gradient(180deg,#f5faf5 0%,#d7e8d7 100%)"
+        : value === "classic"
+        ? "radial-gradient(circle at top,#ffffff 0%,#fbf7f1 50%,#f6f0e6 100%)"
         : "linear-gradient(180deg,#fff8fb 0%,#f3d8e3 100%)",
     color:
       value === "dark"
@@ -289,6 +308,8 @@ export default function EditMenuForm({
         ? "#0f3550"
         : value === "forest"
         ? "#233b2c"
+        : value === "classic"
+        ? "#111827"
         : "#5a3141",
     cursor: "pointer",
     minHeight: 112,
@@ -407,6 +428,10 @@ export default function EditMenuForm({
                 <div onClick={() => setTheme("rose")} style={themeCardStyle("rose")}>
                   <div style={{ fontWeight: 800 }}>玫瑰奶茶風</div>
                   <div style={{ fontSize: 13, opacity: 0.8 }}>柔和、甜點、質感感</div>
+                </div>
+                <div onClick={() => setTheme("classic")} style={themeCardStyle("classic")}>
+                  <div style={{ fontWeight: 800 }}>經典餐館</div>
+                  <div style={{ fontSize: 13, opacity: 0.8 }}>米白、餐館、紙本感</div>
                 </div>
               </div>
             </div>
