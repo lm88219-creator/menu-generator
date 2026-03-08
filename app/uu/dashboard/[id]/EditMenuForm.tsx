@@ -1,7 +1,7 @@
 "use client";
 
 import { QRCodeCanvas } from "qrcode.react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { parseMenuText, normalizeSlug } from "@/lib/menu";
 
 export type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "classic";
@@ -239,6 +239,9 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const [hours, setHours] = useState(initialData.hours);
   const [formItems, setFormItems] = useState<MenuItemForm[]>(() => toFormItems(initialData.menuText));
   const [menuText, setMenuText] = useState(initialData.menuText);
+  const [quickInput, setQuickInput] = useState(initialData.menuText);
+  const [bulkDirty, setBulkDirty] = useState(false);
+  const [editorMode, setEditorMode] = useState<"quick" | "detail">("quick");
   const [theme, setTheme] = useState<ThemeType>(initialData.theme || "dark");
   const [logoDataUrl, setLogoDataUrl] = useState(initialData.logoDataUrl || "");
   const [slug, setSlug] = useState(initialData.slug || "");
@@ -247,8 +250,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const [message, setMessage] = useState("");
   const [deskInput, setDeskInput] = useState("");
   const [selectedDesk, setSelectedDesk] = useState("");
-  const syncSourceRef = useRef<"structured" | "manual" | null>(null);
-  const manualSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const safeSlug = normalizeSlug(slug || restaurant) || id;
   const publicPath = `/uu/menu/${safeSlug}`;
@@ -275,27 +276,10 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const selectedDeskUrl = selectedDesk ? `${publicUrl}?table=${encodeURIComponent(selectedDesk)}` : "";
 
   useEffect(() => {
-    if (syncSourceRef.current === "manual") return;
     const nextMenuText = toMenuText(formItems);
-    if (nextMenuText !== menuText) {
-      syncSourceRef.current = "structured";
-      setMenuText(nextMenuText);
-    }
-  }, [formItems, menuText]);
-
-  useEffect(() => {
-    if (syncSourceRef.current !== "manual") return;
-    if (manualSyncTimerRef.current) clearTimeout(manualSyncTimerRef.current);
-
-    manualSyncTimerRef.current = setTimeout(() => {
-      setFormItems(toFormItems(menuText));
-      syncSourceRef.current = null;
-    }, 220);
-
-    return () => {
-      if (manualSyncTimerRef.current) clearTimeout(manualSyncTimerRef.current);
-    };
-  }, [menuText]);
+    if (nextMenuText !== menuText) setMenuText(nextMenuText);
+    if (!bulkDirty && nextMenuText !== quickInput) setQuickInput(nextMenuText);
+  }, [formItems, menuText, quickInput, bulkDirty]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -325,24 +309,51 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   function updateFormItem(index: number, patch: Partial<MenuItemForm>) {
-    syncSourceRef.current = "structured";
     setFormItems((current) => current.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)));
   }
 
-  function handleMenuTextInput(value: string) {
-    syncSourceRef.current = "manual";
-    setMenuText(value);
+  function handleQuickInputChange(value: string) {
+    setQuickInput(value);
+    setBulkDirty(true);
   }
 
-  function handleMenuTextBlur() {
-    if (manualSyncTimerRef.current) clearTimeout(manualSyncTimerRef.current);
-    syncSourceRef.current = "manual";
-    setFormItems(toFormItems(menuText));
-    syncSourceRef.current = null;
+  function applyQuickInput() {
+    const nextItems = toFormItems(quickInput);
+    setFormItems(nextItems);
+    const nextMenuText = toMenuText(nextItems);
+    setMenuText(nextMenuText);
+    setQuickInput(nextMenuText);
+    setBulkDirty(false);
+    pushMessage("已套用整排輸入");
+  }
+
+  function syncQuickInputFromItems() {
+    const nextMenuText = toMenuText(formItems);
+    setMenuText(nextMenuText);
+    setQuickInput(nextMenuText);
+    setBulkDirty(false);
+    pushMessage("已同步右側內容");
+  }
+
+  function fillQuickInputExample() {
+    const example = `鵝肉
+鹽水鵝肉 200
+麻油鵝肉 220
+
+主食
+炒飯 80
+炒麵 80`;
+    setEditorMode("quick");
+    setQuickInput(example);
+    setBulkDirty(true);
+  }
+
+  function clearQuickInput() {
+    setQuickInput("");
+    setBulkDirty(true);
   }
 
   function addItem(afterCategory?: string) {
-    syncSourceRef.current = "structured";
     setFormItems((current) => [
       ...current,
       createFormItem({ category: afterCategory || current[current.length - 1]?.category || "精選菜單" }),
@@ -350,7 +361,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   function duplicateItem(index: number) {
-    syncSourceRef.current = "structured";
     setFormItems((current) => {
       const target = current[index];
       if (!target) return current;
@@ -361,7 +371,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   function removeItem(index: number) {
-    syncSourceRef.current = "structured";
     setFormItems((current) => {
       const next = current.filter((_, itemIndex) => itemIndex !== index);
       return next.length ? next : [createFormItem()];
@@ -369,10 +378,13 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   async function handleSave() {
-    const latestItems = syncSourceRef.current === "manual" ? toFormItems(menuText) : formItems;
-    if (syncSourceRef.current === "manual") {
+    const latestItems = bulkDirty ? toFormItems(quickInput) : formItems;
+    if (bulkDirty) {
       setFormItems(latestItems);
-      syncSourceRef.current = null;
+      const syncedMenuText = toMenuText(latestItems);
+      setMenuText(syncedMenuText);
+      setQuickInput(syncedMenuText);
+      setBulkDirty(false);
     }
     const finalMenuText = toMenuText(latestItems);
 
@@ -536,7 +548,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <div className="uu-section-head uu-editor-v4-section-head-pro uu-menu-editor-section-head-refined">
               <div>
                 <h2>菜單品項</h2>
-                <p>把品項整理成更俐落的單列編輯格式，分類、菜名、價格與備註能更快完成。</p>
+                <p>改成以「快速輸入」為主流程，先貼整份菜單再批次整理，最後再到右邊微調單一品項。</p>
               </div>
             </div>
 
@@ -552,21 +564,32 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               </div>
             </div>
 
-            <div className="uu-menu-editor-dual-layout">
-              <section className="uu-menu-editor-bulk-card">
-                <div className="uu-menu-editor-bulk-head">
+            <div className="uu-menu-editor-modebar">
+              <button type="button" className={`uu-mode-tab ${editorMode === "quick" ? "is-active" : ""}`} onClick={() => setEditorMode("quick")}>快速輸入</button>
+              <button type="button" className={`uu-mode-tab ${editorMode === "detail" ? "is-active" : ""}`} onClick={() => setEditorMode("detail")}>逐項編輯</button>
+              <span className={`uu-menu-editor-sync-hint ${bulkDirty ? "is-warning" : ""}`}>{bulkDirty ? "左側內容尚未套用到右側" : "左右內容已同步"}</span>
+            </div>
+
+            <div className="uu-menu-editor-dual-layout uu-menu-editor-dual-layout-a">
+              <section className="uu-menu-editor-bulk-card uu-menu-editor-bulk-card-a">
+                <div className="uu-menu-editor-bulk-head uu-menu-editor-bulk-head-a">
                   <div>
-                    <strong>整排輸入區</strong>
-                    <span>左邊直接貼上或輸入完整菜單，右邊品項卡會自動同步。</span>
+                    <strong>快速輸入整份菜單</strong>
+                    <span>先把原始菜單貼在這裡，確認後按「套用到右側」，系統會自動拆成分類、菜名與價格。</span>
                   </div>
-                  <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={() => addItem(categorySummary[0]?.name || "精選菜單")}>＋ 新增品項</button>
+                </div>
+
+                <div className="uu-menu-editor-toolbar uu-menu-editor-toolbar-a">
+                  <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={fillQuickInputExample}>載入範例</button>
+                  <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={syncQuickInputFromItems}>從右側回填</button>
+                  <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={clearQuickInput}>清空</button>
+                  <button type="button" className="uu-btn uu-btn-primary uu-btn-compact" onClick={applyQuickInput}>套用到右側</button>
                 </div>
 
                 <textarea
-                  className="uu-textarea uu-menu-editor-bulk-textarea"
-                  value={menuText}
-                  onChange={(e) => handleMenuTextInput(e.target.value)}
-                  onBlur={handleMenuTextBlur}
+                  className="uu-textarea uu-menu-editor-bulk-textarea uu-menu-editor-bulk-textarea-a"
+                  value={quickInput}
+                  onChange={(e) => handleQuickInputChange(e.target.value)}
                   placeholder={`例如：
 鵝肉
 鹽水鵝肉 200
@@ -577,16 +600,27 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 炒麵 80`}
                 />
 
-                <div className="uu-menu-editor-bulk-footnote">
-                  <span>分類單獨一行，品項後面接價格，備註可用「|」分隔。</span>
-                  <span>右側新增、刪除或修改內容後，左邊也會自動同步。</span>
+                <div className="uu-menu-editor-bulk-footnote uu-menu-editor-bulk-footnote-a">
+                  <span>分類請獨立一行，品項後面接價格，備註可用「|」分隔。</span>
+                  <span>儲存時若左側有未套用內容，系統會自動先套用再儲存。</span>
                 </div>
               </section>
 
-              <div className="uu-menu-editor-structured-panel">
+              <div className="uu-menu-editor-structured-panel uu-menu-editor-structured-panel-a">
+                <div className="uu-menu-editor-structured-head">
+                  <div>
+                    <strong>右側結果預覽與微調</strong>
+                    <span>快速輸入後會在這裡生成品項，適合改價格、改備註、補單一品項。</span>
+                  </div>
+                  <div className="uu-menu-editor-structured-actions">
+                    <button type="button" className="uu-btn uu-btn-secondary uu-btn-compact" onClick={() => addItem()}>＋ 新增品項</button>
+                    <button type="button" className="uu-btn uu-btn-primary uu-btn-compact" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
+                  </div>
+                </div>
+
                 <div className="uu-items-stack uu-menu-editor-stack uu-menu-editor-stack-refined">
                   {formItems.map((item, index) => (
-                    <article key={item.uid} className="uu-menu-item-row-card uu-menu-item-row-card-minimal">
+                    <article key={item.uid} className={`uu-menu-item-row-card uu-menu-item-row-card-minimal ${editorMode === "detail" ? "is-focused" : ""}`}>
                       <div className="uu-menu-item-row-grid uu-menu-item-row-grid-minimal">
                         <input className="uu-input uu-input-compact" value={item.category} onChange={(e) => updateFormItem(index, { category: e.target.value })} placeholder="分類" aria-label={`第 ${index + 1} 項分類`} />
                         <input className="uu-input uu-input-compact uu-menu-item-name-input-minimal" value={item.name} onChange={(e) => updateFormItem(index, { name: e.target.value })} placeholder="菜名" aria-label={`第 ${index + 1} 項菜名`} />
@@ -599,16 +633,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
                           <input type="checkbox" checked={!item.soldOut} onChange={(e) => updateFormItem(index, { soldOut: !e.target.checked })} />
                         </label>
                         <div className="uu-menu-item-delete-cell uu-menu-item-delete-cell-minimal">
+                          <button type="button" className="uu-btn uu-btn-secondary uu-btn-icon-only" onClick={() => duplicateItem(index)} aria-label={`複製第 ${index + 1} 項`}>複製</button>
                           <button type="button" className="uu-btn uu-btn-danger uu-btn-icon-only" onClick={() => removeItem(index)} aria-label={`刪除第 ${index + 1} 項`}>刪除</button>
                         </div>
                       </div>
                     </article>
                   ))}
-                </div>
-
-                <div className="uu-menu-editor-savebar-inline uu-menu-editor-actionbar">
-                  <button type="button" className="uu-btn uu-btn-secondary" onClick={() => addItem()}>＋ 新增品項</button>
-                  <button type="button" className="uu-btn uu-btn-primary" onClick={handleSave} disabled={saving}>{saving ? "儲存中..." : "儲存變更"}</button>
                 </div>
               </div>
             </div>
