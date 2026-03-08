@@ -1,7 +1,8 @@
 export const dynamic = "force-dynamic";
 
 import { CSSProperties } from "react";
-import { getMenu, getMenuIdBySlug, ThemeType } from "@/lib/store";
+import { getMenu, getMenuIdBySlug } from "@/lib/store";
+import type { ThemeType } from "@/lib/theme";
 import { groupMenuItems } from "@/lib/menu";
 
 function renderMessage(title: string, copy: string) {
