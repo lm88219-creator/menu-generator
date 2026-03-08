@@ -433,25 +433,11 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <h2 className="uu-simple-title">{restaurant || "未命名店家"}</h2>
             <p className="uu-admin-copy">把主要編輯步驟集中成清楚的四段，滑動時更容易知道自己改到哪裡。</p>
           </div>
-          <div className="uu-editor-v4-stats uu-editor-v4-stats-refined">
-            <div className="uu-editor-v4-stat-card">
-              <span>全部品項</span>
-              <strong>{formItems.length}</strong>
-            </div>
-            <div className="uu-editor-v4-stat-card">
-              <span>供應中</span>
-              <strong>{activeCount}</strong>
-            </div>
-            <div className="uu-editor-v4-stat-card">
-              <span>售完</span>
-              <strong>{soldOutCount}</strong>
-            </div>
-          </div>
         </div>
 
         <div className="uu-editor-v4-topbar-side">
           <div className="uu-editor-v4-anchor-nav uu-editor-v4-anchor-nav-refined">
-            <a href="#shop-info" className="uu-editor-v4-anchor-link">
+            <a href="#shop-info" className="uu-editor-v4-anchor-link is-primary">
               <span>01</span>
               <strong>店家資訊</strong>
             </a>
@@ -459,11 +445,11 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               <span>02</span>
               <strong>菜單品項</strong>
             </a>
-            <a href="#appearance-settings" className="uu-editor-v4-anchor-link">
+            <a href="#appearance-settings" className="uu-editor-v4-anchor-link is-primary">
               <span>03</span>
               <strong>外觀設定</strong>
             </a>
-            <a href="#advanced-tools" className="uu-editor-v4-anchor-link">
+            <a href="#advanced-tools" className="uu-editor-v4-anchor-link is-primary">
               <span>04</span>
               <strong>進階工具</strong>
             </a>
@@ -523,6 +509,20 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
               <div>
                 <h2>菜單品項</h2>
                 <p>改成以「快速輸入」為主流程，先貼整份菜單再批次整理，最後再到右邊微調單一品項。</p>
+                <div className="uu-editor-v4-stats uu-editor-v4-stats-refined uu-editor-v4-stats-inline-menu">
+                  <div className="uu-editor-v4-stat-card">
+                    <span>全部品項</span>
+                    <strong>{formItems.length}</strong>
+                  </div>
+                  <div className="uu-editor-v4-stat-card">
+                    <span>供應中</span>
+                    <strong>{activeCount}</strong>
+                  </div>
+                  <div className="uu-editor-v4-stat-card">
+                    <span>售完</span>
+                    <strong>{soldOutCount}</strong>
+                  </div>
+                </div>
               </div>
             </div>
 

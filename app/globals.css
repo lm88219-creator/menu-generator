@@ -8203,3 +8203,49 @@ select.uu-input:focus {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* menu editor nav and stat refinements */
+.uu-editor-v4-stats-inline-menu {
+  margin-top: 12px;
+  max-width: 460px;
+}
+
+.uu-editor-v4-stats-inline-menu .uu-editor-v4-stat-card {
+  padding: 9px 12px;
+  border-radius: 16px;
+}
+
+.uu-editor-v4-stats-inline-menu .uu-editor-v4-stat-card span {
+  margin-bottom: 4px;
+}
+
+.uu-editor-v4-stats-inline-menu .uu-editor-v4-stat-card strong {
+  font-size: 18px;
+}
+
+.uu-editor-v4-anchor-link {
+  padding: 9px 12px;
+  border-radius: 16px;
+  border-color: rgba(110, 168, 255, 0.28);
+  background: linear-gradient(180deg, rgba(110, 168, 255, 0.16), rgba(110, 168, 255, 0.07));
+}
+
+.uu-editor-v4-anchor-link:hover {
+  background: linear-gradient(180deg, rgba(110, 168, 255, 0.2), rgba(110, 168, 255, 0.09));
+}
+
+.uu-editor-v4-anchor-link span {
+  width: 28px;
+  height: 28px;
+}
+
+.uu-editor-v4-anchor-link strong {
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .uu-editor-v4-stats-inline-menu {
+    max-width: none;
+  }
+}
