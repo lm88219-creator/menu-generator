@@ -1,1 +1,3 @@
-export { default, dynamic } from "@/components/admin/pages/DashboardEditPage";
+export const dynamic = "force-dynamic";
+
+export { default } from "@/components/admin/pages/DashboardEditPage";
