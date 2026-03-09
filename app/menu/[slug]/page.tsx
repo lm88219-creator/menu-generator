@@ -39,6 +39,10 @@ function toSectionId(category: string, index: number) {
   );
 }
 
+function toCategoryNavLabel(category: string) {
+  return category.split("｜")[0]?.trim() || category.trim();
+}
+
 type ExtendedMenuData = Awaited<ReturnType<typeof getMenu>> & {
   closedDay?: string;
   coverImageDataUrl?: string;
@@ -64,7 +68,7 @@ export default async function MenuPage({
   const table = String(query?.table ?? "").trim();
   const tokens = getPublicThemeTokens(theme);
   const categoryLinks = grouped.map((group, index) => ({
-    label: group.category,
+    label: toCategoryNavLabel(group.category),
     id: toSectionId(group.category, index),
   }));
 

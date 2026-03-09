@@ -1009,3 +1009,112 @@
     min-height: 68px;
   }
 }
+
+
+/* ===== 2026-03-10 public page requested final fixes ===== */
+.uu-public-category-nav-shell {
+  position: sticky;
+  top: 6px;
+  z-index: 30;
+  padding: 8px 0 6px;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.uu-public-category-nav {
+  background: transparent !important;
+  border: 0;
+}
+
+.uu-public-category-nav-scroll {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  row-gap: 10px;
+  overflow: visible;
+  padding: 0;
+  background: transparent;
+}
+
+.uu-public-category-chip {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.uu-public-category-section {
+  scroll-margin-top: 136px;
+}
+
+.uu-public-menu-card-v2 .uu-public-category-section:first-child {
+  margin-top: 22px;
+}
+
+.uu-public-menu-item-imagewrap {
+  width: 94px;
+  min-width: 94px;
+  height: 94px;
+  padding-left: 14px;
+}
+
+.uu-public-menu-item-imagewrap.is-empty {
+  display: grid;
+  place-items: center;
+}
+
+.uu-public-menu-item-image-empty {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  line-height: 1.2;
+}
+
+@media (max-width: 760px) {
+  .uu-public-category-nav-shell {
+    top: 4px;
+    padding: 8px 0 6px;
+  }
+
+  .uu-public-category-nav-scroll {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    row-gap: 8px;
+    justify-content: stretch;
+    align-items: stretch;
+  }
+
+  .uu-public-category-chip {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    padding: 0 10px;
+    font-size: 13px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .uu-public-category-section {
+    scroll-margin-top: 128px;
+  }
+
+  .uu-public-menu-item-imagewrap {
+    width: 68px;
+    min-width: 68px;
+    height: 68px;
+    padding-left: 12px;
+  }
+}
