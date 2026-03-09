@@ -736,15 +736,15 @@
 }
 
 .uu-public-category-nav-scroll {
-  width: fit-content;
+  width: 100%;
   max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 2px 1px 0;
+  flex-wrap: wrap;
+  overflow: visible;
+  padding: 2px 0 0;
   scrollbar-width: none;
 }
 
@@ -753,6 +753,7 @@
 }
 
 .uu-public-category-chip {
+  flex: 0 1 auto;
   min-height: 46px;
   padding: 0 20px;
   border-radius: 999px;
