@@ -4,16 +4,36 @@ import { redirect } from "next/navigation";
 
 export const ADMIN_COOKIE_NAME = "uu_admin_session";
 
-function requiredEnv(name: string, fallback = "") {
-  return String(process.env[name] ?? fallback).trim();
+type AdminCredentials = {
+  username: string;
+  password: string;
+  secret: string;
+};
+
+function readEnv(name: string) {
+  return String(process.env[name] ?? "").trim();
 }
 
-export function getAdminCredentials() {
-  return {
-    username: requiredEnv("ADMIN_USERNAME", "admin"),
-    password: requiredEnv("ADMIN_PASSWORD", "12345678"),
-    secret: requiredEnv("ADMIN_SECRET", "change-this-secret"),
+function hasUnsafeFallback(creds: AdminCredentials) {
+  return (
+    creds.username === "admin" ||
+    creds.password === "12345678" ||
+    creds.secret === "change-this-secret"
+  );
+}
+
+export function getAdminCredentials(): AdminCredentials {
+  const credentials = {
+    username: readEnv("ADMIN_USERNAME") || "admin",
+    password: readEnv("ADMIN_PASSWORD") || "12345678",
+    secret: readEnv("ADMIN_SECRET") || "change-this-secret",
   };
+
+  if (process.env.NODE_ENV === "production" && hasUnsafeFallback(credentials)) {
+    throw new Error("缺少安全的管理員環境變數，請設定 ADMIN_USERNAME、ADMIN_PASSWORD、ADMIN_SECRET");
+  }
+
+  return credentials;
 }
 
 function signValue(username: string, password: string, secret: string) {

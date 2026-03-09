@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
-
-function getPublicBaseUrl() {
-  const envUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
-  if (envUrl) return /^https?:\/\//i.test(envUrl) ? envUrl : `https://${envUrl}`;
-  return typeof window !== "undefined" ? window.location.origin : "";
-}
+import { joinPublicUrl } from "@/lib/public-url";
 
 export default function DeskCardButton({
   restaurant,
@@ -17,7 +12,7 @@ export default function DeskCardButton({
   publicUrl: string;
 }) {
   const [open, setOpen] = useState(false);
-  const fullUrl = `${getPublicBaseUrl()}${publicUrl}`;
+  const fullUrl = joinPublicUrl(publicUrl);
   const fileName = `${restaurant || "menu"}-qr.png`;
 
   function downloadQr() {

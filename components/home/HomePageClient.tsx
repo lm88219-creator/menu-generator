@@ -2,24 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
+import { normalizeSlug } from "@/lib/menu";
+import { getHomeTheme, getPosterThemeTokens, getThemeOptions, getThemeSurface, type ThemeType } from "@/lib/theme";
+import { joinPublicUrl } from "@/lib/public-url";
 
-function getPublicBaseUrl() {
-  const envUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
-  if (envUrl) {
-    return /^https?:\/\//i.test(envUrl) ? envUrl : `https://${envUrl}`;
-  }
-  return window.location.origin;
-}
-
-
-type ThemeType = "dark" | "light" | "warm" | "ocean" | "forest" | "rose" | "classic";
-
-function generateSlug(name: string) {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
-}
 
 export default function HomePageClient() {
   const [restaurant, setRestaurant] = useState("");
@@ -37,118 +23,8 @@ export default function HomePageClient() {
   const [copied, setCopied] = useState(false);
   const [downloadingPoster, setDownloadingPoster] = useState(false);
 
-  const themeMap = useMemo(
-    () => ({
-      dark: {
-        name: "黑色餐廳風",
-        pageBg: "radial-gradient(circle at top,#1a1a1a 0%,#000 45%,#000 100%)",
-        cardBg: "rgba(255,255,255,0.04)",
-        cardBorder: "1px solid rgba(255,255,255,0.08)",
-        text: "#fff",
-        subText: "#a9a9a9",
-        accent: "#f4d58d",
-        inputBg: "rgba(255,255,255,0.05)",
-        inputBorder: "1px solid rgba(255,255,255,0.08)",
-        buttonMainBg: "#fff",
-        buttonMainText: "#000",
-        buttonGhostBg: "rgba(255,255,255,0.08)",
-        buttonGhostText: "#fff",
-      },
-      light: {
-        name: "簡約白色",
-        pageBg: "linear-gradient(180deg,#f8f8f8 0%,#eeeeee 100%)",
-        cardBg: "rgba(255,255,255,0.9)",
-        cardBorder: "1px solid rgba(0,0,0,0.08)",
-        text: "#111",
-        subText: "#666",
-        accent: "#0b57d0",
-        inputBg: "#fff",
-        inputBorder: "1px solid rgba(0,0,0,0.08)",
-        buttonMainBg: "#111",
-        buttonMainText: "#fff",
-        buttonGhostBg: "#fff",
-        buttonGhostText: "#111",
-      },
-      warm: {
-        name: "溫暖咖啡風",
-        pageBg: "linear-gradient(180deg,#f6efe5 0%,#eadbc8 100%)",
-        cardBg: "rgba(255,250,244,0.9)",
-        cardBorder: "1px solid rgba(88,54,24,0.12)",
-        text: "#3e2d20",
-        subText: "#7b6756",
-        accent: "#8b5e34",
-        inputBg: "rgba(255,255,255,0.78)",
-        inputBorder: "1px solid rgba(88,54,24,0.12)",
-        buttonMainBg: "#4e3426",
-        buttonMainText: "#fff",
-        buttonGhostBg: "rgba(255,255,255,0.65)",
-        buttonGhostText: "#3e2d20",
-      },
-      ocean: {
-        name: "海洋清新風",
-        pageBg: "linear-gradient(180deg,#e8f7ff 0%,#cfeeff 100%)",
-        cardBg: "rgba(255,255,255,0.82)",
-        cardBorder: "1px solid rgba(18,108,149,0.14)",
-        text: "#0f3550",
-        subText: "#4d7289",
-        accent: "#118ab2",
-        inputBg: "rgba(255,255,255,0.88)",
-        inputBorder: "1px solid rgba(18,108,149,0.14)",
-        buttonMainBg: "#0f6e91",
-        buttonMainText: "#fff",
-        buttonGhostBg: "rgba(255,255,255,0.72)",
-        buttonGhostText: "#0f3550",
-      },
-      forest: {
-        name: "森林自然風",
-        pageBg: "linear-gradient(180deg,#edf6ef 0%,#d6e7d8 100%)",
-        cardBg: "rgba(250,255,250,0.86)",
-        cardBorder: "1px solid rgba(47,94,61,0.14)",
-        text: "#233b2c",
-        subText: "#5c7564",
-        accent: "#2f6b3f",
-        inputBg: "rgba(255,255,255,0.82)",
-        inputBorder: "1px solid rgba(47,94,61,0.14)",
-        buttonMainBg: "#2f6b3f",
-        buttonMainText: "#fff",
-        buttonGhostBg: "rgba(255,255,255,0.7)",
-        buttonGhostText: "#233b2c",
-      },
-      rose: {
-        name: "玫瑰奶茶風",
-        pageBg: "linear-gradient(180deg,#fff2f6 0%,#f4dbe3 100%)",
-        cardBg: "rgba(255,250,252,0.9)",
-        cardBorder: "1px solid rgba(145,78,101,0.14)",
-        text: "#5a3141",
-        subText: "#8b6573",
-        accent: "#b35c7a",
-        inputBg: "rgba(255,255,255,0.84)",
-        inputBorder: "1px solid rgba(145,78,101,0.14)",
-        buttonMainBg: "#a14b68",
-        buttonMainText: "#fff",
-        buttonGhostBg: "rgba(255,255,255,0.72)",
-        buttonGhostText: "#5a3141",
-      },
-      classic: {
-        name: "經典餐館",
-        pageBg: "radial-gradient(circle at top,#ffffff 0%,#fbf7f1 42%,#f6f0e6 100%)",
-        cardBg: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,251,246,0.96) 100%)",
-        cardBorder: "1px solid rgba(17,24,39,0.08)",
-        text: "#111827",
-        subText: "#6b7280",
-        accent: "#b91c1c",
-        inputBg: "rgba(255,255,255,0.88)",
-        inputBorder: "1px solid rgba(17,24,39,0.1)",
-        buttonMainBg: "linear-gradient(180deg,#b91c1c 0%,#991b1b 100%)",
-        buttonMainText: "#fff",
-        buttonGhostBg: "rgba(255,255,255,0.78)",
-        buttonGhostText: "#111827",
-      },
-    }),
-    []
-  );
-
-  const currentTheme = themeMap[theme];
+  const themeOptions = useMemo(() => getThemeOptions(), []);
+  const currentTheme = getHomeTheme(theme, "warm");
 
   useEffect(() => {
     const apply = () => setIsMobile(window.innerWidth < 900);
@@ -196,7 +72,7 @@ export default function HomePageClient() {
       }
 
       const path = String(data.publicPath ?? data.shortUrl ?? `/m/${data.id}`);
-      const url = String(data.publicUrl ?? `${getPublicBaseUrl()}${path}`);
+      const url = String(data.publicUrl ?? joinPublicUrl(path));
       setQrText(url);
     } catch (error) {
       console.error(error);
@@ -311,51 +187,7 @@ export default function HomePageClient() {
   }
 
   function getThemePosterColors(selectedTheme: ThemeType) {
-    if (selectedTheme === "light") {
-      return {
-        bg: "#f5f5f5",
-        card: "#ffffff",
-        title: "#111111",
-        text: "#222222",
-        muted: "#666666",
-        line: "#d9d9d9",
-        accent: "#0b57d0",
-      };
-    }
-
-    if (selectedTheme === "warm") {
-      return {
-        bg: "#efe1cf",
-        card: "#fffaf3",
-        title: "#4a3326",
-        text: "#4a3326",
-        muted: "#7b6756",
-        line: "#d9c3ae",
-        accent: "#8b5e34",
-      };
-    }
-
-    if (selectedTheme === "classic") {
-      return {
-        bg: "#f6f0e6",
-        card: "#ffffff",
-        title: "#111827",
-        text: "#1f2937",
-        muted: "#6b7280",
-        line: "rgba(17,24,39,0.12)",
-        accent: "#b91c1c",
-      };
-    }
-
-    return {
-      bg: "#111111",
-      card: "#1b1b1b",
-      title: "#ffffff",
-      text: "#f3f3f3",
-      muted: "#aaaaaa",
-      line: "#3a3a3a",
-      accent: "#f4d58d",
-    };
+    return getPosterThemeTokens(selectedTheme);
   }
 
   function loadImage(src: string) {
@@ -610,25 +442,9 @@ y += 150;
     boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
   };
 
-  const accentMap: Record<ThemeType, string> = {
-    dark: "#d4a95d",
-    light: "#a8b2c2",
-    warm: "#9b6b43",
-    ocean: "#53a8c9",
-    forest: "#5e9468",
-    rose: "#c78a9f",
-    classic: "#b91c1c",
-  };
+  const accentMap = Object.fromEntries(themeOptions.map((option) => [option.value, option.accent])) as Record<ThemeType, string>;
 
-  const themeSurfaceMap: Record<ThemeType, { bg: string; text: string; muted: string; border: string }> = {
-    dark: { bg: "#23262d", text: "#f4efe7", muted: "#b8a99a", border: "rgba(212,169,93,0.22)" },
-    light: { bg: "#f4f4f2", text: "#2f343a", muted: "#69727d", border: "rgba(168,178,194,0.34)" },
-    warm: { bg: "#f1e2d4", text: "#4a3326", muted: "#7b6756", border: "rgba(155,107,67,0.22)" },
-    ocean: { bg: "#e2f3f8", text: "#214d63", muted: "#5d7f90", border: "rgba(83,168,201,0.26)" },
-    forest: { bg: "#e7f1e5", text: "#274332", muted: "#667a6c", border: "rgba(94,148,104,0.26)" },
-    rose: { bg: "#f7e7eb", text: "#623d49", muted: "#8d6b76", border: "rgba(199,138,159,0.28)" },
-    classic: { bg: "#fbf7f1", text: "#111827", muted: "#6b7280", border: "rgba(185,28,28,0.22)" },
-  };
+  const themeSurfaceMap = Object.fromEntries(themeOptions.map((option) => [option.value, getThemeSurface(option.value)])) as Record<ThemeType, { bg: string; text: string; muted: string; border: string }>;
 
   const themeCardStyle = (value: ThemeType): React.CSSProperties => ({
     borderRadius: 18,
@@ -720,7 +536,7 @@ y += 150;
     setRestaurant(name);
 
     if (!customSlug) {
-      const slug = generateSlug(name);
+      const slug = normalizeSlug(name);
       setCustomSlug(slug);
     }
   }}
@@ -885,15 +701,7 @@ y += 150;
                   gap: 12,
                 }}
               >
-                {([
-                  ["dark", "黑色餐廳風", "質感、夜店、燈箱感"],
-                  ["light", "簡約白色", "乾淨、清楚、百搭"],
-                  ["warm", "溫暖咖啡風", "木質、餐館、溫暖感"],
-                  ["ocean", "海洋清新風", "清爽、海味、明亮感"],
-                  ["forest", "森林自然風", "自然、手作、健康感"],
-                  ["rose", "玫瑰奶茶風", "柔和、甜點、質感感"],
-                  ["classic", "經典餐館", "米白、餐館、紙本感"],
-                ] as const).map(([value, title, desc]) => (
+                {themeOptions.map(({ value, label: title, desc }) => (
                   <button
                     key={value}
                     type="button"

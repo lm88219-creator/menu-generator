@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { normalizeSlug } from "@/lib/menu";
+import { joinPublicUrl } from "@/lib/public-url";
 import { AdvancedToolsSection } from "./edit-menu/AdvancedToolsSection";
 import { AppearanceSection } from "./edit-menu/AppearanceSection";
 import { MenuItemsSection } from "./edit-menu/MenuItemsSection";
@@ -18,12 +19,6 @@ import {
   type ThemeType,
 } from "./edit-menu/shared-ui";
 
-function getBaseUrl() {
-  const envUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
-  if (envUrl) return /^https?:\/\//i.test(envUrl) ? envUrl : `https://${envUrl}`;
-  if (typeof window !== "undefined") return window.location.origin;
-  return "";
-}
 
 export type { InitialData, MenuItemForm, ThemeType } from "./edit-menu/shared-ui";
 
@@ -47,7 +42,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
   const safeSlug = normalizeSlug(slug || restaurant) || id;
   const publicPath = `/uu/menu/${safeSlug}`;
-  const publicUrl = `${getBaseUrl()}${publicPath}`;
+  const publicUrl = joinPublicUrl(publicPath);
   const deskCodes = useMemo(() => parseDeskInput(deskInput), [deskInput]);
   const activeCount = formItems.filter((item) => item.name.trim() && !item.soldOut).length;
   const categorySummary = useMemo(() => {
