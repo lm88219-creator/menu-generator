@@ -127,7 +127,7 @@ export default async function MenuPage({
           <PublicMenuSections grouped={grouped} categoryLinks={categoryLinks} tokens={tokens} />
         </section>
 
-        <a href="#top" className="uu-public-floating-top-link" style={{ color: tokens.accentStrong }} aria-label="回到頁面頂端">
+        <a href="#top" className="uu-public-floating-top-link" aria-label="回到頁面頂端">
           <span className="uu-public-floating-top-link-icon">↑</span>
           <span className="uu-public-floating-top-link-label">Top</span>
         </a>
