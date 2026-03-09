@@ -1,4 +1,4 @@
-import type { MenuItemForm } from "./shared";
+import type { MenuItemForm } from "./shared-ui";
 
 type CategorySummary = { name: string; count: number };
 

@@ -1,5 +1,5 @@
 import { QRCodeCanvas } from "qrcode.react";
-import { Field } from "./shared";
+import { Field } from "./shared-ui";
 
 type Props = {
   deskInput: string;

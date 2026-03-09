@@ -1,8 +1,8 @@
 import type { ChangeEvent } from "react";
-import type { MenuItemForm, ThemeType } from "./shared";
-import { THEME_OPTIONS } from "./shared";
+import type { MenuItemForm, ThemeType } from "./shared-ui";
+import { THEME_OPTIONS } from "./shared-ui";
 
-type PreviewTokens = ReturnType<typeof import("./shared").getPreviewTokens>;
+type PreviewTokens = ReturnType<typeof import("./shared-ui").getPreviewTokens>;
 
 type Props = {
   selectedTheme: (typeof THEME_OPTIONS)[number];

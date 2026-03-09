@@ -1,4 +1,4 @@
-import { Field, sanitizeSlugInput } from "./shared";
+import { Field, sanitizeSlugInput } from "./shared-ui";
 
 type Props = {
   isPublished: boolean;
