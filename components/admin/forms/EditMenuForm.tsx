@@ -16,7 +16,7 @@ import {
   type InitialData,
   type MenuItemForm,
   type ThemeType,
-} from "./edit-menu/shared";
+} from "./edit-menu/shared-ui";
 
 function getBaseUrl() {
   const envUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
@@ -25,7 +25,7 @@ function getBaseUrl() {
   return "";
 }
 
-export type { InitialData, MenuItemForm, ThemeType } from "./edit-menu/shared";
+export type { InitialData, MenuItemForm, ThemeType } from "./edit-menu/shared-ui";
 
 export default function EditMenuForm({ id, initialData }: { id: string; initialData: InitialData }) {
   const [restaurant, setRestaurant] = useState(initialData.restaurant);
