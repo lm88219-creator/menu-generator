@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 type Props = {
   restaurant: string;
@@ -30,7 +30,7 @@ function MetaRow({
   target,
   hint,
 }: {
-  label: string;
+  label: ReactNode;
   value: string;
   href?: string;
   target?: string;
@@ -103,10 +103,51 @@ export function PublicMenuHero({
         <h1 style={{ color: tokens.title }}>{restaurant}</h1>
 
         <div className="uu-public-store-meta-list">
-          {hours ? <MetaRow label="營業時間" value={hours} /> : null}
+          {hours ? (
+            <MetaRow
+              label={
+                <span className="uu-public-store-meta-labeltext">
+                  <span className="uu-public-meta-icon uu-public-meta-icon-hours" aria-hidden="true">
+                    <span className="uu-public-meta-icon-hours-dot" />
+                  </span>
+                  營業時間
+                </span>
+              }
+              value={hours}
+            />
+          ) : null}
           {closedDay ? <MetaRow label="公休日期" value={closedDay} /> : null}
-          {phone ? <MetaRow label="電話預訂" value={phone} href={formatPhoneHref(phone)} hint="一鍵撥打" /> : null}
-          {address ? <MetaRow label="店家地址" value={address} href={formatMapHref(address)} target="_blank" hint="開啟地圖" /> : null}
+          {phone ? (
+            <MetaRow
+              label={
+                <span className="uu-public-store-meta-labeltext">
+                  <span className="uu-public-meta-icon uu-public-meta-icon-plain" aria-hidden="true">
+                    ☎
+                  </span>
+                  電話預訂
+                </span>
+              }
+              value={phone}
+              href={formatPhoneHref(phone)}
+              hint="一鍵撥打"
+            />
+          ) : null}
+          {address ? (
+            <MetaRow
+              label={
+                <span className="uu-public-store-meta-labeltext">
+                  <span className="uu-public-meta-icon uu-public-meta-icon-plain" aria-hidden="true">
+                    📌
+                  </span>
+                  店家地址
+                </span>
+              }
+              value={address}
+              href={formatMapHref(address)}
+              target="_blank"
+              hint="開啟地圖"
+            />
+          ) : null}
           {!hours && !closedDay && !phone && !address ? <MetaRow label="店家資訊" value="目前尚未提供" /> : null}
         </div>
       </div>

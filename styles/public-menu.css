@@ -1139,3 +1139,45 @@
     justify-items: center;
   }
 }
+
+
+/* 2026-03 public page polish */
+.uu-public-store-meta-labeltext {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.uu-public-meta-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uu-public-meta-icon-hours {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #eef0f3;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.uu-public-meta-icon-hours-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #ef4444;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.12);
+}
+
+.uu-public-meta-icon-plain {
+  width: 18px;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.uu-public-category-chip,
+.uu-public-category-tag {
+  border-width: 3px !important;
+}
