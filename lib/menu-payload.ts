@@ -19,7 +19,7 @@ const MAX_TEXT_LENGTH = {
   address: 180,
   hours: 80,
   menuText: 12000,
-  logoDataUrl: 2_000_000,
+  logoDataUrl: 700_000,
 };
 
 function trimField(value: unknown, maxLength: number) {
@@ -43,6 +43,6 @@ export function readMenuPayload(body: Record<string, unknown>): MenuPayload {
 export function validateMenuPayload(payload: MenuPayload) {
   if (!payload.restaurant) return "請輸入餐廳名稱";
   if (!payload.menuText) return "請輸入菜單內容";
-  if (payload.logoDataUrl.length > MAX_TEXT_LENGTH.logoDataUrl) return "Logo 圖片太大，請換小一點的圖片";
+  if (payload.logoDataUrl.length > MAX_TEXT_LENGTH.logoDataUrl) return "Logo 圖片太大，請壓縮後再上傳";
   return "";
 }

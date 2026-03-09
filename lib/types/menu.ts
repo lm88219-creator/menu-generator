@@ -18,6 +18,17 @@ export type MenuRecord = MenuData & {
   id: string;
 };
 
-export type MenuSummaryRecord = Omit<MenuRecord, "menuText"> & {
+export type MenuSummaryRecord = {
+  id: string;
+  restaurant: string;
+  phone?: string;
+  address?: string;
+  hours?: string;
+  theme?: ThemeType;
+  slug?: string;
+  createdAt?: number;
+  updatedAt?: number;
+  isPublished?: boolean;
   itemCount: number;
+  hasLogo: boolean;
 };

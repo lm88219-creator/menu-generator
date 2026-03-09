@@ -41,7 +41,7 @@ export default async function DashboardPage({
             <span className="uu-kicker">UU MENU ADMIN</span>
             <div>
               <h1 className="uu-dashboard-title">多店菜單控制台</h1>
-              <p className="uu-dashboard-copy">集中處理搜尋、編輯、公開頁與 QR 操作，後台維持乾淨就夠了。</p>
+              <p className="uu-dashboard-copy">集中處理搜尋、編輯、公開頁與 QR 操作。</p>
             </div>
           </div>
 
@@ -120,11 +120,7 @@ export default async function DashboardPage({
                   <article key={menu.id} className="uu-dashboard-row-v7 uu-dashboard-row-v8">
                     <div className="uu-dashboard-row-main-v7 uu-dashboard-row-main-v8">
                       <div className="uu-store-logo uu-dashboard-store-logo-v7 uu-dashboard-store-logo-v8">
-                        {menu.logoDataUrl ? (
-                          <img src={menu.logoDataUrl} alt={`${menu.restaurant} logo`} />
-                        ) : (
-                          <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>
-                        )}
+                        <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>
                       </div>
 
                       <div className="uu-dashboard-store-copy-v7 uu-dashboard-store-copy-v8">
@@ -142,7 +138,7 @@ export default async function DashboardPage({
                           <span className="uu-dashboard-meta-chip">{getThemeLabel(menu.theme)}</span>
                           <span className="uu-dashboard-meta-chip">{menu.itemCount} 項菜單</span>
                           <span className="uu-dashboard-meta-chip">更新 {formatShortDate(menu.updatedAt)}</span>
-                          <span className="uu-dashboard-meta-chip">{menu.logoDataUrl ? "含 Logo" : "純文字版"}</span>
+                          <span className="uu-dashboard-meta-chip">{menu.hasLogo ? "含 Logo" : "純文字版"}</span>
                         </div>
 
                         <div className="uu-dashboard-contact-inline-v8 uu-dashboard-contact-inline-v9">

@@ -34,12 +34,12 @@ function toMenuSummary(record: MenuRecord): MenuSummaryRecord {
     address: record.address,
     hours: record.hours,
     theme: record.theme,
-    logoDataUrl: record.logoDataUrl,
     slug: record.slug,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
     isPublished: record.isPublished,
     itemCount: countMenuItems(record.menuText),
+    hasLogo: Boolean(record.logoDataUrl),
   };
 }
 
