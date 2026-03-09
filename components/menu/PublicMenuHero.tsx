@@ -40,7 +40,7 @@ function MetaRow({
     <>
       <span className="uu-public-store-meta-label">{label}</span>
       <strong className="uu-public-store-meta-value">{value}</strong>
-      {hint ? <em className="uu-public-store-meta-hint">{hint}</em> : null}
+      {hint ? <em className="uu-public-store-meta-hint">（{hint}）</em> : null}
     </>
   );
 
@@ -70,6 +70,7 @@ export function PublicMenuHero({
   formatMapHref,
 }: Props) {
   const visualSrc = coverImageDataUrl || logoDataUrl;
+  const visualAlt = coverImageDataUrl ? `${restaurant} 封面圖` : `${restaurant} Logo`;
 
   return (
     <section className="uu-public-hero-shell" style={cardStyle}>
@@ -78,7 +79,7 @@ export function PublicMenuHero({
           {visualSrc ? (
             <img
               src={visualSrc}
-              alt={`${restaurant} cover`}
+              alt={visualAlt}
               className={`uu-public-visual-image ${coverImageDataUrl ? "is-cover" : "is-logo"}`}
             />
           ) : (

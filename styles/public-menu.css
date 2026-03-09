@@ -1,16 +1,22 @@
-/* 公開菜單頁樣式集中，後續可持續把 .uu-public* 規則自 admin.css 移到這裡。 */
+/* 客戶公開頁：依照線框草圖重排，走資訊清楚、區塊分明的菜單感。 */
 
 .uu-public-page-v2 {
   position: relative;
+  display: grid;
+  gap: 14px;
   padding-bottom: 56px;
+}
+
+.uu-public-hero-shell,
+.uu-public-menu-card-v2 {
+  border: 1px solid var(--uu-public-border);
+  border-radius: 22px;
 }
 
 .uu-public-hero-shell {
   display: grid;
-  gap: 18px;
+  gap: 14px;
   padding: 18px;
-  border: 1px solid var(--uu-public-border);
-  border-radius: 22px;
 }
 
 .uu-public-hero-media-block {
@@ -21,9 +27,10 @@
 .uu-public-visual-card {
   position: relative;
   min-height: 220px;
+  height: 220px;
   overflow: hidden;
   border: 1px solid var(--uu-public-border);
-  border-radius: 18px;
+  border-radius: 16px;
 }
 
 .uu-public-visual-image {
@@ -33,23 +40,27 @@
 }
 
 .uu-public-visual-image.is-cover {
-  min-height: 220px;
   object-fit: cover;
 }
 
 .uu-public-visual-image.is-logo {
-  min-height: 220px;
   object-fit: contain;
-  padding: 24px;
+  padding: 20px;
 }
 
 .uu-public-visual-placeholder {
-  min-height: 220px;
+  width: 100%;
+  height: 100%;
   display: grid;
   place-items: center;
   text-align: center;
   gap: 8px;
-  padding: 28px;
+  padding: 24px;
+}
+
+.uu-public-visual-placeholder strong {
+  font-size: 22px;
+  font-weight: 900;
 }
 
 .uu-public-table-chip {
@@ -59,22 +70,23 @@
   min-height: 34px;
   padding: 0 12px;
   border-radius: 999px;
-  font-size: 13px;
-  font-weight: 800;
+  border: 1px solid var(--uu-public-border);
   color: var(--uu-public-accent-strong);
   background: var(--uu-public-accent-tint);
-  border: 1px solid var(--uu-public-border);
+  font-size: 13px;
+  font-weight: 900;
 }
 
 .uu-public-store-card {
   display: grid;
-  gap: 14px;
+  gap: 10px;
 }
 
 .uu-public-store-card h1 {
   margin: 0;
-  font-size: clamp(30px, 4vw, 42px);
-  line-height: 1.12;
+  padding: 2px 0 8px;
+  font-size: clamp(30px, 4.4vw, 44px);
+  line-height: 1.08;
   font-weight: 900;
 }
 
@@ -85,10 +97,10 @@
 
 .uu-public-store-meta-row {
   display: grid;
-  grid-template-columns: 110px minmax(0, 1fr) auto;
+  grid-template-columns: 98px minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
-  min-height: 58px;
+  min-height: 56px;
   padding: 10px 0;
   color: var(--uu-public-text);
   text-decoration: none;
@@ -96,22 +108,22 @@
 }
 
 .uu-public-store-meta-label {
-  color: var(--uu-public-title);
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 900;
+  color: var(--uu-public-title);
 }
 
 .uu-public-store-meta-value {
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: 16px;
+  line-height: 1.55;
 }
 
 .uu-public-store-meta-hint {
   font-style: normal;
-  color: var(--uu-public-accent-strong);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 900;
   white-space: nowrap;
+  color: var(--uu-public-accent-strong);
 }
 
 .uu-public-store-meta-row.is-link:hover .uu-public-store-meta-value,
@@ -120,45 +132,42 @@
 }
 
 .uu-public-menu-card-v2 {
-  padding-top: 14px;
+  padding: 14px 18px 18px;
 }
 
 .uu-public-category-nav-shell {
   position: sticky;
   top: 10px;
-  z-index: 20;
-  margin-bottom: 24px;
+  z-index: 30;
+  margin-bottom: 14px;
 }
 
 .uu-public-category-nav {
   display: grid;
-  gap: 12px;
-  padding: 14px 14px 12px;
-  border-radius: 18px;
+  gap: 10px;
+  padding: 12px 12px 10px;
   border: 1px solid var(--uu-public-border);
-  background: color-mix(in srgb, var(--uu-public-surface) 90%, transparent);
-  backdrop-filter: blur(16px);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--uu-public-surface) 94%, transparent);
+  backdrop-filter: blur(12px);
 }
 
 .uu-public-category-nav-copy {
-  display: grid;
-  gap: 4px;
   text-align: center;
 }
 
 .uu-public-category-nav-copy strong {
-  font-size: 15px;
-}
-
-.uu-public-category-nav-copy span {
-  font-size: 13px;
+  font-size: 16px;
+  font-weight: 900;
 }
 
 .uu-public-category-nav-scroll {
   display: flex;
+  align-items: center;
+  justify-content: flex-start;
   gap: 10px;
   overflow-x: auto;
-  padding-bottom: 2px;
+  padding: 2px 2px 4px;
   scrollbar-width: none;
 }
 
@@ -168,41 +177,41 @@
 
 .uu-public-category-chip {
   flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
-  padding: 0 16px;
-  border-radius: 999px;
   border: 1px solid var(--uu-public-border);
-  text-decoration: none;
+  border-radius: 999px;
   background: var(--uu-public-badge);
-  font-weight: 800;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 900;
   white-space: nowrap;
 }
 
 .uu-public-category-section {
-  scroll-margin-top: 124px;
+  scroll-margin-top: 120px;
 }
 
 .uu-public-category-section + .uu-public-category-section {
-  margin-top: 28px;
+  margin-top: 26px;
 }
 
 .uu-public-category-title-row {
-  margin: 0 0 14px;
-  padding-bottom: 10px;
+  margin: 0 0 12px;
+  padding: 0 0 10px;
   border-bottom: 1px dashed var(--uu-public-border);
 }
 
 .uu-public-category-tag {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
-  padding: 0 2px;
+  min-height: 34px;
   font-size: 28px;
-  line-height: 1.2;
   font-weight: 900;
+  line-height: 1.2;
 }
 
 .uu-public-item-stack {
@@ -212,11 +221,11 @@
 
 .uu-public-menu-item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 110px;
+  grid-template-columns: minmax(0, 1fr) 116px;
   gap: 14px;
-  padding: 16px;
-  border-radius: 0;
+  padding: 14px;
   border: 1px solid var(--uu-public-border);
+  border-radius: 14px;
 }
 
 .uu-public-menu-item-copy {
@@ -228,16 +237,21 @@
 
 .uu-public-menu-item-name {
   font-size: 28px;
-  line-height: 1.22;
+  line-height: 1.18;
   font-weight: 900;
 }
 
 .uu-public-menu-item-note {
   margin: 0;
+  min-height: 26px;
   color: var(--uu-public-muted);
   font-size: 18px;
-  line-height: 1.6;
+  line-height: 1.45;
   white-space: pre-wrap;
+}
+
+.uu-public-menu-item-note.is-empty {
+  opacity: 0.28;
 }
 
 .uu-public-menu-item-foot {
@@ -250,35 +264,36 @@
 .uu-public-menu-item-price {
   font-size: 28px;
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 1.12;
 }
 
 .uu-public-menu-item-imagewrap {
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-left: 1px solid var(--uu-public-border);
   padding-left: 14px;
-  min-width: 0;
+  border-left: 1px solid var(--uu-public-border);
 }
 
 .uu-public-menu-item-imagewrap.is-empty {
-  align-items: flex-end;
+  background: color-mix(in srgb, var(--uu-public-badge) 72%, transparent);
 }
 
 .uu-public-menu-item-image {
-  width: 92px;
-  min-width: 92px;
-  height: 92px;
+  width: 94px;
+  min-width: 94px;
+  height: 94px;
+  border-radius: 12px;
   object-fit: cover;
 }
 
 .uu-public-menu-item-image-empty {
   color: var(--uu-public-muted);
   font-size: 13px;
-  font-weight: 700;
-  text-align: right;
-  line-height: 1.5;
+  line-height: 1.55;
+  font-weight: 800;
+  text-align: center;
 }
 
 .uu-public-menu-item.is-soldout {
@@ -296,15 +311,24 @@
 }
 
 .uu-public-top-link-wrap {
-  margin-top: 18px;
+  margin-top: 16px;
   padding-top: 14px;
   border-top: 1px dashed var(--uu-public-border);
+  text-align: center;
 }
 
 .uu-public-top-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--uu-public-border);
+  background: var(--uu-public-badge);
   text-decoration: none;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .uu-public-empty-state {
@@ -315,16 +339,22 @@
 }
 
 @media (max-width: 760px) {
-  .uu-public-hero-shell {
-    padding: 14px;
+  .uu-public-hero-shell,
+  .uu-public-menu-card-v2 {
     border-radius: 18px;
   }
 
-  .uu-public-visual-card,
-  .uu-public-visual-image.is-cover,
-  .uu-public-visual-image.is-logo,
-  .uu-public-visual-placeholder {
-    min-height: 180px;
+  .uu-public-hero-shell {
+    padding: 14px;
+  }
+
+  .uu-public-menu-card-v2 {
+    padding: 12px 14px 14px;
+  }
+
+  .uu-public-visual-card {
+    min-height: 176px;
+    height: 176px;
   }
 
   .uu-public-store-card h1 {
@@ -333,7 +363,7 @@
 
   .uu-public-store-meta-row {
     grid-template-columns: 1fr;
-    gap: 3px;
+    gap: 2px;
     align-items: start;
     min-height: 0;
     padding: 10px 0;
@@ -356,9 +386,9 @@
   }
 
   .uu-public-menu-item {
-    grid-template-columns: minmax(0, 1fr) 84px;
+    grid-template-columns: minmax(0, 1fr) 86px;
     gap: 12px;
-    padding: 14px;
+    padding: 12px;
   }
 
   .uu-public-menu-item-name {
@@ -366,6 +396,7 @@
   }
 
   .uu-public-menu-item-note {
+    min-height: 20px;
     font-size: 15px;
   }
 
@@ -373,18 +404,18 @@
     font-size: 24px;
   }
 
-  .uu-public-menu-item-image {
-    width: 70px;
-    min-width: 70px;
-    height: 70px;
+  .uu-public-menu-item-imagewrap {
+    padding-left: 12px;
   }
 
-  .uu-public-menu-item-image-empty {
-    font-size: 12px;
+  .uu-public-menu-item-image {
+    width: 68px;
+    min-width: 68px;
+    height: 68px;
   }
 
   .uu-public-top-link {
+    min-height: 38px;
     font-size: 14px;
-    line-height: 1.7;
   }
 }

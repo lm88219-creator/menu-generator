@@ -7,7 +7,6 @@ export function PublicMenuCategoryNav({
   categoryLinks,
   borderColor,
   accentStrong,
-  muted,
 }: {
   categoryLinks: LinkItem[];
   borderColor: string;
@@ -20,8 +19,7 @@ export function PublicMenuCategoryNav({
     <div className="uu-public-category-nav-shell">
       <div className="uu-public-category-nav" aria-label="菜單分類導覽" style={{ borderColor }}>
         <div className="uu-public-category-nav-copy">
-          <strong style={{ color: accentStrong }}>分類導航 / 點擊可跳分類</strong>
-          <span style={{ color: muted }}>膠囊區塊可左右滑動，滑動後固定在頂部</span>
+          <strong style={{ color: accentStrong }}>分類導航膠囊區</strong>
         </div>
         <div className="uu-public-category-nav-scroll">
           {categoryLinks.map((link) => (

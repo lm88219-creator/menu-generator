@@ -46,7 +46,7 @@ export function PublicMenuSections({
       {grouped.map((group, index) => (
         <section key={`${group.category}-${index}`} id={categoryLinks[index]?.id} className="uu-public-category-section">
           <div className="uu-public-category-title-row">
-            <strong className="uu-public-category-tag" style={{ color: tokens.title }}>
+            <strong className="uu-public-category-tag" style={{ color: tokens.accentStrong }}>
               {group.category}
             </strong>
           </div>
@@ -64,7 +64,7 @@ export function PublicMenuSections({
                     <strong className="uu-public-menu-item-name" style={{ color: tokens.title }}>
                       {item.name}
                     </strong>
-                    {item.note ? <p className="uu-public-menu-item-note">{item.note}</p> : null}
+                    {item.note ? <p className="uu-public-menu-item-note">{item.note}</p> : <p className="uu-public-menu-item-note is-empty">&nbsp;</p>}
                     <div className="uu-public-menu-item-foot">
                       <span className="uu-public-menu-item-price" style={{ color: tokens.priceText }}>
                         {item.price ? `$${item.price}` : "時價"}
@@ -83,7 +83,7 @@ export function PublicMenuSections({
                     </div>
                   ) : (
                     <div className="uu-public-menu-item-imagewrap is-empty" style={{ borderColor: tokens.border }}>
-                      <span className="uu-public-menu-item-image-empty">僅顯示文字</span>
+                      <span className="uu-public-menu-item-image-empty">圖片準備中</span>
                     </div>
                   )}
                 </article>

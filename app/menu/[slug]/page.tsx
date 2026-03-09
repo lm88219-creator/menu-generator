@@ -127,11 +127,10 @@ export default async function MenuPage({
 
           <div className="uu-public-top-link-wrap">
             <a href="#top" className="uu-public-top-link" style={{ color: tokens.accentStrong }}>
-              ↑ Top <span style={{ color: tokens.muted }}>（回至頂端資訊 / 可點擊跳至頂端的導航膠囊）</span>
+              ↑ Top 膠囊
             </a>
           </div>
         </section>
-
       </div>
     </main>
   );
