@@ -61,8 +61,8 @@ export default async function MenuPage({
   const categoryLinks = grouped.map((group, index) => ({
     label: group.category,
     id: toSectionId(group.category, index),
+    count: group.items.length,
   }));
-  const totalItems = grouped.reduce((sum, group) => sum + group.items.length, 0);
 
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 28%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 56%, ${tokens.bgDeep} 100%)`,
@@ -102,21 +102,23 @@ export default async function MenuPage({
           phone={data.phone}
           address={data.address}
           table={table}
-          categoryCount={categoryLinks.length}
-          itemCount={totalItems}
           tokens={tokens}
           cardStyle={cardStyle}
           formatPhoneHref={formatPhoneHref}
           formatMapHref={formatMapHref}
         />
 
-        <section id="menu-sections" className="uu-public-card uu-public-menu-card" style={cardStyle}>
+        <section className="uu-public-card uu-public-menu-card" style={cardStyle}>
           <PublicMenuCategoryNav categoryLinks={categoryLinks} borderColor={tokens.border} accentStrong={tokens.accentStrong} />
 
           <div className="uu-public-section-head is-menu-head">
             <div>
               <span className="uu-public-section-kicker">精選內容</span>
               <h2>菜單</h2>
+            </div>
+            <div className="uu-public-menu-overview">
+              <span>{grouped.length} 個分類</span>
+              <span>{grouped.reduce((sum, group) => sum + group.items.length, 0)} 項品項</span>
             </div>
           </div>
 

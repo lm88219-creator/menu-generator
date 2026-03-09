@@ -1,11 +1,14 @@
+
 import { Redis } from "@upstash/redis";
 import { normalizeSlug } from "@/lib/menu";
-import { MENU_SCHEMA_VERSION, type MenuData, type MenuRecord, type MenuSummaryRecord } from "@/lib/types/menu";
+import { normalizeTheme } from "@/lib/theme";
+import type { MenuData, MenuRecord, MenuSummaryRecord } from "@/lib/types/menu";
 
 const redis = Redis.fromEnv();
 
 const MENU_INDEX_KEY = "menus:index";
 const MENU_SUMMARY_INDEX_KEY = "menus:summary:index";
+const MENU_SCHEMA_VERSION = 2;
 
 function getMenuKey(id: string) {
   return `menu:${id}`;
@@ -19,25 +22,6 @@ function getSlugKey(slug: string) {
   return `menu:slug:${slug}`;
 }
 
-
-function normalizeMenuData(data: MenuData): MenuData {
-  return {
-    ...data,
-    schemaVersion: MENU_SCHEMA_VERSION,
-    restaurant: String(data.restaurant ?? "").trim(),
-    phone: String(data.phone ?? "").trim() || undefined,
-    address: String(data.address ?? "").trim() || undefined,
-    hours: String(data.hours ?? "").trim() || undefined,
-    menuText: String(data.menuText ?? "").trim(),
-    logoDataUrl: String(data.logoDataUrl ?? "").trim() || undefined,
-    slug: normalizeSlug(data.slug ?? "") || undefined,
-    theme: data.theme,
-    createdAt: Number(data.createdAt ?? 0) || undefined,
-    updatedAt: Number(data.updatedAt ?? 0) || undefined,
-    isPublished: data.isPublished !== false,
-  };
-}
-
 function countMenuItems(menuText: string) {
   return String(menuText || "")
     .split("\n")
@@ -45,10 +29,32 @@ function countMenuItems(menuText: string) {
     .filter((line) => Boolean(line) && !/^#/.test(line) && !/^[\[【].+[\]】]$/.test(line) && line.split(/\s+/).length > 1).length;
 }
 
+function countMissingInfo(record: MenuData) {
+  const checklist = [record.phone, record.address, record.hours, record.logoDataUrl];
+  return checklist.filter((value) => !String(value ?? "").trim()).length;
+}
+
+function normalizeMenuData(data: MenuData | null | undefined): MenuData | null {
+  if (!data) return null;
+  return {
+    schemaVersion: MENU_SCHEMA_VERSION,
+    restaurant: String(data.restaurant ?? "").trim(),
+    phone: String(data.phone ?? "").trim(),
+    address: String(data.address ?? "").trim(),
+    hours: String(data.hours ?? "").trim(),
+    menuText: String(data.menuText ?? "").trim(),
+    theme: normalizeTheme(data.theme),
+    logoDataUrl: String(data.logoDataUrl ?? "").trim(),
+    slug: normalizeSlug(data.slug ?? "") || undefined,
+    createdAt: Number(data.createdAt ?? 0) || undefined,
+    updatedAt: Number(data.updatedAt ?? 0) || undefined,
+    isPublished: data.isPublished !== false,
+  };
+}
+
 function toMenuSummary(record: MenuRecord): MenuSummaryRecord {
   return {
     id: record.id,
-    schemaVersion: MENU_SCHEMA_VERSION,
     restaurant: record.restaurant,
     theme: record.theme,
     slug: record.slug,
@@ -57,37 +63,50 @@ function toMenuSummary(record: MenuRecord): MenuSummaryRecord {
     isPublished: record.isPublished,
     itemCount: countMenuItems(record.menuText),
     hasLogo: Boolean(record.logoDataUrl),
+    missingInfoCount: countMissingInfo(record),
+    schemaVersion: MENU_SCHEMA_VERSION,
   };
 }
 
 async function writeMenuSummary(id: string, data: MenuData) {
-  const summary = toMenuSummary({ id, ...data });
+  const normalized = normalizeMenuData(data);
+  if (!normalized) return null;
+  const summary = toMenuSummary({ id, ...normalized });
   await redis.set(getMenuSummaryKey(id), summary);
   await redis.sadd(MENU_SUMMARY_INDEX_KEY, id);
   return summary;
 }
 
 export async function createMenu(id: string, data: MenuData) {
-  const payload = normalizeMenuData({
-    ...data,
-    slug: data.slug,
-  });
-  const slug = normalizeSlug(payload.slug ?? "");
+  const normalized = normalizeMenuData(data);
+  if (!normalized) return null;
 
-  await redis.set(getMenuKey(id), payload);
+  await redis.set(getMenuKey(id), normalized);
   await redis.sadd(MENU_INDEX_KEY, id);
-  await writeMenuSummary(id, payload);
+  await writeMenuSummary(id, normalized);
 
-  if (slug) {
-    await redis.set(getSlugKey(slug), id);
+  if (normalized.slug) {
+    await redis.set(getSlugKey(normalized.slug), id);
   }
 
-  return payload;
+  return normalized;
 }
 
 export async function getMenu(id: string): Promise<MenuData | null> {
   const data = await redis.get<MenuData>(getMenuKey(id));
-  return data ? normalizeMenuData(data) : null;
+  const normalized = normalizeMenuData(data);
+  if (!normalized) return null;
+
+  if (
+    normalized.schemaVersion !== data?.schemaVersion ||
+    normalized.theme !== data?.theme ||
+    normalized.slug !== data?.slug
+  ) {
+    await redis.set(getMenuKey(id), normalized);
+    await writeMenuSummary(id, normalized);
+  }
+
+  return normalized;
 }
 
 export async function getMenuIdBySlug(slug: string) {
@@ -119,6 +138,8 @@ export async function updateMenu(id: string, patch: Partial<MenuData>) {
     slug: nextSlug || undefined,
     updatedAt: Date.now(),
   });
+
+  if (!next) return null;
 
   await redis.set(getMenuKey(id), next);
   await redis.sadd(MENU_INDEX_KEY, id);
@@ -163,7 +184,7 @@ async function rebuildIndexesFromMenus(): Promise<Array<{ summary: MenuSummaryRe
       const data = await getMenu(id);
       if (!data) return null;
       const summary = await writeMenuSummary(id, data);
-      return { summary };
+      return summary ? { summary } : null;
     })
   );
 

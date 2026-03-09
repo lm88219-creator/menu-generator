@@ -52,14 +52,8 @@ export function HomeFormCard({
   onFillExample: () => void;
   onClear: () => void;
 }) {
-  const lineCount = String(form.menu || "")
-    .split(/\n+/)
-    .map((line) => line.trim())
-    .filter(Boolean).length;
-
   return (
     <div
-      className="uu-home-panel"
       style={{
         borderRadius: 24,
         padding: 24,
@@ -69,51 +63,38 @@ export function HomeFormCard({
         boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
       }}
     >
-      <div className="uu-home-panel-head">
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "8px 12px",
-            borderRadius: 999,
-            background: form.theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
-            fontSize: 13,
-            color: currentTheme.subText,
-            letterSpacing: "0.1em",
-            fontWeight: 700,
-          }}
-        >
-          START HERE
-        </div>
-
-        <h2 style={{ fontSize: isMobile ? 30 : 38, margin: "16px 0 0", lineHeight: 1.08 }}>先把店家資訊與菜單填完整</h2>
-
-        <p
-          style={{
-            marginTop: 12,
-            color: currentTheme.subText,
-            fontSize: 15,
-            lineHeight: 1.8,
-            maxWidth: 700,
-          }}
-        >
-          這一區專門處理建立流程。先填店名、基本資訊、菜單與主題，生成後就能立刻拿到公開網址與 QR Code。
-        </p>
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "8px 12px",
+          borderRadius: 999,
+          background: form.theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
+          fontSize: 13,
+          color: currentTheme.subText,
+          letterSpacing: "0.1em",
+          fontWeight: 700,
+        }}
+      >
+        UU MENU
       </div>
 
-      <div className="uu-home-checklist" style={{ border: currentTheme.inputBorder, background: currentTheme.inputBg }}>
-        <div>
-          <strong>建立流程</strong>
-          <span>1. 店家資料 → 2. 菜單內容 → 3. 主題與 Logo → 4. 生成公開頁</span>
-        </div>
-        <div>
-          <strong>目前菜單行數</strong>
-          <span>{lineCount} 行</span>
-        </div>
-      </div>
+      <h1 style={{ fontSize: isMobile ? 34 : 42, margin: "16px 0 0", lineHeight: 1.08 }}>QR 菜單生成器</h1>
 
-      <SectionTitle title="店家基本資料" desc="公開頁與 QR Code 會優先使用這些內容。" />
+      <p
+        style={{
+          marginTop: 12,
+          color: currentTheme.subText,
+          fontSize: 16,
+          lineHeight: 1.8,
+          maxWidth: 640,
+        }}
+      >
+        為餐廳快速建立 QR Code 菜單
+        <br />
+        一分鐘生成可分享的線上菜單
+      </p>
 
       <FieldBlock label="餐廳名稱">
         <input value={form.restaurant} onChange={(e) => onRestaurantChange(e.target.value)} style={inputStyle} placeholder="例如：友愛熱炒" />
@@ -134,19 +115,29 @@ export function HomeFormCard({
 
       <FieldBlock label="自訂網址代稱">
         <input value={form.customSlug} onChange={(e) => onCustomSlugChange(e.target.value)} style={inputStyle} placeholder="例如：food-168" />
-        <div className="uu-home-slug-help" style={{ background: currentTheme.inputBg, border: currentTheme.inputBorder }}>
-          <strong>公開網址預覽</strong>
-          <span>{form.customSlug ? `https://你的網站/menu/${form.customSlug}` : "未填寫時，系統會自動依店名轉成網址 slug。"}</span>
-        </div>
+        {form.customSlug ? (
+          <div
+            style={{
+              marginTop: 10,
+              padding: "10px 14px",
+              borderRadius: 10,
+              background: currentTheme.inputBg,
+              border: currentTheme.inputBorder,
+              fontSize: 13,
+              color: currentTheme.subText,
+              wordBreak: "break-all",
+            }}
+          >
+            https://你的網站/menu/{form.customSlug}
+          </div>
+        ) : null}
         <div style={{ marginTop: 8, color: currentTheme.subText, fontSize: 13, lineHeight: 1.7 }}>
-          只能輸入英文、數字與 -。若之後修改 slug，舊連結與舊 QR Code 也要一起更新。
+          可選填，若不填系統會自動將餐廳名稱轉為英文網址，且只能輸入英文、數字與 -。
         </div>
       </FieldBlock>
 
-      <SectionTitle title="品牌外觀" desc="先挑好主題，再決定要不要放 Logo。" />
-
       <FieldBlock label="餐廳 Logo">
-        <div className="uu-home-logo-box" style={{ border: currentTheme.inputBorder, background: currentTheme.inputBg }}>
+        <div style={{ borderRadius: 16, border: currentTheme.inputBorder, background: currentTheme.inputBg, padding: 14 }}>
           <label
             style={{
               display: "inline-flex",
@@ -162,17 +153,30 @@ export function HomeFormCard({
             }}
           >
             <input type="file" accept="image/*" onChange={(e) => onLogoUpload(e.target.files?.[0])} style={{ display: "none" }} />
-            {form.logoDataUrl ? "更換 Logo" : "上傳 Logo"}
+            上傳 Logo
           </label>
           {form.logoDataUrl ? (
-            <div className="uu-home-logo-preview-wrap">
-              <div className="uu-home-logo-preview">
+            <div style={{ marginTop: 12, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10 }}>
+              <div
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 16,
+                  background: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "1px solid rgba(0,0,0,0.06)",
+                  overflow: "hidden",
+                  padding: 8,
+                }}
+              >
                 <img src={form.logoDataUrl} alt="logo preview" style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", display: "block" }} />
               </div>
               <button onClick={onLogoRemove} style={ghostButtonStyle}>移除 Logo</button>
             </div>
           ) : (
-            <div style={{ marginTop: 10, fontSize: 12, color: currentTheme.subText }}>PNG / JPG，建議使用正方形，公開頁看起來會比較穩定。</div>
+            <div style={{ marginTop: 10, fontSize: 12, color: currentTheme.subText }}>PNG / JPG，建議使用方形圖片</div>
           )}
         </div>
       </FieldBlock>
@@ -197,21 +201,14 @@ export function HomeFormCard({
         </div>
       </FieldBlock>
 
-      <SectionTitle title="菜單內容" desc="分類獨立一行，品項建議使用「名稱 空格 價格」格式。" />
-
       <FieldBlock label="菜單內容">
         <textarea
           rows={12}
           value={form.menu}
           onChange={(e) => onMenuChange(e.target.value)}
-          style={{ ...inputStyle, resize: "vertical", lineHeight: 1.7, minHeight: 240 }}
+          style={{ ...inputStyle, resize: "vertical", lineHeight: 1.7, minHeight: 220 }}
           placeholder={`例如：\n鵝肉\n鹽水鵝肉 200\n麻油鵝肉 220\n\n主食\n炒飯 80\n炒麵 80`}
         />
-        <div className="uu-home-menu-tips" style={{ color: currentTheme.subText }}>
-          <span>分類：單獨一行，例如「熱炒」</span>
-          <span>品項：名稱後面接價格，例如「炒螺肉 120」</span>
-          <span>備註：可用「｜」或「/」補充，例如「蝦仁炒飯 90｜加大 +10」</span>
-        </div>
       </FieldBlock>
 
       <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -219,15 +216,6 @@ export function HomeFormCard({
         <button onClick={onFillExample} style={ghostButtonStyle}>填入範例菜單</button>
         <button onClick={onClear} style={ghostButtonStyle}>清空</button>
       </div>
-    </div>
-  );
-}
-
-function SectionTitle({ title, desc }: { title: string; desc: string }) {
-  return (
-    <div className="uu-home-section-title">
-      <strong>{title}</strong>
-      <span>{desc}</span>
     </div>
   );
 }

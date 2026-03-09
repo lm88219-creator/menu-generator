@@ -13,47 +13,62 @@ import { useLogoUpload } from "./edit-menu/hooks/useLogoUpload";
 
 export type { InitialData, MenuItemForm, ThemeType } from "./edit-menu/shared-ui";
 
-function buildSnapshot(input: {
-  restaurant: string;
-  phone: string;
-  address: string;
-  hours: string;
-  quickInput: string;
-  theme: string;
-  logoDataUrl: string;
-  slug: string;
-  isPublished: boolean;
-}) {
-  return JSON.stringify({
-    restaurant: input.restaurant.trim(),
-    phone: input.phone.trim(),
-    address: input.address.trim(),
-    hours: input.hours.trim(),
-    quickInput: input.quickInput.trim(),
-    theme: input.theme,
-    logoDataUrl: input.logoDataUrl,
-    slug: input.slug.trim(),
-    isPublished: input.isPublished,
-  });
-}
-
-function formatSavedTime(timestamp: number | null) {
-  if (!timestamp) return "尚未儲存";
-  return new Intl.DateTimeFormat("zh-TW", {
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(new Date(timestamp));
-}
-
 export default function EditMenuForm({ id, initialData }: { id: string; initialData: InitialData }) {
   const [message, setMessage] = useState("");
-  const [lastSavedAt, setLastSavedAt] = useState<number | null>(Date.now());
+  const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
+  const [savedSnapshot, setSavedSnapshot] = useState<string | null>(null);
   const state = useEditMenuFormState(id, initialData);
   const { deskInput, setDeskInput, deskCodes, selectedDesk, setSelectedDesk } = useDeskCodes(id);
   const selectedDeskUrl = selectedDesk ? `${state.publicUrl}?table=${encodeURIComponent(selectedDesk)}` : "";
+
+  const snapshot = useMemo(
+    () =>
+      JSON.stringify({
+        restaurant: state.restaurant.trim(),
+        phone: state.phone.trim(),
+        address: state.address.trim(),
+        hours: state.hours.trim(),
+        menuText: state.menuText.trim(),
+        quickInput: state.quickInput.trim(),
+        bulkDirty: state.bulkDirty,
+        theme: state.theme,
+        logoDataUrl: state.logoDataUrl,
+        slug: state.slug,
+        isPublished: state.isPublished,
+      }),
+    [
+      state.restaurant,
+      state.phone,
+      state.address,
+      state.hours,
+      state.menuText,
+      state.quickInput,
+      state.bulkDirty,
+      state.theme,
+      state.logoDataUrl,
+      state.slug,
+      state.isPublished,
+    ]
+  );
+
+  useEffect(() => {
+    setSavedSnapshot((current) => current ?? snapshot);
+  }, [snapshot]);
+
+  const completion = useMemo(() => {
+    const checks = [
+      Boolean(state.restaurant.trim()),
+      Boolean(state.phone.trim()),
+      Boolean(state.address.trim()),
+      Boolean(state.hours.trim()),
+      Boolean(state.formItems.filter((item) => item.name.trim()).length),
+      Boolean(state.safeSlug.trim()),
+      Boolean(state.logoDataUrl),
+    ];
+    return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+  }, [state.restaurant, state.phone, state.address, state.hours, state.formItems, state.safeSlug, state.logoDataUrl]);
+
+  const isDirty = savedSnapshot !== null && snapshot !== savedSnapshot;
 
   function pushMessage(text: string) {
     setMessage(text);
@@ -62,61 +77,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
   const { saving, handleSave } = useEditMenuSave(pushMessage);
   const handleLogoUpload = useLogoUpload(state.setLogoDataUrl);
-
-  const currentSnapshot = useMemo(
-    () =>
-      buildSnapshot({
-        restaurant: state.restaurant,
-        phone: state.phone,
-        address: state.address,
-        hours: state.hours,
-        quickInput: state.quickInput,
-        theme: state.theme,
-        logoDataUrl: state.logoDataUrl,
-        slug: state.slug,
-        isPublished: state.isPublished,
-      }),
-    [state.restaurant, state.phone, state.address, state.hours, state.quickInput, state.theme, state.logoDataUrl, state.slug, state.isPublished]
-  );
-
-  const initialSnapshot = useMemo(
-    () =>
-      buildSnapshot({
-        restaurant: initialData.restaurant,
-        phone: initialData.phone ?? "",
-        address: initialData.address ?? "",
-        hours: initialData.hours ?? "",
-        quickInput: initialData.menuText ?? "",
-        theme: initialData.theme,
-        logoDataUrl: initialData.logoDataUrl ?? "",
-        slug: initialData.slug ?? "",
-        isPublished: initialData.isPublished !== false,
-      }),
-    [initialData]
-  );
-
-  const [savedSnapshot, setSavedSnapshot] = useState(initialSnapshot);
-  const hasUnsavedChanges = currentSnapshot !== savedSnapshot;
-  const hasChangedSinceInitial = currentSnapshot !== initialSnapshot;
-  const completionItems = [
-    Boolean(state.restaurant.trim()),
-    Boolean(state.phone.trim()),
-    Boolean(state.address.trim()),
-    Boolean(state.hours.trim()),
-    state.activeCount > 0,
-    Boolean(state.logoDataUrl),
-  ];
-  const completionCount = completionItems.filter(Boolean).length;
-
-  useEffect(() => {
-    const onBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (!hasUnsavedChanges) return;
-      event.preventDefault();
-      event.returnValue = "";
-    };
-    window.addEventListener("beforeunload", onBeforeUnload);
-    return () => window.removeEventListener("beforeunload", onBeforeUnload);
-  }, [hasUnsavedChanges]);
 
   async function copyText(value: string, okText: string) {
     try {
@@ -142,23 +102,24 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
       slug: state.slug,
       isPublished: state.isPublished,
       onSyncQuickInput: state.syncQuickInput,
-      onSaved: (nextSlug, nextMenuText) => {
+      onSaved: (nextSlug, updatedAt) => {
         if (nextSlug) state.setSlug(nextSlug);
-        const nextSavedAt = Date.now();
+        if (updatedAt) setLastSavedAt(updatedAt);
         setSavedSnapshot(
-          buildSnapshot({
-            restaurant: state.restaurant,
-            phone: state.phone,
-            address: state.address,
-            hours: state.hours,
-            quickInput: nextMenuText,
+          JSON.stringify({
+            restaurant: state.restaurant.trim(),
+            phone: state.phone.trim(),
+            address: state.address.trim(),
+            hours: state.hours.trim(),
+            menuText: state.bulkDirty ? state.quickInput.trim() : state.menuText.trim(),
+            quickInput: state.bulkDirty ? state.quickInput.trim() : state.menuText.trim(),
+            bulkDirty: false,
             theme: state.theme,
             logoDataUrl: state.logoDataUrl,
             slug: nextSlug ?? state.slug,
             isPublished: state.isPublished,
           })
         );
-        setLastSavedAt(nextSavedAt);
       },
     });
   }
@@ -167,61 +128,18 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
     <div className="uu-editor-v4-shell">
       {message ? <div className="uu-editor-floating-message"><span className="uu-inline-hint is-success">{message}</span></div> : null}
 
-      <section className="uu-panel uu-editor-workbench-bar">
+      <div className="uu-editor-workbench">
         <div className="uu-editor-workbench-main">
-          <div>
-            <div className="uu-kicker">編輯工作台</div>
-            <h2>店家資料、菜單內容與公開頁設定都集中在這裡</h2>
-            <p>
-              {hasUnsavedChanges
-                ? "你目前有尚未儲存的修改，建議先存檔再離開頁面。"
-                : "目前內容已同步到最新儲存版本，可以繼續微調後再存檔。"}
-            </p>
-          </div>
-
-          <div className="uu-editor-workbench-meta">
-            <span className={`uu-status ${hasUnsavedChanges ? "is-warn" : "is-on"}`}>
-              {hasUnsavedChanges ? "尚未儲存" : "已儲存"}
-            </span>
-            <span className="uu-chip">最後儲存 {formatSavedTime(lastSavedAt)}</span>
-            <span className="uu-chip">{state.activeCount} 項菜單</span>
-            <span className="uu-chip">{state.categorySummary.length} 個分類</span>
-            <span className="uu-chip">完成度 {completionCount}/6</span>
-            <span className="uu-chip">{state.isPublished ? "公開中" : "已下架"}</span>
-          </div>
+          <strong>編輯工作台</strong>
+          <span>完成度 {completion}% ・ {state.activeCount} 項品項 ・ {state.isPublished ? "公開中" : "目前下架"}</span>
         </div>
-
-        <div className="uu-editor-workbench-actions">
-          <button type="button" className="uu-btn uu-btn-primary" onClick={onSave} disabled={saving}>
-            {saving ? "儲存中..." : hasUnsavedChanges ? "儲存變更" : "再次儲存"}
-          </button>
-          <button type="button" className="uu-btn uu-btn-secondary" onClick={() => copyText(state.publicUrl, "已複製公開網址")}>
-            複製公開網址
-          </button>
-          <a className="uu-btn uu-btn-secondary" href={state.publicPath} target="_blank" rel="noreferrer">
-            開啟公開頁
-          </a>
+        <div className="uu-editor-workbench-side">
+          <span className={`uu-editor-dirty-chip ${isDirty ? "is-dirty" : "is-clean"}`}>
+            {isDirty ? "尚未儲存變更" : "已與伺服器同步"}
+          </span>
+          <span className="uu-editor-last-saved">{lastSavedAt ? `最後儲存：${formatDateTime(lastSavedAt)}` : "尚未重新儲存"}</span>
         </div>
-
-        <div className="uu-editor-workbench-progress">
-          <div className="uu-editor-workbench-progress-bar">
-            <span style={{ width: `${(completionCount / 6) * 100}%` }} />
-          </div>
-          <div className="uu-editor-workbench-progress-copy">
-            <strong>發布前檢查</strong>
-            <span>店名、電話、地址、營業時間、菜單內容與 Logo 填得越完整，公開頁越像正式產品。</span>
-          </div>
-        </div>
-
-        {hasChangedSinceInitial ? (
-          <div className="uu-editor-workbench-note">
-            <strong>提醒：</strong>
-            {state.slug !== (initialData.slug ?? "")
-              ? "你已修改菜單網址 slug，舊的 QR Code 或舊連結可能需要一起更新。"
-              : "目前編輯內容與你剛進入頁面時已不同，離開前記得確認是否已儲存。"}
-          </div>
-        ) : null}
-      </section>
+      </div>
 
       <div className="uu-editor-v4-layout uu-editor-v4-layout-single">
         <div className="uu-editor-v4-main">
@@ -286,6 +204,29 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
           />
         </div>
       </div>
+
+      <div className="uu-editor-sticky-savebar">
+        <div className="uu-editor-sticky-savebar-copy">
+          <strong>{isDirty ? "有變更尚未儲存" : "目前內容已儲存"}</strong>
+          <span>{state.restaurant || "未命名店家"} ・ /{state.safeSlug}</span>
+        </div>
+        <div className="uu-editor-sticky-savebar-actions">
+          <button type="button" className="uu-btn uu-btn-secondary" onClick={() => copyText(state.publicUrl, "已複製公開網址")}>複製公開網址</button>
+          <button type="button" className="uu-btn uu-btn-primary" onClick={onSave} disabled={saving}>
+            {saving ? "儲存中..." : isDirty ? "立即儲存變更" : "再次儲存"}
+          </button>
+        </div>
+      </div>
     </div>
   );
+}
+
+function formatDateTime(value: number) {
+  return new Intl.DateTimeFormat("zh-TW", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(value));
 }

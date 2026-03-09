@@ -61,7 +61,6 @@ export function HomeResultCard({
 
   return (
     <div
-      className="uu-home-result-panel"
       style={{
         marginTop: 26,
         borderRadius: 24,
@@ -72,9 +71,9 @@ export function HomeResultCard({
         boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
       }}
     >
-      <div className="uu-home-result-layout" style={{ gridTemplateColumns: isMobile ? "1fr" : "0.85fr 1.15fr" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "0.9fr 1.1fr", gap: 24, alignItems: "center" }}>
         <div style={{ textAlign: "center" }}>
-          <div className="uu-home-result-qr-shell">
+          <div style={{ display: "inline-block", background: "#fff", padding: 26, borderRadius: 26, boxShadow: "0 14px 28px rgba(0,0,0,0.12)" }}>
             <QRCodeCanvas
               id="qr-code"
               value={qrText}
@@ -88,13 +87,19 @@ export function HomeResultCard({
               }
             />
           </div>
-          <div className="uu-home-result-qr-note" style={{ color: currentTheme.subText }}>
-            客人可直接掃描 QR Code 進入公開菜單。
-          </div>
         </div>
 
         <div>
-          <div className="uu-home-result-badge" style={{ background: form.theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)", color: currentTheme.subText }}>
+          <div
+            style={{
+              display: "inline-flex",
+              padding: "8px 12px",
+              borderRadius: 999,
+              background: form.theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
+              color: currentTheme.subText,
+              fontSize: 13,
+            }}
+          >
             你的公開菜單已建立完成
           </div>
 
@@ -102,17 +107,6 @@ export function HomeResultCard({
           <a href={qrText} target="_blank" rel="noreferrer" style={{ color: currentTheme.accent, wordBreak: "break-all", fontSize: 16, lineHeight: 1.7 }}>
             {qrText}
           </a>
-
-          <div className="uu-home-result-checks" style={{ border: currentTheme.inputBorder }}>
-            <div>
-              <strong>下一步建議</strong>
-              <span>先用手機打開公開頁，確認排版、電話與地址連結是否正常。</span>
-            </div>
-            <div>
-              <strong>再進後台細修</strong>
-              <span>要調整上架狀態、桌號 QR、公開頁細節，可直接進入後台管理。</span>
-            </div>
-          </div>
 
           <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button onClick={onCopyUrl} style={mainButtonStyle}>{copied ? "已複製網址" : "複製網址"}</button>

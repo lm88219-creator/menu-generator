@@ -15,7 +15,7 @@ type SaveArgs = {
   slug: string;
   isPublished: boolean;
   onSyncQuickInput: (items: MenuItemForm[], menuText: string) => void;
-  onSaved: (nextSlug: string | undefined, nextMenuText: string) => void;
+  onSaved: (nextSlug?: string, updatedAt?: number) => void;
 };
 
 export function useEditMenuSave(pushMessage: (text: string) => void) {
@@ -25,13 +25,13 @@ export function useEditMenuSave(pushMessage: (text: string) => void) {
     const latestItems = args.bulkDirty ? toFormItems(args.quickInput) : args.formItems;
     if (!args.restaurant.trim()) {
       alert("請輸入餐廳名稱");
-      return;
+      return false;
     }
 
     const finalMenuText = toMenuText(latestItems);
     if (!finalMenuText.trim()) {
       alert("請至少新增一個菜單品項");
-      return;
+      return false;
     }
 
     if (args.bulkDirty) {
@@ -59,13 +59,15 @@ export function useEditMenuSave(pushMessage: (text: string) => void) {
       const data = await res.json();
       if (!res.ok) {
         alert(data?.error || "更新失敗");
-        return;
+        return false;
       }
 
-      args.onSaved(data?.data?.slug, finalMenuText);
+      args.onSaved(data?.data?.slug, data?.data?.updatedAt ?? Date.now());
       pushMessage("已成功儲存");
+      return true;
     } catch {
       alert("更新失敗");
+      return false;
     } finally {
       setSaving(false);
     }

@@ -1,214 +1,52 @@
-.uu-public-shell {
-  min-height: 100vh;
-}
+/* 公開菜單頁樣式集中，後續可持續把 .uu-public* 規則自 admin.css 移到這裡。 */
 
-.uu-public-container-refined {
-  display: grid;
-  gap: 18px;
-  padding: 28px 18px 48px;
-}
-
-.uu-public-hero-refined,
-.uu-public-menu-card,
-.uu-public-empty-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 28px;
-}
-
-.uu-public-hero-tagline {
-  margin: 12px 0 0;
-  color: var(--uu-public-muted);
-  line-height: 1.8;
-}
-
-.uu-public-action-bar {
+.uu-public-hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 16px;
 }
-
-.uu-public-action-button {
+.uu-public-hero-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 0 14px;
+  min-height: 42px;
+  padding: 0 16px;
   border-radius: 999px;
-  border: 1px solid var(--uu-public-border);
-  background: color-mix(in srgb, var(--uu-public-accent-tint) 50%, var(--uu-public-surface-soft));
-  color: var(--uu-public-title);
   text-decoration: none;
   font-weight: 700;
-  transition: transform .18s ease, border-color .18s ease, background .18s ease;
-}
-
-.uu-public-action-button:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--uu-public-accent) 30%, var(--uu-public-border));
-}
-
-.uu-public-info-cards {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 18px;
-}
-
-.uu-public-info-card {
-  display: grid;
-  gap: 6px;
-  padding: 14px 16px;
-  border-radius: 20px;
-  border: 1px solid var(--uu-public-border);
-  background: color-mix(in srgb, var(--uu-public-accent-tint) 28%, var(--uu-public-surface-soft));
-  color: inherit;
-  text-decoration: none;
-}
-
-.uu-public-info-card strong {
   color: var(--uu-public-title);
-}
-
-.uu-public-info-card span {
-  color: var(--uu-public-muted);
-  line-height: 1.7;
-}
-
-.uu-public-mobile-nav {
-  position: sticky;
-  top: 10px;
-  z-index: 12;
-  display: grid;
-  gap: 12px;
-  margin-bottom: 18px;
-  padding: 14px;
-  border-radius: 22px;
+  background: var(--uu-public-accent-tint);
   border: 1px solid var(--uu-public-border);
-  background: color-mix(in srgb, var(--uu-public-surface) 86%, rgba(255,255,255,.2));
-  backdrop-filter: blur(14px);
 }
-
-.uu-public-nav-head {
+.uu-public-mobile-nav-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.uu-public-mobile-nav-chip small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--uu-public-accent-tint);
+  font-size: 11px;
+}
+.uu-public-menu-overview {
   display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.uu-public-menu-overview span,
+.uu-public-section-count {
+  color: var(--uu-public-muted);
+  font-size: 13px;
+}
+.uu-public-section-title-row {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  align-items: center;
-}
-
-.uu-public-nav-head strong {
-  display: block;
-  color: var(--uu-public-title);
-}
-
-.uu-public-mobile-nav-scroll {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scrollbar-width: thin;
-}
-
-.uu-public-mobile-nav-chip {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid var(--uu-public-border);
-  background: color-mix(in srgb, var(--uu-public-accent-tint) 34%, white 66%);
-  text-decoration: none;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.uu-public-mobile-nav-index,
-.uu-public-section-title-number {
-  font-size: 12px;
-  opacity: .8;
-}
-
-.uu-public-mobile-nav-chip:hover {
-  background: color-mix(in srgb, var(--uu-public-accent-tint-strong) 56%, white 44%);
-}
-
-.uu-public-section-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 34px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid var(--uu-public-border);
-  background: color-mix(in srgb, var(--uu-public-surface-soft) 75%, white);
-  color: var(--uu-public-muted);
-  font-size: .9rem;
-  font-weight: 700;
-}
-
-.uu-public-item-refined {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 14px;
-  align-items: center;
-}
-
-.uu-public-item-copy {
-  min-width: 0;
-}
-
-.uu-public-item-name-line {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.uu-public-item-note-inline {
-  color: var(--uu-public-muted);
-  font-size: .92rem;
-}
-
-.uu-public-item-refined strong {
-  font-size: 1.05rem;
-}
-
-.uu-public-item-price-refined {
-  min-width: 92px;
-  justify-content: center;
-  font-variant-numeric: tabular-nums;
-  font-size: 1.02rem;
-}
-
-.uu-public-menu-footnote {
-  margin-top: 18px;
-}
-
-@media (max-width: 900px) {
-  .uu-public-info-cards {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 720px) {
-  .uu-public-container-refined {
-    padding: 16px 12px 32px;
-  }
-
-  .uu-public-nav-head {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .uu-public-item-refined {
-    grid-template-columns: 1fr;
-    align-items: flex-start;
-  }
-
-  .uu-public-item-price-refined {
-    min-width: auto;
-  }
 }

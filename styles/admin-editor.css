@@ -1,5 +1,5 @@
 .uu-editor-page-v7 {
-  gap: 18px;
+  gap: 16px;
 }
 
 .uu-editor-page-hero-v7 {
@@ -25,111 +25,6 @@
   margin-top: 0;
 }
 
-.uu-editor-workbench-bar {
-  position: sticky;
-  top: 14px;
-  z-index: 20;
-  display: grid;
-  gap: 14px;
-  padding: 18px 20px;
-  border: 1px solid rgba(255,255,255,.08);
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(16, 24, 39, 0.92) 100%);
-  box-shadow: 0 16px 40px rgba(0,0,0,.18);
-  backdrop-filter: blur(16px);
-}
-
-.uu-editor-workbench-main {
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  align-items: flex-start;
-}
-
-.uu-editor-workbench-main h2 {
-  margin: 4px 0 6px;
-  font-size: 1.1rem;
-}
-
-.uu-editor-workbench-main p {
-  margin: 0;
-  color: rgba(226,232,240,.78);
-}
-
-.uu-editor-workbench-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.uu-status.is-warn {
-  color: #fed7aa;
-  background: rgba(251, 146, 60, 0.14);
-  border-color: rgba(251, 146, 60, 0.3);
-}
-
-.uu-editor-workbench-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.uu-editor-workbench-progress {
-  display: grid;
-  gap: 10px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(148,163,184,.16);
-  background: rgba(8, 15, 27, 0.46);
-}
-
-.uu-editor-workbench-progress-bar {
-  position: relative;
-  height: 10px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(255,255,255,.08);
-}
-
-.uu-editor-workbench-progress-bar span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #60a5fa 0%, #34d399 100%);
-}
-
-.uu-editor-workbench-progress-copy {
-  display: grid;
-  gap: 4px;
-}
-
-.uu-editor-workbench-progress-copy span {
-  color: rgba(226,232,240,.74);
-  line-height: 1.7;
-}
-
-.uu-editor-workbench-note {
-  padding: 12px 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(251, 191, 36, 0.2);
-  background: rgba(251, 191, 36, 0.08);
-  color: #fde68a;
-  line-height: 1.6;
-}
-
-.uu-editor-v4-main {
-  gap: 18px;
-}
-
-.uu-editor-v4-section {
-  border-radius: 24px;
-}
-
-.uu-editor-v4-tools-grid {
-  align-items: start;
-}
-
 @media (max-width: 900px) {
   .uu-editor-page-hero-v7 {
     grid-template-columns: 1fr;
@@ -138,17 +33,84 @@
   .uu-editor-page-actions-v7 {
     justify-content: flex-start;
   }
+}
 
-  .uu-editor-workbench-bar {
-    top: 8px;
-    padding: 16px;
+.uu-editor-workbench {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+}
+.uu-editor-workbench-main,
+.uu-editor-workbench-side {
+  display: grid;
+  gap: 6px;
+}
+.uu-editor-workbench-main span,
+.uu-editor-workbench-side span {
+  color: rgba(255,255,255,0.72);
+  font-size: 13px;
+}
+.uu-editor-dirty-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.uu-editor-dirty-chip.is-dirty {
+  background: rgba(250, 204, 21, 0.12);
+  color: #fde68a;
+}
+.uu-editor-dirty-chip.is-clean {
+  background: rgba(52, 211, 153, 0.12);
+  color: #bbf7d0;
+}
+.uu-editor-last-saved {
+  text-align: right;
+}
+.uu-editor-sticky-savebar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(9,12,18,0.88);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 36px rgba(0,0,0,0.28);
+}
+.uu-editor-sticky-savebar-copy {
+  display: grid;
+  gap: 4px;
+}
+.uu-editor-sticky-savebar-copy span {
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+}
+.uu-editor-sticky-savebar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (max-width: 900px) {
+  .uu-editor-workbench,
+  .uu-editor-sticky-savebar {
+    grid-template-columns: 1fr;
   }
-
-  .uu-editor-workbench-main {
-    flex-direction: column;
-  }
-
-  .uu-editor-workbench-meta {
-    justify-content: flex-start;
+  .uu-editor-last-saved {
+    text-align: left;
   }
 }
