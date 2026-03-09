@@ -1,9 +1,18 @@
 import type { ParsedMenuItem } from "@/lib/menu";
 
+type PublicMenuItem = ParsedMenuItem & {
+  imageUrl?: string;
+  imageDataUrl?: string;
+};
+
 type Group = {
   category: string;
-  items: ParsedMenuItem[];
+  items: PublicMenuItem[];
 };
+
+function getItemImage(item: PublicMenuItem) {
+  return item.imageDataUrl || item.imageUrl || "";
+}
 
 export function PublicMenuSections({
   grouped,
@@ -11,7 +20,7 @@ export function PublicMenuSections({
   tokens,
 }: {
   grouped: Group[];
-  categoryLinks: Array<{ label: string; id: string; count?: number }>;
+  categoryLinks: Array<{ label: string; id: string }>;
   tokens: {
     border: string;
     badge: string;
@@ -20,10 +29,8 @@ export function PublicMenuSections({
     muted: string;
     surfaceSoft: string;
     priceText: string;
-    priceBg: string;
     soldoutBg: string;
     soldoutText: string;
-    accentTint: string;
   };
 }) {
   if (!grouped.length) {
@@ -37,43 +44,47 @@ export function PublicMenuSections({
   return (
     <>
       {grouped.map((group, index) => (
-        <section key={`${group.category}-${index}`} id={categoryLinks[index]?.id} className="uu-public-section uu-public-section-refined">
-          <div className="uu-public-section-title-row">
-            <div className="uu-public-section-title uu-public-section-title-refined" style={{ color: tokens.accentStrong, background: tokens.badge, borderColor: tokens.border }}>
-              <span className="uu-public-section-dot" />
-              {group.category}
-            </div>
-            <span className="uu-public-section-count" style={{ color: tokens.muted }}>{group.items.length} 項</span>
+        <section key={`${group.category}-${index}`} id={categoryLinks[index]?.id} className="uu-public-category-section">
+          <div className="uu-public-category-title" style={{ color: tokens.title }}>
+            <span className="uu-public-category-line" style={{ background: tokens.border }} />
+            <strong>{group.category}</strong>
+            <span className="uu-public-category-line" style={{ background: tokens.border }} />
           </div>
 
-          <div className="uu-public-item-list uu-public-item-list-refined">
-            {group.items.map((item, itemIndex) => (
-              <div
-                key={`${group.category}-${item.name}-${itemIndex}`}
-                className={`uu-public-item uu-public-item-refined ${item.soldOut ? "is-soldout" : ""}`}
-                style={{ borderColor: tokens.border, background: tokens.surfaceSoft }}
-              >
-                <div className="uu-public-item-copy">
-                  <div className="uu-public-item-mainrow">
-                    <strong style={{ color: tokens.title }}>{item.name}</strong>
-                    {!item.soldOut && item.note ? (
-                      <span className="uu-public-item-note-tag" style={{ background: tokens.accentTint, color: tokens.accentStrong }}>
-                        附註
+          <div className="uu-public-item-stack">
+            {group.items.map((item, itemIndex) => {
+              const imageSrc = getItemImage(item);
+              return (
+                <article
+                  key={`${group.category}-${item.name}-${itemIndex}`}
+                  className={`uu-public-menu-item ${item.soldOut ? "is-soldout" : ""} ${imageSrc ? "has-image" : "is-text-only"}`}
+                  style={{ borderColor: tokens.border, background: tokens.surfaceSoft }}
+                >
+                  <div className="uu-public-menu-item-copy">
+                    <strong className="uu-public-menu-item-name" style={{ color: tokens.title }}>
+                      {item.name}
+                    </strong>
+                    {item.note ? <p className="uu-public-menu-item-note">{item.note}</p> : null}
+                    <div className="uu-public-menu-item-foot">
+                      <span className="uu-public-menu-item-price" style={{ color: tokens.priceText }}>
+                        {item.price ? `$${item.price}` : "時價"}
                       </span>
-                    ) : null}
+                      {item.soldOut ? (
+                        <span className="uu-public-soldout-pill" style={{ background: tokens.soldoutBg, color: tokens.soldoutText }}>
+                          今日售完
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
-                  {item.note ? <p>備註：{item.note}</p> : null}
-                  {item.soldOut ? (
-                    <span className="uu-public-soldout-pill" style={{ background: tokens.soldoutBg, color: tokens.soldoutText }}>
-                      今日售完
-                    </span>
+
+                  {imageSrc ? (
+                    <div className="uu-public-menu-item-imagewrap" style={{ borderColor: tokens.border }}>
+                      <img src={imageSrc} alt={`${item.name} 圖片`} className="uu-public-menu-item-image" />
+                    </div>
                   ) : null}
-                </div>
-                <div className="uu-public-item-price uu-public-item-price-refined" style={{ color: tokens.priceText, background: tokens.priceBg }}>
-                  {item.price ? `$${item.price}` : "時價"}
-                </div>
-              </div>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </section>
       ))}

@@ -39,6 +39,11 @@ function toSectionId(category: string, index: number) {
   );
 }
 
+type ExtendedMenuData = Awaited<ReturnType<typeof getMenu>> & {
+  closedDay?: string;
+  coverImageDataUrl?: string;
+};
+
 export default async function MenuPage({
   params,
   searchParams,
@@ -49,7 +54,7 @@ export default async function MenuPage({
   const { slug } = await params;
   const query = searchParams ? await searchParams : {};
   const id = await getMenuIdBySlug(decodeURIComponent(slug));
-  const data = id ? await getMenu(id) : null;
+  const data = (id ? await getMenu(id) : null) as ExtendedMenuData | null;
 
   if (!data) return renderMessage("找不到菜單", "這份菜單可能不存在，或網址有誤。請確認餐廳提供的連結是否正確。");
   if (data.isPublished === false) return renderMessage("這份菜單暫時未公開", "店家目前暫停顯示這份菜單，請稍後再試。");
@@ -61,11 +66,7 @@ export default async function MenuPage({
   const categoryLinks = grouped.map((group, index) => ({
     label: group.category,
     id: toSectionId(group.category, index),
-    count: group.items.length,
   }));
-  const totalItems = grouped.reduce((sum, group) => sum + group.items.length, 0);
-  const soldOutCount = grouped.reduce((sum, group) => sum + group.items.filter((item) => item.soldOut).length, 0);
-  const noteCount = grouped.reduce((sum, group) => sum + group.items.filter((item) => item.note).length, 0);
 
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 28%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 56%, ${tokens.bgDeep} 100%)`,
@@ -97,11 +98,14 @@ export default async function MenuPage({
 
   return (
     <main className="uu-public-shell" style={shellStyle}>
-      <div className="uu-public-container uu-public-container-refined">
+      <div id="top" />
+      <div className="uu-public-container uu-public-container-refined uu-public-page-v2">
         <PublicMenuHero
           restaurant={data.restaurant}
           logoDataUrl={data.logoDataUrl}
+          coverImageDataUrl={data.coverImageDataUrl}
           hours={data.hours}
+          closedDay={data.closedDay}
           phone={data.phone}
           address={data.address}
           table={table}
@@ -111,28 +115,24 @@ export default async function MenuPage({
           formatMapHref={formatMapHref}
         />
 
-        <section className="uu-public-card uu-public-menu-card" style={cardStyle}>
-          <PublicMenuCategoryNav categoryLinks={categoryLinks} borderColor={tokens.border} accentStrong={tokens.accentStrong} />
-
-          <div className="uu-public-section-head is-menu-head">
-            <div>
-              <span className="uu-public-section-kicker">精選內容</span>
-              <h2>菜單</h2>
-            </div>
-            <div className="uu-public-menu-overview">
-              <span>{grouped.length} 個分類</span>
-              <span>{totalItems} 項品項</span>
-              <span>{noteCount} 項附註</span>
-              {soldOutCount ? <span>{soldOutCount} 項售完</span> : null}
-            </div>
-          </div>
+        <section className="uu-public-card uu-public-menu-card uu-public-menu-card-v2" style={cardStyle}>
+          <PublicMenuCategoryNav
+            categoryLinks={categoryLinks}
+            borderColor={tokens.border}
+            accentStrong={tokens.accentStrong}
+            muted={tokens.muted}
+          />
 
           <PublicMenuSections grouped={grouped} categoryLinks={categoryLinks} tokens={tokens} />
 
-          <div className="uu-public-menu-footnote" style={{ color: tokens.muted }}>
+          <div className="uu-public-menu-footnote uu-public-menu-footnote-v2" style={{ color: tokens.muted }}>
             實際供應品項與價格請以現場公告為準。
           </div>
         </section>
+
+        <a href="#top" className="uu-public-backtotop" aria-label="回到頂端">
+          ↑
+        </a>
       </div>
     </main>
   );
