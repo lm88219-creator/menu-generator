@@ -96,6 +96,26 @@ export function HomeFormCard({
         一分鐘生成可分享的線上菜單
       </p>
 
+      <div
+        style={{
+          marginTop: 16,
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
+          gap: 10,
+        }}
+      >
+        {[
+          ["品牌資訊", "店名、Logo、電話一次填好"],
+          ["主題風格", "公開頁與 QR 視覺同步更新"],
+          ["正式網址", "生成後可直接複製分享"],
+        ].map(([title, desc]) => (
+          <div key={title} style={{ padding: 14, borderRadius: 16, border: currentTheme.inputBorder, background: currentTheme.inputBg }}>
+            <div style={{ fontWeight: 800, fontSize: 14 }}>{title}</div>
+            <div style={{ marginTop: 6, color: currentTheme.subText, fontSize: 12, lineHeight: 1.7 }}>{desc}</div>
+          </div>
+        ))}
+      </div>
+
       <FieldBlock label="餐廳名稱">
         <input value={form.restaurant} onChange={(e) => onRestaurantChange(e.target.value)} style={inputStyle} placeholder="例如：友愛熱炒" />
       </FieldBlock>

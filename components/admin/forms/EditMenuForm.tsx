@@ -13,6 +13,13 @@ import { useLogoUpload } from "./edit-menu/hooks/useLogoUpload";
 
 export type { InitialData, MenuItemForm, ThemeType } from "./edit-menu/shared-ui";
 
+const SECTION_LINKS = [
+  { href: "#shop-info", label: "店家資訊" },
+  { href: "#menu-items", label: "菜單品項" },
+  { href: "#appearance", label: "外觀設定" },
+  { href: "#advanced-tools", label: "進階工具" },
+];
+
 export default function EditMenuForm({ id, initialData }: { id: string; initialData: InitialData }) {
   const [message, setMessage] = useState("");
   const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
@@ -67,6 +74,11 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
     ];
     return Math.round((checks.filter(Boolean).length / checks.length) * 100);
   }, [state.restaurant, state.phone, state.address, state.hours, state.formItems, state.safeSlug, state.logoDataUrl]);
+
+  const infoMissingCount = useMemo(
+    () => [state.phone, state.address, state.hours, state.logoDataUrl].filter((value) => !String(value ?? "").trim()).length,
+    [state.phone, state.address, state.hours, state.logoDataUrl]
+  );
 
   const isDirty = savedSnapshot !== null && snapshot !== savedSnapshot;
 
@@ -140,6 +152,39 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
           <span className="uu-editor-last-saved">{lastSavedAt ? `最後儲存：${formatDateTime(lastSavedAt)}` : "尚未重新儲存"}</span>
         </div>
       </div>
+
+      <section className="uu-editor-overview-panel uu-panel">
+        <div className="uu-editor-overview-grid">
+          <article className="uu-editor-overview-card">
+            <span>公開網址</span>
+            <strong>{state.safeSlug}</strong>
+            <small>{state.publicPath}</small>
+          </article>
+          <article className="uu-editor-overview-card">
+            <span>店家資料</span>
+            <strong>{infoMissingCount ? `尚缺 ${infoMissingCount} 項` : "已填完整"}</strong>
+            <small>{state.logoDataUrl ? "品牌 Logo 已設定" : "尚未上傳 Logo"}</small>
+          </article>
+          <article className="uu-editor-overview-card">
+            <span>菜單結構</span>
+            <strong>{state.categorySummary.length || 1} 個分類</strong>
+            <small>{state.activeCount} 項供應中</small>
+          </article>
+          <article className="uu-editor-overview-card">
+            <span>目前主題</span>
+            <strong>{state.selectedTheme.label}</strong>
+            <small>{state.isPublished ? "公開頁會立即套用" : "儲存後等待重新上架"}</small>
+          </article>
+        </div>
+
+        <div className="uu-editor-section-nav">
+          {SECTION_LINKS.map((item) => (
+            <a key={item.href} href={item.href} className="uu-editor-section-pill">
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </section>
 
       <div className="uu-editor-v4-layout uu-editor-v4-layout-single">
         <div className="uu-editor-v4-main">

@@ -158,6 +158,7 @@ export default async function DashboardPage({
                 const publicPath = getPublicMenuPath(menu.slug || menu.id);
                 const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
                 const missingInfoCount = menu.missingInfoCount ?? 0;
+                const healthScore = Math.max(0, 100 - missingInfoCount * 15 - (menu.isPublished === false ? 20 : 0));
 
                 return (
                   <article key={menu.id} className="uu-dashboard-row-v7 uu-dashboard-row-v8 uu-dashboard-row-v9">
@@ -185,6 +186,17 @@ export default async function DashboardPage({
                           <span className="uu-dashboard-meta-chip">{menu.itemCount} 項菜單</span>
                           <span className="uu-dashboard-meta-chip">更新 {formatShortDate(menu.updatedAt)}</span>
                           <span className="uu-dashboard-meta-chip">{menu.hasLogo ? "含 Logo" : "純文字版"}</span>
+                        </div>
+
+                        <div className="uu-dashboard-row-health">
+                          <div>
+                            <span>整理度</span>
+                            <strong>{healthScore}%</strong>
+                          </div>
+                          <div>
+                            <span>公開網址</span>
+                            <strong>{publicPath}</strong>
+                          </div>
                         </div>
                       </div>
                     </div>

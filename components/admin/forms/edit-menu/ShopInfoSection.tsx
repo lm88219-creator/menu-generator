@@ -33,12 +33,19 @@ export function ShopInfoSection(props: Props) {
     safeSlug,
   } = props;
 
+  const checklist = [
+    { label: "店名", done: Boolean(restaurant.trim()) },
+    { label: "電話", done: Boolean(phone.trim()) },
+    { label: "營業時間", done: Boolean(hours.trim()) },
+    { label: "地址", done: Boolean(address.trim()) },
+  ];
+
   return (
     <section id="shop-info" className="uu-simple-section uu-editor-v4-section uu-editor-v4-shop-section">
       <div className="uu-section-head uu-editor-v4-section-head-pro">
         <div>
           <h2>店家資訊</h2>
-          <p>把公開頁會用到的品牌資訊整理成清楚欄位，店名、網址與聯絡方式更容易一次確認。</p>
+          <p>先把公開頁最重要的品牌資訊整理好，後面主題預覽與 QR 分享就會一起跟上。</p>
         </div>
         <label className="uu-switch-row uu-editor-v4-publish-toggle uu-editor-v4-publish-toggle-pro">
           <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
@@ -72,6 +79,21 @@ export function ShopInfoSection(props: Props) {
             <div><span>電話</span><strong>{phone || "未填寫"}</strong></div>
             <div><span>營業時間</span><strong>{hours || "未填寫"}</strong></div>
             <div><span>地址</span><strong>{address || "未填寫"}</strong></div>
+          </div>
+
+          <div className="uu-editor-checklist-card">
+            <div className="uu-editor-checklist-head">
+              <strong>公開頁準備度</strong>
+              <span>{checklist.filter((item) => item.done).length}/{checklist.length}</span>
+            </div>
+            <div className="uu-editor-checklist-items">
+              {checklist.map((item) => (
+                <div key={item.label} className={`uu-editor-checklist-item ${item.done ? "is-done" : ""}`}>
+                  <span>{item.done ? "✓" : "•"}</span>
+                  <strong>{item.label}</strong>
+                </div>
+              ))}
+            </div>
           </div>
         </aside>
       </div>

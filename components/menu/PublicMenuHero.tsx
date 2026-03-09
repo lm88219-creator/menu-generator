@@ -13,6 +13,8 @@ type Props = {
     text: string;
     title: string;
     accentStrong: string;
+    muted: string;
+    accentTint: string;
   };
   cardStyle: CSSProperties;
   formatPhoneHref: (phone: string) => string;
@@ -31,7 +33,11 @@ export function PublicMenuHero({
   formatPhoneHref,
   formatMapHref,
 }: Props) {
-  const hasMeta = Boolean(hours || phone || address);
+  const metaCards = [
+    { label: "營業時間", value: hours || "未提供" },
+    { label: "電話", value: phone || "未提供" },
+    { label: "地址", value: address || "未提供" },
+  ];
 
   return (
     <section className="uu-public-hero uu-public-hero-refined" style={cardStyle}>
@@ -47,21 +53,23 @@ export function PublicMenuHero({
         {logoDataUrl ? <img src={logoDataUrl} alt={`${restaurant} logo`} className="uu-public-logo" /> : null}
         <div className="uu-public-heading-block">
           <h1 style={{ color: tokens.title }}>{restaurant}</h1>
-          {hasMeta ? (
-            <div className="uu-public-inline-meta">
-              {hours ? <span>營業時間｜{hours}</span> : null}
-              {phone ? (
-                <a href={formatPhoneHref(phone)} className="uu-public-inline-link">
-                  電話｜{phone}
-                </a>
-              ) : null}
-              {address ? (
-                <a href={formatMapHref(address)} target="_blank" rel="noreferrer" className="uu-public-inline-link">
-                  地址｜{address}
-                </a>
-              ) : null}
-            </div>
-          ) : null}
+          <p className="uu-public-hero-copy" style={{ color: tokens.muted }}>
+            線上菜單已整理完成，價格與供應狀態請以現場公告為準。
+          </p>
+
+          <div className="uu-public-inline-meta">
+            {hours ? <span>營業時間｜{hours}</span> : null}
+            {phone ? (
+              <a href={formatPhoneHref(phone)} className="uu-public-inline-link">
+                電話｜{phone}
+              </a>
+            ) : null}
+            {address ? (
+              <a href={formatMapHref(address)} target="_blank" rel="noreferrer" className="uu-public-inline-link">
+                地址｜{address}
+              </a>
+            ) : null}
+          </div>
 
           <div className="uu-public-hero-actions">
             {phone ? (
@@ -78,8 +86,17 @@ export function PublicMenuHero({
         </div>
       </div>
 
+      <div className="uu-public-hero-meta-grid">
+        {metaCards.map((item) => (
+          <div key={item.label} className="uu-public-hero-meta-card" style={{ background: tokens.badge, borderColor: tokens.border }}>
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+          </div>
+        ))}
+      </div>
+
       {table ? (
-        <div className="uu-public-table-pill" style={{ background: tokens.badge, borderColor: tokens.border, color: tokens.text }}>
+        <div className="uu-public-table-pill" style={{ background: tokens.accentTint, borderColor: tokens.border, color: tokens.text }}>
           目前桌號：{table}
         </div>
       ) : null}

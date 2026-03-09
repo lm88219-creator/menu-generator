@@ -108,6 +108,10 @@ export function HomeResultCard({
             {qrText}
           </a>
 
+          <div style={{ marginTop: 14, padding: "12px 14px", borderRadius: 14, border: currentTheme.inputBorder, background: "rgba(255,255,255,0.04)", color: currentTheme.subText, fontSize: 13, lineHeight: 1.7 }}>
+            接下來可以直接複製網址、下載 QR Code，或回後台繼續整理菜單。
+          </div>
+
           <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button onClick={onCopyUrl} style={mainButtonStyle}>{copied ? "已複製網址" : "複製網址"}</button>
             <button onClick={downloadQR} style={ghostButtonStyle}>下載 QR Code</button>

@@ -23,6 +23,7 @@ export function PublicMenuSections({
     priceBg: string;
     soldoutBg: string;
     soldoutText: string;
+    accentTint: string;
   };
 }) {
   if (!grouped.length) {
@@ -53,7 +54,14 @@ export function PublicMenuSections({
                 style={{ borderColor: tokens.border, background: tokens.surfaceSoft }}
               >
                 <div className="uu-public-item-copy">
-                  <strong style={{ color: tokens.title }}>{item.name}</strong>
+                  <div className="uu-public-item-mainrow">
+                    <strong style={{ color: tokens.title }}>{item.name}</strong>
+                    {!item.soldOut && item.note ? (
+                      <span className="uu-public-item-note-tag" style={{ background: tokens.accentTint, color: tokens.accentStrong }}>
+                        備註
+                      </span>
+                    ) : null}
+                  </div>
                   {item.note ? <p>{item.note}</p> : null}
                   {item.soldOut ? (
                     <span className="uu-public-soldout-pill" style={{ background: tokens.soldoutBg, color: tokens.soldoutText }}>
