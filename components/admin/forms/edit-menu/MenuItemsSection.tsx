@@ -69,6 +69,21 @@ export function MenuItemsSection(props: Props) {
         </div>
       </div>
 
+      <div className="uu-menu-editor-guidance-grid">
+        <div className="uu-menu-editor-guidance-card">
+          <strong>大量整理時</strong>
+          <span>先用左側整份輸入貼上，整理好分類後再套用到逐項編輯。</span>
+        </div>
+        <div className="uu-menu-editor-guidance-card">
+          <strong>細節微調時</strong>
+          <span>逐項編輯最適合改價格、備註、停售狀態與單一品項分類。</span>
+        </div>
+        <div className="uu-menu-editor-guidance-card">
+          <strong>避免遺漏</strong>
+          <span>每次大改完記得儲存，底部固定工具列會一直保留在畫面上。</span>
+        </div>
+      </div>
+
       <div className={`uu-menu-editor-dual-layout uu-menu-editor-dual-layout-a is-mode-${editorMode}`}>
         {editorMode !== "items" ? (
           <section className="uu-menu-editor-bulk-card uu-menu-editor-bulk-card-a">

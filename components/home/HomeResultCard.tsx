@@ -112,6 +112,21 @@ export function HomeResultCard({
             接下來可以直接複製網址、下載 QR Code，或回後台繼續整理菜單。
           </div>
 
+          <div className="uu-home-result-grid">
+            <div className="uu-home-result-stat">
+              <span>分享方式</span>
+              <strong>網址 / QR / 海報圖</strong>
+            </div>
+            <div className="uu-home-result-stat">
+              <span>公開頁狀態</span>
+              <strong>已可開啟</strong>
+            </div>
+            <div className="uu-home-result-stat">
+              <span>後續整理</span>
+              <strong>可回後台微調</strong>
+            </div>
+          </div>
+
           <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button onClick={onCopyUrl} style={mainButtonStyle}>{copied ? "已複製網址" : "複製網址"}</button>
             <button onClick={downloadQR} style={ghostButtonStyle}>下載 QR Code</button>

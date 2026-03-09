@@ -58,11 +58,11 @@ export function PublicMenuSections({
                     <strong style={{ color: tokens.title }}>{item.name}</strong>
                     {!item.soldOut && item.note ? (
                       <span className="uu-public-item-note-tag" style={{ background: tokens.accentTint, color: tokens.accentStrong }}>
-                        備註
+                        附註
                       </span>
                     ) : null}
                   </div>
-                  {item.note ? <p>{item.note}</p> : null}
+                  {item.note ? <p>備註：{item.note}</p> : null}
                   {item.soldOut ? (
                     <span className="uu-public-soldout-pill" style={{ background: tokens.soldoutBg, color: tokens.soldoutText }}>
                       今日售完

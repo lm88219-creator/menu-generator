@@ -221,6 +221,11 @@ export function HomeFormCard({
         </div>
       </FieldBlock>
 
+      <div className="uu-home-helper-panel" style={{ color: currentTheme.subText }}>
+        <strong style={{ color: currentTheme.text }}>建議流程</strong>
+        <span>先填店名與菜單，再補電話、地址、營業時間；最後挑主題與 Logo，生成後就能直接對外分享。</span>
+      </div>
+
       <FieldBlock label="菜單內容">
         <textarea
           rows={12}

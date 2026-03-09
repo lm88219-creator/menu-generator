@@ -57,6 +57,12 @@ export default function HomePageClient() {
       }}
     >
       <div style={{ maxWidth: 1120, margin: "0 auto" }}>
+        <div className="uu-home-top-strip">
+          <div className="uu-home-top-chip">輸入店家資訊</div>
+          <div className="uu-home-top-chip">選擇主題與 Logo</div>
+          <div className="uu-home-top-chip">生成公開網址與 QR Code</div>
+        </div>
+
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.12fr 0.88fr", gap: 18, alignItems: "start" }}>
           <HomeFormCard
             form={form}

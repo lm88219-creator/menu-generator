@@ -63,6 +63,9 @@ export default async function MenuPage({
     id: toSectionId(group.category, index),
     count: group.items.length,
   }));
+  const totalItems = grouped.reduce((sum, group) => sum + group.items.length, 0);
+  const soldOutCount = grouped.reduce((sum, group) => sum + group.items.filter((item) => item.soldOut).length, 0);
+  const noteCount = grouped.reduce((sum, group) => sum + group.items.filter((item) => item.note).length, 0);
 
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 28%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 56%, ${tokens.bgDeep} 100%)`,
@@ -118,7 +121,9 @@ export default async function MenuPage({
             </div>
             <div className="uu-public-menu-overview">
               <span>{grouped.length} 個分類</span>
-              <span>{grouped.reduce((sum, group) => sum + group.items.length, 0)} 項品項</span>
+              <span>{totalItems} 項品項</span>
+              <span>{noteCount} 項附註</span>
+              {soldOutCount ? <span>{soldOutCount} 項售完</span> : null}
             </div>
           </div>
 

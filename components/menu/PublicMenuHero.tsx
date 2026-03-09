@@ -39,6 +39,12 @@ export function PublicMenuHero({
     { label: "地址", value: address || "未提供" },
   ];
 
+  const overviewChips = [
+    hours ? "今日可營業資訊" : "營業資訊待補",
+    phone ? "可直接撥號" : "電話未提供",
+    address ? "可開啟導航" : "地址未提供",
+  ];
+
   return (
     <section className="uu-public-hero uu-public-hero-refined" style={cardStyle}>
       <div className="uu-public-hero-top">
@@ -84,6 +90,14 @@ export function PublicMenuHero({
             ) : null}
           </div>
         </div>
+      </div>
+
+      <div className="uu-public-hero-overview">
+        {overviewChips.map((item) => (
+          <span key={item} className="uu-public-hero-overview-chip" style={{ background: tokens.badge, borderColor: tokens.border }}>
+            {item}
+          </span>
+        ))}
       </div>
 
       <div className="uu-public-hero-meta-grid">

@@ -104,3 +104,23 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.uu-public-hero-overview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.uu-public-hero-overview-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--uu-public-border);
+  color: var(--uu-public-text);
+  font-size: 12px;
+  font-weight: 700;
+}

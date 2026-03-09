@@ -16,7 +16,7 @@ export type { InitialData, MenuItemForm, ThemeType } from "./edit-menu/shared-ui
 const SECTION_LINKS = [
   { href: "#shop-info", label: "店家資訊" },
   { href: "#menu-items", label: "菜單品項" },
-  { href: "#appearance", label: "外觀設定" },
+  { href: "#appearance-settings", label: "外觀設定" },
   { href: "#advanced-tools", label: "進階工具" },
 ];
 
@@ -81,6 +81,17 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   );
 
   const isDirty = savedSnapshot !== null && snapshot !== savedSnapshot;
+
+  const readinessItems = useMemo(
+    () => [
+      { label: "店家資訊", done: Boolean(state.restaurant.trim() && state.phone.trim() && state.address.trim() && state.hours.trim()) },
+      { label: "菜單品項", done: state.activeCount > 0 },
+      { label: "外觀設定", done: Boolean(state.theme) },
+      { label: "品牌 Logo", done: Boolean(state.logoDataUrl) },
+      { label: "公開狀態", done: state.isPublished },
+    ],
+    [state.restaurant, state.phone, state.address, state.hours, state.activeCount, state.theme, state.logoDataUrl, state.isPublished]
+  );
 
   function pushMessage(text: string) {
     setMessage(text);
@@ -154,6 +165,29 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
       </div>
 
       <section className="uu-editor-overview-panel uu-panel">
+        <div className="uu-editor-flow-grid">
+          <article className="uu-editor-flow-card is-active">
+            <span>STEP 1</span>
+            <strong>先補齊店家資訊</strong>
+            <small>店名、電話、地址、營業時間會直接影響公開頁完整度。</small>
+          </article>
+          <article className="uu-editor-flow-card">
+            <span>STEP 2</span>
+            <strong>整理菜單品項</strong>
+            <small>先用整份輸入快速貼上，再用逐項微調修價格、備註與停售狀態。</small>
+          </article>
+          <article className="uu-editor-flow-card">
+            <span>STEP 3</span>
+            <strong>確認品牌外觀</strong>
+            <small>主題與 Logo 會同步套用到客人看的公開頁。</small>
+          </article>
+          <article className="uu-editor-flow-card">
+            <span>STEP 4</span>
+            <strong>最後做分享工具</strong>
+            <small>公開網址、桌號 QR 與快速複製都集中在最下方。</small>
+          </article>
+        </div>
+
         <div className="uu-editor-overview-grid">
           <article className="uu-editor-overview-card">
             <span>公開網址</span>
@@ -182,6 +216,15 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <a key={item.href} href={item.href} className="uu-editor-section-pill">
               {item.label}
             </a>
+          ))}
+        </div>
+
+        <div className="uu-editor-readiness-grid">
+          {readinessItems.map((item) => (
+            <div key={item.label} className={`uu-editor-readiness-chip ${item.done ? "is-done" : "is-pending"}`}>
+              <span>{item.done ? "✓" : "•"}</span>
+              <strong>{item.label}</strong>
+            </div>
           ))}
         </div>
       </section>

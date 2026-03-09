@@ -1,1 +1,64 @@
-/* 首頁目前多為 inline style，先預留獨立樣式檔。 */
+/* 首頁目前多為 inline style，補上一些共用小元件樣式。 */
+
+.uu-home-top-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.uu-home-top-chip,
+.uu-home-result-stat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.06);
+  color: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.uu-home-helper-panel {
+  margin-top: 18px;
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.05);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.uu-home-result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.uu-home-result-stat {
+  min-height: unset;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 14px;
+  border-radius: 16px;
+}
+
+.uu-home-result-stat span {
+  opacity: .72;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 760px) {
+  .uu-home-result-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
