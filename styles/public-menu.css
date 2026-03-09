@@ -641,3 +641,70 @@
     font-size: 14px;
   }
 }
+
+/* v7: 公開頁微調 - 分類膠囊更顯眼、取消白底、封面圖片鋪滿區塊 */
+.uu-public-visual-image.is-logo {
+  object-fit: cover;
+  padding: 0;
+}
+
+.uu-public-category-nav-shell {
+  padding: 2px 0 0;
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.uu-public-category-nav {
+  background: transparent;
+}
+
+.uu-public-category-nav-scroll {
+  width: fit-content;
+  max-width: 100%;
+  padding: 0;
+  gap: 12px;
+}
+
+.uu-public-category-chip,
+.uu-public-category-tag {
+  min-height: 46px;
+  padding: 0 20px;
+  border-color: color-mix(in srgb, var(--uu-public-accent-strong) 18%, var(--uu-public-border));
+  background: color-mix(in srgb, var(--uu-public-accent-tint) 82%, white 18%);
+  color: var(--uu-public-accent-strong);
+}
+
+.uu-public-category-chip {
+  font-size: 15px;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--uu-public-accent-tint-strong) 30%, transparent);
+}
+
+.uu-public-category-chip:hover {
+  transform: translateY(-1px);
+}
+
+.uu-public-menu-card-v2 .uu-public-category-section:first-child {
+  margin-top: 28px;
+}
+
+@media (max-width: 760px) {
+  .uu-public-category-nav-shell {
+    top: 8px;
+    padding-top: 0;
+  }
+
+  .uu-public-category-nav-scroll {
+    gap: 10px;
+  }
+
+  .uu-public-category-chip,
+  .uu-public-category-tag {
+    min-height: 42px;
+    padding: 0 16px;
+  }
+
+  .uu-public-category-chip {
+    font-size: 14px;
+  }
+}
