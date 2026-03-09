@@ -1,7 +1,7 @@
 import { isAdminAuthenticated } from "@/lib/auth";
 import { ROUTES } from "@/lib/routes";
 import { redirect } from "next/navigation";
-import LoginForm from "@/app/uu/login/LoginForm";
+import LoginForm from "@/components/admin/LoginForm";
 
 export default async function LoginPage() {
   if (await isAdminAuthenticated()) redirect(ROUTES.dashboard);
