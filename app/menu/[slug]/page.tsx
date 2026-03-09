@@ -125,12 +125,11 @@ export default async function MenuPage({
 
           <PublicMenuSections grouped={grouped} categoryLinks={categoryLinks} tokens={tokens} />
 
-          <div className="uu-public-top-link-wrap">
-            <a href="#top" className="uu-public-top-link" style={{ color: tokens.accentStrong }}>
-              ↑ Top 膠囊
-            </a>
-          </div>
         </section>
+
+        <a href="#top" className="uu-public-floating-top-link" style={{ color: tokens.accentStrong }}>
+          ↑ Top
+        </a>
       </div>
     </main>
   );

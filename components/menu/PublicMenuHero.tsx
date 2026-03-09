@@ -36,23 +36,30 @@ function MetaRow({
   target?: string;
   hint?: string;
 }) {
-  const content = (
+  const valueBlock = (
     <>
-      <span className="uu-public-store-meta-label">{label}</span>
       <strong className="uu-public-store-meta-value">{value}</strong>
-      {hint ? <em className="uu-public-store-meta-hint">（{hint}）</em> : null}
+      {hint ? <span className="uu-public-store-meta-pill">{hint}</span> : null}
     </>
   );
 
-  if (href) {
-    return (
-      <a href={href} target={target} rel={target === "_blank" ? "noreferrer" : undefined} className="uu-public-store-meta-row is-link">
-        {content}
-      </a>
-    );
-  }
-
-  return <div className="uu-public-store-meta-row">{content}</div>;
+  return (
+    <div className="uu-public-store-meta-row">
+      <span className="uu-public-store-meta-label">{label}</span>
+      {href ? (
+        <a
+          href={href}
+          target={target}
+          rel={target === "_blank" ? "noreferrer" : undefined}
+          className="uu-public-store-meta-link"
+        >
+          {valueBlock}
+        </a>
+      ) : (
+        <div className="uu-public-store-meta-static">{valueBlock}</div>
+      )}
+    </div>
+  );
 }
 
 export function PublicMenuHero({
