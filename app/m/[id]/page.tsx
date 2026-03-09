@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { getMenu } from "@/lib/store";
 import { redirect } from "next/navigation";
+import { getPublicMenuPath } from "@/lib/routes";
 
 export default async function LegacyIdPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<{ table?: string }> }) {
   const { id } = await params;
@@ -16,5 +17,5 @@ export default async function LegacyIdPage({ params, searchParams }: { params: P
   const query = (searchParams ? await searchParams : {}) ?? {};
   const table = String(query.table ?? "").trim();
   const suffix = table ? `?table=${encodeURIComponent(table)}` : "";
-  redirect(`/uu/menu/${encodeURIComponent(data.slug)}${suffix}`);
+  redirect(`${getPublicMenuPath(data.slug)}${suffix}`);
 }

@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { isAdminAuthenticated } from "@/lib/auth";
 import { deleteMenu, getMenu, isSlugAvailable, updateMenu } from "@/lib/store";
 import { resolvePublicBaseUrl } from "@/lib/site";
+import { getPublicMenuPath } from "@/lib/routes";
 import { readMenuPayload, validateMenuPayload } from "@/lib/menu-payload";
 
 type Params = { params: Promise<{ id: string }> };
@@ -37,7 +38,7 @@ export async function PATCH(req: Request, { params }: Params) {
     const updated = await updateMenu(id, payload);
     if (!updated) return Response.json({ error: "找不到菜單" }, { status: 404 });
 
-    const publicPath = `/uu/menu/${encodeURIComponent(updated.slug || id)}`;
+    const publicPath = getPublicMenuPath(updated.slug || id);
     const publicBaseUrl = resolvePublicBaseUrl(req.url);
     return Response.json({ success: true, id, data: updated, publicPath, publicUrl: `${publicBaseUrl}${publicPath}`, shortUrl: publicPath });
   } catch (error) {

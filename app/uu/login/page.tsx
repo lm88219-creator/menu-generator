@@ -1,9 +1,10 @@
 import { isAdminAuthenticated } from "@/lib/auth";
+import { ROUTES } from "@/lib/routes";
 import { redirect } from "next/navigation";
 import LoginForm from "./LoginForm";
 
 export default async function LoginPage() {
-  if (await isAdminAuthenticated()) redirect("/uu/dashboard");
+  if (await isAdminAuthenticated()) redirect(ROUTES.dashboard);
 
   return (
     <main className="uu-login-shell">

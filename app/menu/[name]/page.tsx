@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
+import { getPublicMenuPath } from "@/lib/routes";
 
 type PageProps = {
   params: Promise<{ name: string }>;
@@ -12,5 +13,5 @@ export default async function LegacyMenuPage({ params, searchParams }: PageProps
   const query = (searchParams ? await searchParams : {}) ?? {};
   const table = String(query.table ?? "").trim();
   const suffix = table ? `?table=${encodeURIComponent(table)}` : "";
-  redirect(`/uu/menu/${encodeURIComponent(name)}${suffix}`);
+  redirect(`${getPublicMenuPath(name)}${suffix}`);
 }

@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { QRCodeCanvas } from "qrcode.react";
+import { ROUTES } from "@/lib/routes";
 import { downloadPosterImage } from "./poster-utils";
 import type { HomeFormState } from "./home-utils";
 
@@ -114,7 +115,7 @@ export function HomeResultCard({
             <button onClick={() => openShare(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(qrText)}`)} style={ghostButtonStyle}>分享 LINE</button>
             <button onClick={() => openShare(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(qrText)}`)} style={ghostButtonStyle}>分享 FB</button>
             <a
-              href="/uu/dashboard"
+              href={ROUTES.dashboard}
               style={{
                 display: "inline-flex",
                 alignItems: "center",

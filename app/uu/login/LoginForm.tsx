@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
 import { useState } from "react";
 
 export default function LoginForm() {
@@ -25,7 +26,7 @@ export default function LoginForm() {
         setError(data?.error || "登入失敗");
         return;
       }
-      router.push("/uu/dashboard");
+      router.push(ROUTES.dashboard);
       router.refresh();
     } catch {
       setError("登入失敗");

@@ -1,8 +1,9 @@
 export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
+import { getDashboardEditPath } from "@/lib/routes";
 
 export default async function LegacyDashboardEditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  redirect(`/uu/dashboard/${id}`);
+  redirect(getDashboardEditPath(id));
 }

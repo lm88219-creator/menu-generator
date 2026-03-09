@@ -1,7 +1,8 @@
 export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
 
 export default function LegacyDashboardPage() {
-  redirect("/uu/dashboard");
+  redirect(ROUTES.dashboard);
 }

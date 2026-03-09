@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { normalizeSlug } from "@/lib/menu";
 import { joinPublicUrl } from "@/lib/public-url";
+import { getPublicMenuPath } from "@/lib/routes";
 import { AdvancedToolsSection } from "./edit-menu/AdvancedToolsSection";
 import { AppearanceSection } from "./edit-menu/AppearanceSection";
 import { MenuItemsSection } from "./edit-menu/MenuItemsSection";
@@ -10,7 +11,6 @@ import { ShopInfoSection } from "./edit-menu/ShopInfoSection";
 import {
   createFormItem,
   getPreviewTokens,
-  parseDeskInput,
   THEME_OPTIONS,
   toFormItems,
   toMenuText,
@@ -18,7 +18,9 @@ import {
   type MenuItemForm,
   type ThemeType,
 } from "./edit-menu/shared-ui";
-
+import { useDeskCodes } from "./edit-menu/hooks/useDeskCodes";
+import { useEditMenuSave } from "./edit-menu/hooks/useEditMenuSave";
+import { useLogoUpload } from "./edit-menu/hooks/useLogoUpload";
 
 export type { InitialData, MenuItemForm, ThemeType } from "./edit-menu/shared-ui";
 
@@ -35,15 +37,12 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const [logoDataUrl, setLogoDataUrl] = useState(initialData.logoDataUrl || "");
   const [slug, setSlug] = useState(initialData.slug || "");
   const [isPublished, setIsPublished] = useState(initialData.isPublished !== false);
-  const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
-  const [deskInput, setDeskInput] = useState("");
-  const [selectedDesk, setSelectedDesk] = useState("");
 
+  const { deskInput, setDeskInput, deskCodes, selectedDesk, setSelectedDesk } = useDeskCodes(id);
   const safeSlug = normalizeSlug(slug || restaurant) || id;
-  const publicPath = `/uu/menu/${safeSlug}`;
+  const publicPath = getPublicMenuPath(safeSlug);
   const publicUrl = joinPublicUrl(publicPath);
-  const deskCodes = useMemo(() => parseDeskInput(deskInput), [deskInput]);
   const activeCount = formItems.filter((item) => item.name.trim() && !item.soldOut).length;
   const categorySummary = useMemo(() => {
     const map = new Map<string, number>();
@@ -60,41 +59,21 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const previewItems = formItems.filter((item) => item.name.trim()).slice(0, 4);
   const previewCategory = categorySummary[0]?.name || "主廚推薦";
   const previewSubtitle = address || phone || hours || "今日精選菜單";
-  const deskStorageKey = `uu-desk-codes:${id}`;
   const selectedDeskUrl = selectedDesk ? `${publicUrl}?table=${encodeURIComponent(selectedDesk)}` : "";
+
+  function pushMessage(text: string) {
+    setMessage(text);
+    setTimeout(() => setMessage(""), 2200);
+  }
+
+  const { saving, handleSave } = useEditMenuSave(pushMessage);
+  const handleLogoUpload = useLogoUpload(setLogoDataUrl);
 
   useEffect(() => {
     const nextMenuText = toMenuText(formItems);
     if (nextMenuText !== menuText) setMenuText(nextMenuText);
     if (!bulkDirty && nextMenuText !== quickInput) setQuickInput(nextMenuText);
   }, [formItems, menuText, quickInput, bulkDirty]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const saved = window.localStorage.getItem(deskStorageKey);
-    if (saved) setDeskInput(saved);
-  }, [deskStorageKey]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (deskInput.trim()) window.localStorage.setItem(deskStorageKey, deskInput);
-    else window.localStorage.removeItem(deskStorageKey);
-  }, [deskInput, deskStorageKey]);
-
-  useEffect(() => {
-    if (!deskCodes.length) {
-      setSelectedDesk("");
-      return;
-    }
-    if (!selectedDesk || !deskCodes.includes(selectedDesk)) {
-      setSelectedDesk(deskCodes[0]);
-    }
-  }, [deskCodes, selectedDesk]);
-
-  function pushMessage(text: string) {
-    setMessage(text);
-    setTimeout(() => setMessage(""), 2200);
-  }
 
   function updateFormItem(index: number, patch: Partial<MenuItemForm>) {
     setFormItems((current) => current.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)));
@@ -107,8 +86,8 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
   function applyQuickInput() {
     const nextItems = toFormItems(quickInput);
-    setFormItems(nextItems);
     const nextMenuText = toMenuText(nextItems);
+    setFormItems(nextItems);
     setMenuText(nextMenuText);
     setQuickInput(nextMenuText);
     setBulkDirty(false);
@@ -139,59 +118,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
     });
   }
 
-  async function handleSave() {
-    const latestItems = bulkDirty ? toFormItems(quickInput) : formItems;
-    if (bulkDirty) {
-      setFormItems(latestItems);
-      const syncedMenuText = toMenuText(latestItems);
-      setMenuText(syncedMenuText);
-      setQuickInput(syncedMenuText);
-      setBulkDirty(false);
-    }
-    const finalMenuText = toMenuText(latestItems);
-
-    if (!restaurant.trim()) {
-      alert("請輸入餐廳名稱");
-      return;
-    }
-    if (!finalMenuText.trim()) {
-      alert("請至少新增一個菜單品項");
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/menu/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          restaurant,
-          phone,
-          address,
-          hours,
-          menuText: finalMenuText,
-          theme,
-          logoDataUrl,
-          customSlug: slug,
-          isPublished,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        alert(data?.error || "更新失敗");
-        return;
-      }
-      if (data?.data?.slug) setSlug(data.data.slug);
-      setMenuText(finalMenuText);
-      pushMessage("已成功儲存");
-    } catch {
-      alert("更新失敗");
-    } finally {
-      setSaving(false);
-    }
-  }
-
   async function copyText(value: string, okText: string) {
     try {
       await navigator.clipboard.writeText(value);
@@ -201,16 +127,31 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
     }
   }
 
-  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      alert("請上傳圖片檔");
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => setLogoDataUrl(String(reader.result || ""));
-    reader.readAsDataURL(file);
+  async function onSave() {
+    await handleSave({
+      id,
+      restaurant,
+      phone,
+      address,
+      hours,
+      formItems,
+      quickInput,
+      bulkDirty,
+      theme,
+      logoDataUrl,
+      slug,
+      isPublished,
+      onSyncQuickInput: (items, syncedMenuText) => {
+        setFormItems(items);
+        setMenuText(syncedMenuText);
+        setQuickInput(syncedMenuText);
+        setBulkDirty(false);
+      },
+      onSaved: (nextSlug) => {
+        if (nextSlug) setSlug(nextSlug);
+        setMenuText(toMenuText(formItems));
+      },
+    });
   }
 
   return (
@@ -242,7 +183,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             quickInput={quickInput}
             handleQuickInputChange={handleQuickInputChange}
             applyQuickInput={applyQuickInput}
-            handleSave={handleSave}
+            handleSave={onSave}
             saving={saving}
             formItems={formItems}
             updateFormItem={updateFormItem}
@@ -273,7 +214,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             setSelectedDesk={setSelectedDesk}
             selectedDeskUrl={selectedDeskUrl}
             copyText={copyText}
-            handleSave={handleSave}
+            handleSave={onSave}
             saving={saving}
             publicUrl={publicUrl}
             publicPath={publicPath}

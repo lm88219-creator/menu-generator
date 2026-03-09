@@ -7,6 +7,7 @@ import EditMenuForm from "@/components/admin/forms/EditMenuForm";
 import CopyUrlButton from "@/components/admin/CopyUrlButton";
 import { getConfiguredSiteUrl } from "@/lib/site";
 import { normalizeTheme } from "@/lib/theme";
+import { getPublicMenuPath, ROUTES } from "@/lib/routes";
 
 export default async function DashboardEditPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
@@ -20,14 +21,14 @@ export default async function DashboardEditPage({ params }: { params: Promise<{ 
           <section className="uu-panel uu-empty-state uu-empty-state-pro">
             <h2>找不到這份菜單</h2>
             <p>這份菜單可能已經被刪除，或是網址 ID 不存在。</p>
-            <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回後台</Link>
+            <Link href={ROUTES.dashboard} className="uu-btn uu-btn-secondary">返回後台</Link>
           </section>
         </div>
       </main>
     );
   }
 
-  const publicPath = `/uu/menu/${encodeURIComponent(menu.slug || id)}`;
+  const publicPath = getPublicMenuPath(menu.slug || id);
   const baseUrl = getConfiguredSiteUrl();
   const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
   const itemCount = String(menu.menuText || "")
@@ -44,9 +45,16 @@ export default async function DashboardEditPage({ params }: { params: Promise<{ 
             <div className="uu-editor-page-hero-copy-v5">
               <div className="uu-kicker">UU MENU EDITOR</div>
               <h1 className="uu-dashboard-title">編輯菜單</h1>
+              <p className="uu-dashboard-copy">這頁只保留四個重點：店家資料、菜單內容、外觀設定、公開工具。</p>
+
+              <div className="uu-dashboard-store-meta-v7" style={{ marginTop: 12 }}>
+                <span className="uu-dashboard-meta-chip">{menu.restaurant || "未命名店家"}</span>
+                <span className="uu-dashboard-meta-chip">{itemCount} 項菜單</span>
+                <span className="uu-dashboard-meta-chip">{menu.isPublished === false ? "已下架" : "上架中"}</span>
+              </div>
 
               <div className="uu-editor-page-actions uu-editor-page-actions-v6">
-                <Link href="/uu/dashboard" className="uu-btn uu-btn-secondary">返回後台</Link>
+                <Link href={ROUTES.dashboard} className="uu-btn uu-btn-secondary">返回後台</Link>
                 <Link href={publicPath} target="_blank" className="uu-btn uu-btn-primary">打開公開頁</Link>
                 <CopyUrlButton url={publicUrl} />
               </div>

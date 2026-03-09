@@ -1,27 +1,9 @@
 import { Redis } from "@upstash/redis";
 import { normalizeSlug } from "@/lib/menu";
-import type { ThemeType } from "@/lib/theme";
+import type { MenuData, MenuRecord, MenuSummaryRecord } from "@/lib/types/menu";
 
 const redis = Redis.fromEnv();
 
-
-export type MenuData = {
-  restaurant: string;
-  phone?: string;
-  address?: string;
-  hours?: string;
-  menuText: string;
-  theme?: ThemeType;
-  logoDataUrl?: string;
-  slug?: string;
-  createdAt?: number;
-  updatedAt?: number;
-  isPublished?: boolean;
-};
-
-export type MenuRecord = MenuData & {
-  id: string;
-};
 
 const MENU_INDEX_KEY = "menus:index";
 
@@ -138,4 +120,34 @@ export async function listMenus(): Promise<MenuRecord[]> {
   return menus
     .filter((item): item is MenuRecord => Boolean(item))
     .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
+}
+
+
+function countMenuItems(menuText: string) {
+  return String(menuText || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => Boolean(line) && !/^#/.test(line) && !/^[\[【].+[\]】]$/.test(line) && line.split(/\s+/).length > 1).length;
+}
+
+function toMenuSummary(record: MenuRecord): MenuSummaryRecord {
+  return {
+    id: record.id,
+    restaurant: record.restaurant,
+    phone: record.phone,
+    address: record.address,
+    hours: record.hours,
+    theme: record.theme,
+    logoDataUrl: record.logoDataUrl,
+    slug: record.slug,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt,
+    isPublished: record.isPublished,
+    itemCount: countMenuItems(record.menuText),
+  };
+}
+
+export async function listMenuSummaries(): Promise<MenuSummaryRecord[]> {
+  const menus = await listMenus();
+  return menus.map(toMenuSummary);
 }

@@ -4,6 +4,7 @@ import { isAdminAuthenticated } from "@/lib/auth";
 import { createMenu, isSlugAvailable } from "@/lib/store";
 import { buildMenuPathSegment } from "@/lib/menu";
 import { resolvePublicBaseUrl } from "@/lib/site";
+import { getPublicMenuPath } from "@/lib/routes";
 import { readMenuPayload, validateMenuPayload } from "@/lib/menu-payload";
 
 function randomId() {
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
 
     await createMenu(id, { ...payload, theme: payload.theme, slug, createdAt: now, updatedAt: now, isPublished: payload.isPublished });
 
-    const publicPath = `/uu/menu/${encodeURIComponent(slug)}`;
+    const publicPath = getPublicMenuPath(slug);
     const publicBaseUrl = resolvePublicBaseUrl(req.url);
     const publicUrl = `${publicBaseUrl}${publicPath}`;
 
