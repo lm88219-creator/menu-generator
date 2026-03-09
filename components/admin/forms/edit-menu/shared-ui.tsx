@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { parseMenuText } from "@/lib/menu";
 import { getPreviewTokens as getThemePreviewTokens, getThemeOptions, type ThemeType } from "@/lib/theme";
+export type { ThemeType } from "@/lib/theme";
 
 
 export type InitialData = {
