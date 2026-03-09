@@ -1118,3 +1118,24 @@
     padding-left: 12px;
   }
 }
+
+
+/* ===== 2026-03-10 public page final polish ===== */
+.uu-public-category-nav {
+  justify-content: center !important;
+}
+
+.uu-public-category-nav-scroll {
+  justify-content: center !important;
+}
+
+.uu-public-category-chip,
+.uu-public-category-tag {
+  border-width: 2px !important;
+}
+
+@media (max-width: 760px) {
+  .uu-public-category-nav-scroll {
+    justify-items: center;
+  }
+}
