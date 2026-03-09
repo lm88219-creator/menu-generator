@@ -104,9 +104,9 @@ export function PublicMenuHero({
 
         <div className="uu-public-store-meta-list">
           {hours ? <MetaRow label="營業時間" value={hours} /> : null}
-          {closedDay ? <MetaRow label="公休日" value={closedDay} /> : null}
-          {phone ? <MetaRow label="電話" value={phone} href={formatPhoneHref(phone)} hint="一鍵撥打" /> : null}
-          {address ? <MetaRow label="地址" value={address} href={formatMapHref(address)} target="_blank" hint="開啟地圖" /> : null}
+          {closedDay ? <MetaRow label="公休日期" value={closedDay} /> : null}
+          {phone ? <MetaRow label="電話預訂" value={phone} href={formatPhoneHref(phone)} hint="一鍵撥打" /> : null}
+          {address ? <MetaRow label="店家地址" value={address} href={formatMapHref(address)} target="_blank" hint="開啟地圖" /> : null}
           {!hours && !closedDay && !phone && !address ? <MetaRow label="店家資訊" value="目前尚未提供" /> : null}
         </div>
       </div>

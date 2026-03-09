@@ -829,3 +829,86 @@
     font-size: 16px;
   }
 }
+
+
+/* ===== Latest public page refinements ===== */
+.uu-public-store-meta-row {
+  grid-template-columns: 112px minmax(0, 1fr);
+}
+
+.uu-public-store-meta-link,
+.uu-public-store-meta-static {
+  flex-wrap: wrap;
+}
+
+.uu-public-store-meta-value {
+  font-weight: 800;
+}
+
+.uu-public-category-nav-shell {
+  background: transparent;
+  padding: 10px 0 6px;
+}
+
+.uu-public-category-nav-scroll {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  overflow: visible;
+  row-gap: 12px;
+}
+
+.uu-public-category-chip {
+  flex: 1 1 calc(25% - 10px);
+  min-width: max-content;
+  min-height: 44px;
+  padding: 0 18px;
+  border-color: color-mix(in srgb, var(--uu-public-accent-strong) 28%, white 72%);
+  background: color-mix(in srgb, white 92%, var(--uu-public-accent-tint) 8%);
+  color: var(--uu-public-title);
+}
+
+.uu-public-category-chip.is-active {
+  border-color: var(--uu-public-accent-strong);
+  background: var(--uu-public-accent-strong);
+  color: white;
+}
+
+.uu-public-category-tag {
+  min-height: 42px;
+  padding: 0 18px;
+  border-color: color-mix(in srgb, var(--uu-public-accent-strong) 24%, white 76%);
+  background: color-mix(in srgb, #fff7f2 92%, white 8%);
+  color: var(--uu-public-accent-strong);
+}
+
+.uu-public-menu-card-v2 .uu-public-category-section:first-child {
+  margin-top: 30px;
+}
+
+@media (max-width: 640px) {
+  .uu-public-store-meta-row {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .uu-public-store-meta-label,
+  .uu-public-store-meta-value {
+    font-size: 15px;
+  }
+
+  .uu-public-store-meta-pill {
+    min-height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .uu-public-category-nav-scroll {
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .uu-public-category-chip {
+    flex: 0 1 auto;
+    max-width: 100%;
+  }
+}
