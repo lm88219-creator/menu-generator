@@ -4,7 +4,7 @@
   position: relative;
   display: grid;
   gap: 14px;
-  padding-bottom: 56px;
+  padding-bottom: 96px;
 }
 
 .uu-public-hero-shell,
@@ -85,7 +85,7 @@
 .uu-public-store-card h1 {
   margin: 0;
   padding: 2px 0 8px;
-  font-size: clamp(30px, 4.4vw, 44px);
+  font-size: clamp(28px, 4vw, 42px);
   line-height: 1.08;
   font-weight: 900;
 }
@@ -97,13 +97,12 @@
 
 .uu-public-store-meta-row {
   display: grid;
-  grid-template-columns: 98px minmax(0, 1fr) auto;
+  grid-template-columns: 98px minmax(0, 1fr);
   gap: 12px;
   align-items: center;
   min-height: 56px;
   padding: 10px 0;
   color: var(--uu-public-text);
-  text-decoration: none;
   border-bottom: 1px solid var(--uu-public-border);
 }
 
@@ -113,22 +112,40 @@
   color: var(--uu-public-title);
 }
 
+.uu-public-store-meta-link,
+.uu-public-store-meta-static {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: inherit;
+  text-decoration: none;
+}
+
 .uu-public-store-meta-value {
   font-size: 16px;
   line-height: 1.55;
 }
 
-.uu-public-store-meta-hint {
-  font-style: normal;
-  font-size: 14px;
+.uu-public-store-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--uu-public-border);
+  background: var(--uu-public-badge);
+  color: var(--uu-public-accent-strong);
+  font-size: 13px;
   font-weight: 900;
   white-space: nowrap;
-  color: var(--uu-public-accent-strong);
 }
 
-.uu-public-store-meta-row.is-link:hover .uu-public-store-meta-value,
-.uu-public-store-meta-row.is-link:hover .uu-public-store-meta-hint {
-  opacity: 0.9;
+.uu-public-store-meta-link:hover .uu-public-store-meta-value,
+.uu-public-store-meta-link:hover .uu-public-store-meta-pill {
+  opacity: 0.92;
 }
 
 .uu-public-menu-card-v2 {
@@ -143,28 +160,17 @@
 }
 
 .uu-public-category-nav {
-  display: grid;
-  gap: 10px;
-  padding: 12px 12px 10px;
+  padding: 10px 12px;
   border: 1px solid var(--uu-public-border);
   border-radius: 16px;
   background: color-mix(in srgb, var(--uu-public-surface) 94%, transparent);
   backdrop-filter: blur(12px);
 }
 
-.uu-public-category-nav-copy {
-  text-align: center;
-}
-
-.uu-public-category-nav-copy strong {
-  font-size: 16px;
-  font-weight: 900;
-}
-
 .uu-public-category-nav-scroll {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 10px;
   overflow-x: auto;
   padding: 2px 2px 4px;
@@ -175,13 +181,14 @@
   display: none;
 }
 
-.uu-public-category-chip {
-  flex: 0 0 auto;
-  min-height: 40px;
-  padding: 0 16px;
+.uu-public-category-chip,
+.uu-public-category-tag,
+.uu-public-floating-top-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
   border: 1px solid var(--uu-public-border);
   border-radius: 999px;
   background: var(--uu-public-badge);
@@ -199,6 +206,18 @@
   margin-top: 26px;
 }
 
+.uu-public-divider-gap {
+  margin: 4px 0 18px;
+  min-height: 56px;
+  border-top: 1px dashed var(--uu-public-border);
+  border-bottom: 1px dashed color-mix(in srgb, var(--uu-public-border) 55%, transparent);
+  display: grid;
+  place-items: center;
+  color: var(--uu-public-title);
+  font-size: 15px;
+  font-weight: 900;
+}
+
 .uu-public-category-title-row {
   margin: 0 0 12px;
   padding: 0 0 10px;
@@ -206,12 +225,10 @@
 }
 
 .uu-public-category-tag {
-  display: inline-flex;
-  align-items: center;
-  min-height: 34px;
-  font-size: 28px;
-  font-weight: 900;
+  min-height: 38px;
+  font-size: 18px;
   line-height: 1.2;
+  color: var(--uu-public-accent-strong);
 }
 
 .uu-public-item-stack {
@@ -236,16 +253,16 @@
 }
 
 .uu-public-menu-item-name {
-  font-size: 28px;
-  line-height: 1.18;
+  font-size: 24px;
+  line-height: 1.22;
   font-weight: 900;
 }
 
 .uu-public-menu-item-note {
   margin: 0;
-  min-height: 26px;
+  min-height: 24px;
   color: var(--uu-public-muted);
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.45;
   white-space: pre-wrap;
 }
@@ -262,7 +279,7 @@
 }
 
 .uu-public-menu-item-price {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 900;
   line-height: 1.12;
 }
@@ -310,25 +327,14 @@
   font-weight: 800;
 }
 
-.uu-public-top-link-wrap {
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px dashed var(--uu-public-border);
-  text-align: center;
-}
-
-.uu-public-top-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  padding: 0 16px;
-  border-radius: 999px;
-  border: 1px solid var(--uu-public-border);
-  background: var(--uu-public-badge);
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 900;
+.uu-public-floating-top-link {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 50;
+  min-height: 42px;
+  padding: 0 18px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
 }
 
 .uu-public-empty-state {
@@ -363,7 +369,7 @@
 
   .uu-public-store-meta-row {
     grid-template-columns: 1fr;
-    gap: 2px;
+    gap: 4px;
     align-items: start;
     min-height: 0;
     padding: 10px 0;
@@ -373,16 +379,28 @@
     font-size: 15px;
   }
 
+  .uu-public-store-meta-link,
+  .uu-public-store-meta-static {
+    gap: 8px;
+  }
+
   .uu-public-store-meta-value {
     font-size: 14px;
   }
 
-  .uu-public-store-meta-hint {
-    font-size: 13px;
+  .uu-public-store-meta-pill {
+    min-height: 26px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .uu-public-divider-gap {
+    min-height: 46px;
+    font-size: 14px;
   }
 
   .uu-public-category-tag {
-    font-size: 24px;
+    font-size: 16px;
   }
 
   .uu-public-menu-item {
@@ -392,7 +410,7 @@
   }
 
   .uu-public-menu-item-name {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .uu-public-menu-item-note {
@@ -401,7 +419,7 @@
   }
 
   .uu-public-menu-item-price {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .uu-public-menu-item-imagewrap {
@@ -414,8 +432,11 @@
     height: 68px;
   }
 
-  .uu-public-top-link {
+  .uu-public-floating-top-link {
+    right: 12px;
+    bottom: 12px;
     min-height: 38px;
+    padding: 0 14px;
     font-size: 14px;
   }
 }
