@@ -30,9 +30,6 @@ function toMenuSummary(record: MenuRecord): MenuSummaryRecord {
   return {
     id: record.id,
     restaurant: record.restaurant,
-    phone: record.phone,
-    address: record.address,
-    hours: record.hours,
     theme: record.theme,
     slug: record.slug,
     createdAt: record.createdAt,
@@ -132,17 +129,17 @@ export async function deleteMenu(id: string) {
 }
 
 async function rebuildIndexesFromMenus(): Promise<Array<{ summary: MenuSummaryRecord }>> {
-  const keys = await redis.keys("menu:*");
+  const keys = (await redis.keys("menu:*")) as string[];
   const ids = keys
-    .filter((key) => !key.startsWith("menu:slug:") && !key.startsWith("menu:summary:"))
-    .map((key) => key.replace("menu:", ""));
+    .filter((key: string) => !key.startsWith("menu:slug:") && !key.startsWith("menu:summary:"))
+    .map((key: string) => key.replace("menu:", ""));
 
   if (ids.length) {
     await redis.sadd(MENU_INDEX_KEY, ...(ids as [string, ...string[]]));
   }
 
   const records = await Promise.all(
-    ids.map(async (id) => {
+    ids.map(async (id: string) => {
       const data = await getMenu(id);
       if (!data) return null;
       const summary = await writeMenuSummary(id, data);
@@ -150,7 +147,7 @@ async function rebuildIndexesFromMenus(): Promise<Array<{ summary: MenuSummaryRe
     })
   );
 
-  return records.filter((item): item is { summary: MenuSummaryRecord } => Boolean(item));
+  return records.filter((item: { summary: MenuSummaryRecord } | null): item is { summary: MenuSummaryRecord } => Boolean(item));
 }
 
 export async function listMenus(): Promise<MenuRecord[]> {
@@ -162,7 +159,7 @@ export async function listMenus(): Promise<MenuRecord[]> {
   }
 
   const menus = await Promise.all(
-    ids.map(async (id) => {
+    ids.map(async (id: string) => {
       const data = await getMenu(id);
       if (!data) return null;
       return {
@@ -191,7 +188,7 @@ export async function listMenuSummaries(): Promise<MenuSummaryRecord[]> {
   }
 
   const summaries = await Promise.all(
-    ids.map(async (id) => {
+    ids.map(async (id: string) => {
       const summary = await redis.get<MenuSummaryRecord>(getMenuSummaryKey(id));
       if (summary) return summary;
       const data = await getMenu(id);
@@ -201,6 +198,6 @@ export async function listMenuSummaries(): Promise<MenuSummaryRecord[]> {
   );
 
   return summaries
-    .filter((item): item is MenuSummaryRecord => Boolean(item))
-    .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
+    .filter((item: MenuSummaryRecord | null): item is MenuSummaryRecord => Boolean(item))
+    .sort((a: MenuSummaryRecord, b: MenuSummaryRecord) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
 }

@@ -1,0 +1,41 @@
+.uu-dashboard-v9 {
+  gap: 16px;
+}
+
+.uu-dashboard-hero-v9,
+.uu-dashboard-overview-v9,
+.uu-dashboard-list-shell-v9 {
+  padding: 20px;
+}
+
+.uu-dashboard-searchbar-v9 {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.uu-dashboard-stats-v9 {
+  align-items: stretch;
+}
+
+.uu-dashboard-list-v9 {
+  gap: 12px;
+}
+
+.uu-dashboard-row-v9 {
+  align-items: center;
+}
+
+.uu-dashboard-row-v9 .uu-dashboard-row-main-v8 {
+  align-items: center;
+}
+
+@media (max-width: 820px) {
+  .uu-dashboard-hero-v9,
+  .uu-dashboard-overview-v9,
+  .uu-dashboard-list-shell-v9 {
+    padding: 16px;
+  }
+
+  .uu-dashboard-searchbar-v9 {
+    grid-template-columns: 1fr;
+  }
+}

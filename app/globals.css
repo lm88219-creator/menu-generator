@@ -1,5 +1,7 @@
 @import "../styles/base.css";
 @import "../styles/admin.css";
+@import "../styles/admin-dashboard.css";
 @import "../styles/editor.css";
+@import "../styles/admin-editor.css";
 @import "../styles/public-menu.css";
 @import "../styles/home.css";

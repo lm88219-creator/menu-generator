@@ -1,9 +1,12 @@
 export const dynamic = "force-dynamic";
 
 import { CSSProperties } from "react";
+import { groupMenuItems } from "@/lib/menu";
 import { getMenu, getMenuIdBySlug } from "@/lib/store";
 import { getPublicThemeTokens, type ThemeType } from "@/lib/theme";
-import { groupMenuItems } from "@/lib/menu";
+import { PublicMenuCategoryNav } from "@/components/menu/PublicMenuCategoryNav";
+import { PublicMenuHero } from "@/components/menu/PublicMenuHero";
+import { PublicMenuSections } from "@/components/menu/PublicMenuSections";
 
 function renderMessage(title: string, copy: string) {
   return (
@@ -17,12 +20,6 @@ function renderMessage(title: string, copy: string) {
       </div>
     </main>
   );
-}
-
-type ThemeTokens = ReturnType<typeof getPublicThemeTokens>;
-
-function getThemeTokens(theme: ThemeType): ThemeTokens {
-  return getPublicThemeTokens(theme);
 }
 
 function formatPhoneHref(phone: string) {
@@ -60,12 +57,11 @@ export default async function MenuPage({
   const theme = (data.theme ?? "light") as ThemeType;
   const grouped = groupMenuItems(data.menuText || "");
   const table = String(query?.table ?? "").trim();
-  const tokens = getThemeTokens(theme);
+  const tokens = getPublicThemeTokens(theme);
   const categoryLinks = grouped.map((group, index) => ({
     label: group.category,
     id: toSectionId(group.category, index),
   }));
-  const hasMeta = Boolean(data.hours || data.phone || data.address);
 
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 28%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 56%, ${tokens.bgDeep} 100%)`,
@@ -98,60 +94,21 @@ export default async function MenuPage({
   return (
     <main className="uu-public-shell" style={shellStyle}>
       <div className="uu-public-container uu-public-container-refined">
-        <section className="uu-public-hero uu-public-hero-refined" style={cardStyle}>
-          <div className="uu-public-hero-top">
-            <div className="uu-public-hero-badges">
-              <span className="uu-public-kicker">UU MENU</span>
-              {table ? <span className="uu-public-badge-chip is-table">桌號 {table}</span> : null}
-            </div>
-          </div>
-
-          <div className="uu-public-hero-main">
-            {data.logoDataUrl ? <img src={data.logoDataUrl} alt={`${data.restaurant} logo`} className="uu-public-logo" /> : null}
-            <div className="uu-public-heading-block">
-              <h1 style={{ color: tokens.title }}>{data.restaurant}</h1>
-              {hasMeta ? (
-                <div className="uu-public-inline-meta">
-                  {data.hours ? <span>營業時間｜{data.hours}</span> : null}
-                  {data.phone ? (
-                    <a href={formatPhoneHref(data.phone)} className="uu-public-inline-link">
-                      電話｜{data.phone}
-                    </a>
-                  ) : null}
-                  {data.address ? (
-                    <a href={formatMapHref(data.address)} target="_blank" rel="noreferrer" className="uu-public-inline-link">
-                      地址｜{data.address}
-                    </a>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          {table ? (
-            <div className="uu-public-table-pill" style={{ background: tokens.badge, borderColor: tokens.border, color: tokens.text }}>
-              目前桌號：{table}
-            </div>
-          ) : null}
-        </section>
+        <PublicMenuHero
+          restaurant={data.restaurant}
+          logoDataUrl={data.logoDataUrl}
+          hours={data.hours}
+          phone={data.phone}
+          address={data.address}
+          table={table}
+          tokens={tokens}
+          cardStyle={cardStyle}
+          formatPhoneHref={formatPhoneHref}
+          formatMapHref={formatMapHref}
+        />
 
         <section className="uu-public-card uu-public-menu-card" style={cardStyle}>
-          {categoryLinks.length > 1 ? (
-            <div className="uu-public-mobile-nav" aria-label="菜單分類導覽">
-              <div className="uu-public-mobile-nav-scroll">
-                {categoryLinks.map((link) => (
-                  <a
-                    key={link.id}
-                    href={`#${link.id}`}
-                    className="uu-public-mobile-nav-chip"
-                    style={{ borderColor: tokens.border, color: tokens.accentStrong }}
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          ) : null}
+          <PublicMenuCategoryNav categoryLinks={categoryLinks} borderColor={tokens.border} accentStrong={tokens.accentStrong} />
 
           <div className="uu-public-section-head is-menu-head">
             <div>
@@ -160,45 +117,7 @@ export default async function MenuPage({
             </div>
           </div>
 
-          {grouped.length ? (
-            grouped.map((group, index) => (
-              <section key={`${group.category}-${index}`} id={categoryLinks[index]?.id} className="uu-public-section uu-public-section-refined">
-                <div className="uu-public-section-title-row">
-                  <div className="uu-public-section-title uu-public-section-title-refined" style={{ color: tokens.accentStrong, background: tokens.badge, borderColor: tokens.border }}>
-                    <span className="uu-public-section-dot" />
-                    {group.category}
-                  </div>
-                </div>
-
-                <div className="uu-public-item-list uu-public-item-list-refined">
-                  {group.items.map((item: any, itemIndex: number) => (
-                    <div
-                      key={`${group.category}-${item.name}-${itemIndex}`}
-                      className={`uu-public-item uu-public-item-refined ${item.soldOut ? "is-soldout" : ""}`}
-                      style={{ borderColor: tokens.border, background: tokens.surfaceSoft }}
-                    >
-                      <div className="uu-public-item-copy">
-                        <strong style={{ color: tokens.title }}>{item.name}</strong>
-                        {item.note ? <p>{item.note}</p> : null}
-                        {item.soldOut ? (
-                          <span className="uu-public-soldout-pill" style={{ background: tokens.soldoutBg, color: tokens.soldoutText }}>
-                            今日售完
-                          </span>
-                        ) : null}
-                      </div>
-                      <div className="uu-public-item-price uu-public-item-price-refined" style={{ color: tokens.priceText, background: tokens.priceBg }}>
-                        {item.price ? `$${item.price}` : "時價"}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            ))
-          ) : (
-            <div className="uu-public-empty-state" style={{ background: tokens.badge, borderColor: tokens.border }}>
-              目前尚未填入菜單內容。
-            </div>
-          )}
+          <PublicMenuSections grouped={grouped} categoryLinks={categoryLinks} tokens={tokens} />
 
           <div className="uu-public-menu-footnote" style={{ color: tokens.muted }}>
             實際供應品項與價格請以現場公告為準。
@@ -208,4 +127,3 @@ export default async function MenuPage({
     </main>
   );
 }
-

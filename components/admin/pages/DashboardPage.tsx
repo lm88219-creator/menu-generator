@@ -23,7 +23,7 @@ export default async function DashboardPage({
   const baseUrl = getConfiguredSiteUrl();
 
   const filteredMenus = menus.filter((menu) => {
-    const haystack = [menu.restaurant, menu.slug, menu.id, menu.phone, menu.address]
+    const haystack = [menu.restaurant, menu.slug, menu.id]
       .map((value) => String(value ?? "").toLowerCase())
       .join(" ");
     return !keyword || haystack.includes(keyword);
@@ -35,13 +35,13 @@ export default async function DashboardPage({
 
   return (
     <main className="uu-admin-shell">
-      <div className="uu-admin-container uu-admin-container-narrow uu-dashboard-v7">
-        <section className="uu-panel uu-dashboard-hero-v7">
+      <div className="uu-admin-container uu-admin-container-narrow uu-dashboard-v7 uu-dashboard-v9">
+        <section className="uu-panel uu-dashboard-hero-v7 uu-dashboard-hero-v9">
           <div className="uu-dashboard-hero-main-v7">
             <span className="uu-kicker">UU MENU ADMIN</span>
             <div>
               <h1 className="uu-dashboard-title">多店菜單控制台</h1>
-              <p className="uu-dashboard-copy">集中處理搜尋、編輯、公開頁與 QR 操作。</p>
+              <p className="uu-dashboard-copy">先找到店家，再進入編輯。列表只保留真正常看的重點資訊。</p>
             </div>
           </div>
 
@@ -51,53 +51,45 @@ export default async function DashboardPage({
           </div>
         </section>
 
-        <section className="uu-panel uu-dashboard-overview-v7">
-          <form action={ROUTES.dashboard} method="GET" className="uu-dashboard-searchbar-v7">
-            <div className="uu-dashboard-search-copy-v7">
-              <span className="uu-dashboard-section-label-v7">快速搜尋</span>
-              <strong>店名、網址代稱、電話、地址都能找</strong>
-            </div>
+        <section className="uu-panel uu-dashboard-overview-v7 uu-dashboard-overview-v9">
+          <form action={ROUTES.dashboard} method="GET" className="uu-dashboard-searchbar-v7 uu-dashboard-searchbar-v9">
             <input
               className="uu-input uu-dashboard-search-input"
               type="text"
               name="q"
               defaultValue={resolved?.q ?? ""}
-              placeholder="例如：友愛、you-ai、0912、嘉義市"
+              placeholder="搜尋店名或 slug，例如：友愛、you-ai"
             />
             <button type="submit" className="uu-btn uu-btn-primary">搜尋</button>
             <Link href={ROUTES.dashboard} className="uu-btn uu-btn-secondary">清除</Link>
           </form>
 
-          <div className="uu-dashboard-stats-v7">
+          <div className="uu-dashboard-stats-v7 uu-dashboard-stats-v9">
             <div className="uu-dashboard-stat-card-v7">
               <span>全部菜單</span>
               <strong>{menus.length}</strong>
-              <small>目前可管理店數</small>
             </div>
             <div className="uu-dashboard-stat-card-v7">
               <span>上架中</span>
               <strong>{publishedCount}</strong>
-              <small>客人可直接查看</small>
             </div>
             <div className="uu-dashboard-stat-card-v7">
               <span>已下架</span>
               <strong>{hiddenCount}</strong>
-              <small>暫停公開顯示</small>
             </div>
             <div className="uu-dashboard-stat-card-v7 uu-dashboard-stat-card-wide-v7">
               <span>最後更新</span>
               <strong>{latestUpdate ? formatDateTime(latestUpdate) : "尚無資料"}</strong>
-              <small>快速確認最近一次編輯時間</small>
             </div>
           </div>
         </section>
 
-        <section className="uu-panel uu-dashboard-list-shell-v7">
-          <div className="uu-dashboard-list-head-v7">
+        <section className="uu-panel uu-dashboard-list-shell-v7 uu-dashboard-list-shell-v9">
+          <div className="uu-dashboard-list-head-v7 uu-dashboard-list-head-v9">
             <div>
               <span className="uu-dashboard-section-label-v7">店家管理</span>
               <h2>店家列表</h2>
-              <p>{keyword ? `搜尋「${resolved?.q}」共找到 ${filteredMenus.length} 家` : `目前共 ${menus.length} 家店，主要操作都保留在列表右側。`}</p>
+              <p>{keyword ? `搜尋「${resolved?.q}」共找到 ${filteredMenus.length} 家` : `目前共 ${menus.length} 家店，列表保留編輯時最常看的資訊。`}</p>
             </div>
             <div className="uu-dashboard-list-meta-v7">
               <span className="uu-chip">顯示 {filteredMenus.length} / {menus.length}</span>
@@ -106,18 +98,13 @@ export default async function DashboardPage({
           </div>
 
           {filteredMenus.length ? (
-            <div className="uu-dashboard-list-v7 uu-dashboard-list-v8">
-              <div className="uu-dashboard-column-head-v7 uu-dashboard-column-head-v8" aria-hidden="true">
-                <span>店家列表</span>
-                <span>快捷操作</span>
-              </div>
-
+            <div className="uu-dashboard-list-v7 uu-dashboard-list-v8 uu-dashboard-list-v9">
               {filteredMenus.map((menu) => {
                 const publicPath = getPublicMenuPath(menu.slug || menu.id);
                 const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
 
                 return (
-                  <article key={menu.id} className="uu-dashboard-row-v7 uu-dashboard-row-v8">
+                  <article key={menu.id} className="uu-dashboard-row-v7 uu-dashboard-row-v8 uu-dashboard-row-v9">
                     <div className="uu-dashboard-row-main-v7 uu-dashboard-row-main-v8">
                       <div className="uu-store-logo uu-dashboard-store-logo-v7 uu-dashboard-store-logo-v8">
                         <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>
@@ -139,17 +126,6 @@ export default async function DashboardPage({
                           <span className="uu-dashboard-meta-chip">{menu.itemCount} 項菜單</span>
                           <span className="uu-dashboard-meta-chip">更新 {formatShortDate(menu.updatedAt)}</span>
                           <span className="uu-dashboard-meta-chip">{menu.hasLogo ? "含 Logo" : "純文字版"}</span>
-                        </div>
-
-                        <div className="uu-dashboard-contact-inline-v8 uu-dashboard-contact-inline-v9">
-                          <div className="uu-dashboard-info-item-v7 uu-dashboard-info-card-v8">
-                            <span>電話</span>
-                            <strong>{menu.phone || "未填電話"}</strong>
-                          </div>
-                          <div className="uu-dashboard-info-item-v7 uu-dashboard-info-card-v8 uu-dashboard-info-card-wide-v8">
-                            <span>地址</span>
-                            <strong>{menu.address || "未填地址"}</strong>
-                          </div>
                         </div>
                       </div>
                     </div>

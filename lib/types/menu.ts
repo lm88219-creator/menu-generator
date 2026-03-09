@@ -21,9 +21,6 @@ export type MenuRecord = MenuData & {
 export type MenuSummaryRecord = {
   id: string;
   restaurant: string;
-  phone?: string;
-  address?: string;
-  hours?: string;
   theme?: ThemeType;
   slug?: string;
   createdAt?: number;

@@ -1,0 +1,36 @@
+.uu-editor-page-v7 {
+  gap: 16px;
+}
+
+.uu-editor-page-hero-v7 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.uu-editor-page-hero-main-v7 {
+  display: grid;
+  gap: 12px;
+}
+
+.uu-editor-page-actions-v7 {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.uu-editor-page-meta-v7 {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .uu-editor-page-hero-v7 {
+    grid-template-columns: 1fr;
+  }
+
+  .uu-editor-page-actions-v7 {
+    justify-content: flex-start;
+  }
+}

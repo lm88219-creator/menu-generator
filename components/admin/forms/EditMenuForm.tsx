@@ -1,65 +1,23 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { normalizeSlug } from "@/lib/menu";
-import { joinPublicUrl } from "@/lib/public-url";
-import { getPublicMenuPath } from "@/lib/routes";
+import { useState } from "react";
 import { AdvancedToolsSection } from "./edit-menu/AdvancedToolsSection";
 import { AppearanceSection } from "./edit-menu/AppearanceSection";
 import { MenuItemsSection } from "./edit-menu/MenuItemsSection";
 import { ShopInfoSection } from "./edit-menu/ShopInfoSection";
-import {
-  createFormItem,
-  getPreviewTokens,
-  THEME_OPTIONS,
-  toFormItems,
-  toMenuText,
-  type InitialData,
-  type MenuItemForm,
-  type ThemeType,
-} from "./edit-menu/shared-ui";
+import type { InitialData } from "./edit-menu/shared-ui";
 import { useDeskCodes } from "./edit-menu/hooks/useDeskCodes";
 import { useEditMenuSave } from "./edit-menu/hooks/useEditMenuSave";
+import { useEditMenuFormState } from "./edit-menu/hooks/useEditMenuFormState";
 import { useLogoUpload } from "./edit-menu/hooks/useLogoUpload";
 
 export type { InitialData, MenuItemForm, ThemeType } from "./edit-menu/shared-ui";
 
 export default function EditMenuForm({ id, initialData }: { id: string; initialData: InitialData }) {
-  const [restaurant, setRestaurant] = useState(initialData.restaurant);
-  const [phone, setPhone] = useState(initialData.phone);
-  const [address, setAddress] = useState(initialData.address);
-  const [hours, setHours] = useState(initialData.hours);
-  const [formItems, setFormItems] = useState<MenuItemForm[]>(() => toFormItems(initialData.menuText));
-  const [menuText, setMenuText] = useState(initialData.menuText);
-  const [quickInput, setQuickInput] = useState(initialData.menuText);
-  const [bulkDirty, setBulkDirty] = useState(false);
-  const [theme, setTheme] = useState<ThemeType>(initialData.theme || "dark");
-  const [logoDataUrl, setLogoDataUrl] = useState(initialData.logoDataUrl || "");
-  const [slug, setSlug] = useState(initialData.slug || "");
-  const [isPublished, setIsPublished] = useState(initialData.isPublished !== false);
   const [message, setMessage] = useState("");
-
+  const state = useEditMenuFormState(id, initialData);
   const { deskInput, setDeskInput, deskCodes, selectedDesk, setSelectedDesk } = useDeskCodes(id);
-  const safeSlug = normalizeSlug(slug || restaurant) || id;
-  const publicPath = getPublicMenuPath(safeSlug);
-  const publicUrl = joinPublicUrl(publicPath);
-  const activeCount = formItems.filter((item) => item.name.trim() && !item.soldOut).length;
-  const categorySummary = useMemo(() => {
-    const map = new Map<string, number>();
-    formItems.forEach((item) => {
-      const name = item.name.trim();
-      if (!name) return;
-      const key = item.category.trim() || "精選菜單";
-      map.set(key, (map.get(key) || 0) + 1);
-    });
-    return Array.from(map.entries()).map(([name, count]) => ({ name, count }));
-  }, [formItems]);
-  const selectedTheme = THEME_OPTIONS.find((item) => item.value === theme) || THEME_OPTIONS[0];
-  const previewTokens = getPreviewTokens(theme);
-  const previewItems = formItems.filter((item) => item.name.trim()).slice(0, 4);
-  const previewCategory = categorySummary[0]?.name || "主廚推薦";
-  const previewSubtitle = address || phone || hours || "今日精選菜單";
-  const selectedDeskUrl = selectedDesk ? `${publicUrl}?table=${encodeURIComponent(selectedDesk)}` : "";
+  const selectedDeskUrl = selectedDesk ? `${state.publicUrl}?table=${encodeURIComponent(selectedDesk)}` : "";
 
   function pushMessage(text: string) {
     setMessage(text);
@@ -67,56 +25,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   }
 
   const { saving, handleSave } = useEditMenuSave(pushMessage);
-  const handleLogoUpload = useLogoUpload(setLogoDataUrl);
-
-  useEffect(() => {
-    const nextMenuText = toMenuText(formItems);
-    if (nextMenuText !== menuText) setMenuText(nextMenuText);
-    if (!bulkDirty && nextMenuText !== quickInput) setQuickInput(nextMenuText);
-  }, [formItems, menuText, quickInput, bulkDirty]);
-
-  function updateFormItem(index: number, patch: Partial<MenuItemForm>) {
-    setFormItems((current) => current.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)));
-  }
-
-  function handleQuickInputChange(value: string) {
-    setQuickInput(value);
-    setBulkDirty(true);
-  }
-
-  function applyQuickInput() {
-    const nextItems = toFormItems(quickInput);
-    const nextMenuText = toMenuText(nextItems);
-    setFormItems(nextItems);
-    setMenuText(nextMenuText);
-    setQuickInput(nextMenuText);
-    setBulkDirty(false);
-    pushMessage("已套用整排輸入");
-  }
-
-  function addItem(afterCategory?: string) {
-    setFormItems((current) => [
-      ...current,
-      createFormItem({ category: afterCategory || current[current.length - 1]?.category || "精選菜單" }),
-    ]);
-  }
-
-  function duplicateItem(index: number) {
-    setFormItems((current) => {
-      const target = current[index];
-      if (!target) return current;
-      const next = [...current];
-      next.splice(index + 1, 0, createFormItem({ ...target }));
-      return next;
-    });
-  }
-
-  function removeItem(index: number) {
-    setFormItems((current) => {
-      const next = current.filter((_, itemIndex) => itemIndex !== index);
-      return next.length ? next : [createFormItem()];
-    });
-  }
+  const handleLogoUpload = useLogoUpload(state.setLogoDataUrl);
 
   async function copyText(value: string, okText: string) {
     try {
@@ -130,26 +39,20 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   async function onSave() {
     await handleSave({
       id,
-      restaurant,
-      phone,
-      address,
-      hours,
-      formItems,
-      quickInput,
-      bulkDirty,
-      theme,
-      logoDataUrl,
-      slug,
-      isPublished,
-      onSyncQuickInput: (items, syncedMenuText) => {
-        setFormItems(items);
-        setMenuText(syncedMenuText);
-        setQuickInput(syncedMenuText);
-        setBulkDirty(false);
-      },
+      restaurant: state.restaurant,
+      phone: state.phone,
+      address: state.address,
+      hours: state.hours,
+      formItems: state.formItems,
+      quickInput: state.quickInput,
+      bulkDirty: state.bulkDirty,
+      theme: state.theme,
+      logoDataUrl: state.logoDataUrl,
+      slug: state.slug,
+      isPublished: state.isPublished,
+      onSyncQuickInput: state.syncQuickInput,
       onSaved: (nextSlug) => {
-        if (nextSlug) setSlug(nextSlug);
-        setMenuText(toMenuText(formItems));
+        if (nextSlug) state.setSlug(nextSlug);
       },
     });
   }
@@ -161,49 +64,49 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
       <div className="uu-editor-v4-layout uu-editor-v4-layout-single">
         <div className="uu-editor-v4-main">
           <ShopInfoSection
-            isPublished={isPublished}
-            setIsPublished={setIsPublished}
-            restaurant={restaurant}
-            setRestaurant={setRestaurant}
-            slug={slug}
-            setSlug={setSlug}
-            phone={phone}
-            setPhone={setPhone}
-            hours={hours}
-            setHours={setHours}
-            address={address}
-            setAddress={setAddress}
-            safeSlug={safeSlug}
+            isPublished={state.isPublished}
+            setIsPublished={state.setIsPublished}
+            restaurant={state.restaurant}
+            setRestaurant={state.setRestaurant}
+            slug={state.slug}
+            setSlug={state.setSlug}
+            phone={state.phone}
+            setPhone={state.setPhone}
+            hours={state.hours}
+            setHours={state.setHours}
+            address={state.address}
+            setAddress={state.setAddress}
+            safeSlug={state.safeSlug}
           />
 
           <MenuItemsSection
-            activeCount={activeCount}
-            categorySummary={categorySummary}
-            bulkDirty={bulkDirty}
-            quickInput={quickInput}
-            handleQuickInputChange={handleQuickInputChange}
-            applyQuickInput={applyQuickInput}
+            activeCount={state.activeCount}
+            categorySummary={state.categorySummary}
+            bulkDirty={state.bulkDirty}
+            quickInput={state.quickInput}
+            handleQuickInputChange={state.handleQuickInputChange}
+            applyQuickInput={state.applyQuickInput}
             handleSave={onSave}
             saving={saving}
-            formItems={formItems}
-            updateFormItem={updateFormItem}
-            duplicateItem={duplicateItem}
-            removeItem={removeItem}
-            addItem={() => addItem()}
+            formItems={state.formItems}
+            updateFormItem={state.updateFormItem}
+            duplicateItem={state.duplicateItem}
+            removeItem={state.removeItem}
+            addItem={() => state.addItem()}
           />
 
           <AppearanceSection
-            selectedTheme={selectedTheme}
-            theme={theme}
-            setTheme={setTheme}
-            logoDataUrl={logoDataUrl}
+            selectedTheme={state.selectedTheme}
+            theme={state.theme}
+            setTheme={state.setTheme}
+            logoDataUrl={state.logoDataUrl}
             handleLogoUpload={handleLogoUpload}
-            setLogoDataUrl={setLogoDataUrl}
-            previewTokens={previewTokens}
-            restaurant={restaurant}
-            previewSubtitle={previewSubtitle}
-            previewCategory={previewCategory}
-            previewItems={previewItems}
+            setLogoDataUrl={state.setLogoDataUrl}
+            previewTokens={state.previewTokens}
+            restaurant={state.restaurant}
+            previewSubtitle={state.previewSubtitle}
+            previewCategory={state.previewCategory}
+            previewItems={state.previewItems}
           />
 
           <AdvancedToolsSection
@@ -216,8 +119,8 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             copyText={copyText}
             handleSave={onSave}
             saving={saving}
-            publicUrl={publicUrl}
-            publicPath={publicPath}
+            publicUrl={state.publicUrl}
+            publicPath={state.publicPath}
           />
         </div>
       </div>
