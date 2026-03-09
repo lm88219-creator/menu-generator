@@ -125,14 +125,13 @@ export default async function MenuPage({
 
           <PublicMenuSections grouped={grouped} categoryLinks={categoryLinks} tokens={tokens} />
 
-          <div className="uu-public-menu-footnote uu-public-menu-footnote-v2" style={{ color: tokens.muted }}>
-            實際供應品項與價格請以現場公告為準。
+          <div className="uu-public-top-link-wrap">
+            <a href="#top" className="uu-public-top-link" style={{ color: tokens.accentStrong }}>
+              ↑ Top <span style={{ color: tokens.muted }}>（回至頂端資訊 / 可點擊跳至頂端的導航膠囊）</span>
+            </a>
           </div>
         </section>
 
-        <a href="#top" className="uu-public-backtotop" aria-label="回到頂端">
-          ↑
-        </a>
       </div>
     </main>
   );

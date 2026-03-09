@@ -23,6 +23,38 @@ type Props = {
   formatMapHref: (address: string) => string;
 };
 
+function MetaRow({
+  label,
+  value,
+  href,
+  target,
+  hint,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+  target?: string;
+  hint?: string;
+}) {
+  const content = (
+    <>
+      <span className="uu-public-store-meta-label">{label}</span>
+      <strong className="uu-public-store-meta-value">{value}</strong>
+      {hint ? <em className="uu-public-store-meta-hint">{hint}</em> : null}
+    </>
+  );
+
+  if (href) {
+    return (
+      <a href={href} target={target} rel={target === "_blank" ? "noreferrer" : undefined} className="uu-public-store-meta-row is-link">
+        {content}
+      </a>
+    );
+  }
+
+  return <div className="uu-public-store-meta-row">{content}</div>;
+}
+
 export function PublicMenuHero({
   restaurant,
   logoDataUrl,
@@ -41,71 +73,33 @@ export function PublicMenuHero({
 
   return (
     <section className="uu-public-hero-shell" style={cardStyle}>
-      <div className="uu-public-visual-card" style={{ borderColor: tokens.border, background: tokens.badge }}>
-        {visualSrc ? (
-          <img
-            src={visualSrc}
-            alt={`${restaurant} cover`}
-            className={`uu-public-visual-image ${coverImageDataUrl ? "is-cover" : "is-logo"}`}
-          />
-        ) : (
-          <div className="uu-public-visual-placeholder" style={{ color: tokens.muted }}>
-            <strong style={{ color: tokens.title }}>封面準備中</strong>
-            <span>{restaurant || "UU MENU"}</span>
-          </div>
-        )}
-        <div className="uu-public-visual-overlay">
-          <span className="uu-public-kicker">UU MENU</span>
-          {table ? <span className="uu-public-badge-chip is-table">桌號 {table}</span> : null}
+      <div className="uu-public-hero-media-block">
+        <div className="uu-public-visual-card" style={{ borderColor: tokens.border, background: tokens.badge }}>
+          {visualSrc ? (
+            <img
+              src={visualSrc}
+              alt={`${restaurant} cover`}
+              className={`uu-public-visual-image ${coverImageDataUrl ? "is-cover" : "is-logo"}`}
+            />
+          ) : (
+            <div className="uu-public-visual-placeholder" style={{ color: tokens.muted }}>
+              <strong style={{ color: tokens.title }}>封面準備中</strong>
+              <span>{restaurant || "UU MENU"}</span>
+            </div>
+          )}
         </div>
+        {table ? <div className="uu-public-table-chip">桌號 {table}</div> : null}
       </div>
 
       <div className="uu-public-store-card">
         <h1 style={{ color: tokens.title }}>{restaurant}</h1>
-        <div className="uu-public-store-meta-list">
-          {hours ? (
-            <div className="uu-public-store-meta-row">
-              <span>營業時間</span>
-              <strong>{hours}</strong>
-            </div>
-          ) : null}
-          {closedDay ? (
-            <div className="uu-public-store-meta-row">
-              <span>公休日</span>
-              <strong>{closedDay}</strong>
-            </div>
-          ) : null}
-          {phone ? (
-            <a href={formatPhoneHref(phone)} className="uu-public-store-meta-row is-link">
-              <span>電話</span>
-              <strong>{phone}</strong>
-            </a>
-          ) : null}
-          {address ? (
-            <a href={formatMapHref(address)} target="_blank" rel="noreferrer" className="uu-public-store-meta-row is-link">
-              <span>地址</span>
-              <strong>{address}</strong>
-            </a>
-          ) : null}
-          {!hours && !closedDay && !phone && !address ? (
-            <div className="uu-public-store-meta-row">
-              <span>店家資訊</span>
-              <strong>目前尚未提供</strong>
-            </div>
-          ) : null}
-        </div>
 
-        <div className="uu-public-store-actions">
-          {phone ? (
-            <a href={formatPhoneHref(phone)} className="uu-public-store-action">
-              一鍵撥打
-            </a>
-          ) : null}
-          {address ? (
-            <a href={formatMapHref(address)} target="_blank" rel="noreferrer" className="uu-public-store-action is-secondary">
-              開啟地圖
-            </a>
-          ) : null}
+        <div className="uu-public-store-meta-list">
+          {hours ? <MetaRow label="營業時間" value={hours} /> : null}
+          {closedDay ? <MetaRow label="公休日" value={closedDay} /> : null}
+          {phone ? <MetaRow label="電話" value={phone} href={formatPhoneHref(phone)} hint="一鍵撥打" /> : null}
+          {address ? <MetaRow label="地址" value={address} href={formatMapHref(address)} target="_blank" hint="開啟地圖" /> : null}
+          {!hours && !closedDay && !phone && !address ? <MetaRow label="店家資訊" value="目前尚未提供" /> : null}
         </div>
       </div>
     </section>
