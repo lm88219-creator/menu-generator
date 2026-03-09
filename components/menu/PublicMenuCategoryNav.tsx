@@ -25,8 +25,9 @@ export function PublicMenuCategoryNav({
       </div>
 
       <div className="uu-public-mobile-nav-scroll">
-        {categoryLinks.map((link) => (
+        {categoryLinks.map((link, index) => (
           <a key={link.id} href={`#${link.id}`} className="uu-public-mobile-nav-chip" style={{ borderColor, color: accentStrong }}>
+            <span className="uu-public-mobile-nav-index">{String(index + 1).padStart(2, "0")}</span>
             {link.label}
           </a>
         ))}

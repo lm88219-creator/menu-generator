@@ -44,20 +44,44 @@ export default function HomePageClient() {
   };
 
   const { ghostButtonStyle, mainButtonStyle } = getHomeButtonStyles({ currentTheme, theme: form.theme });
+  const filledCount = [form.restaurant, form.phone, form.address, form.hours, form.menu, form.logoDataUrl].filter(Boolean).length;
 
   return (
     <main
+      className="uu-home-shell"
       style={{
         minHeight: "100vh",
         background: currentTheme.pageBg,
         color: currentTheme.text,
-        padding: "40px 16px",
         fontFamily: "Arial, sans-serif",
         transition: "0.2s ease",
       }}
     >
-      <div style={{ maxWidth: 1120, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.12fr 0.88fr", gap: 18, alignItems: "start" }}>
+      <div className="uu-home-container">
+        <section className="uu-home-topbar" style={{ border: currentTheme.cardBorder, background: currentTheme.cardBg }}>
+          <div>
+            <span className="uu-home-kicker">UU MENU BUILDER</span>
+            <h1>餐廳 QR 菜單生成器</h1>
+            <p>把建立、預覽、公開分享整合在同一頁，先做出可上線版本，再進後台慢慢細修。</p>
+          </div>
+
+          <div className="uu-home-topbar-stats">
+            <div className="uu-home-stat" style={{ border: currentTheme.inputBorder, background: currentTheme.inputBg }}>
+              <span>已填欄位</span>
+              <strong>{filledCount}/6</strong>
+            </div>
+            <div className="uu-home-stat" style={{ border: currentTheme.inputBorder, background: currentTheme.inputBg }}>
+              <span>主題風格</span>
+              <strong>{currentTheme.name}</strong>
+            </div>
+            <div className="uu-home-stat" style={{ border: currentTheme.inputBorder, background: currentTheme.inputBg }}>
+              <span>公開狀態</span>
+              <strong>{qrText ? "已生成" : "尚未生成"}</strong>
+            </div>
+          </div>
+        </section>
+
+        <div className="uu-home-layout" style={{ gridTemplateColumns: isMobile ? "1fr" : "1.12fr 0.88fr" }}>
           <HomeFormCard
             form={form}
             isMobile={isMobile}

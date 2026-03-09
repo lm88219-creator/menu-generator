@@ -98,6 +98,15 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
   const [savedSnapshot, setSavedSnapshot] = useState(initialSnapshot);
   const hasUnsavedChanges = currentSnapshot !== savedSnapshot;
   const hasChangedSinceInitial = currentSnapshot !== initialSnapshot;
+  const completionItems = [
+    Boolean(state.restaurant.trim()),
+    Boolean(state.phone.trim()),
+    Boolean(state.address.trim()),
+    Boolean(state.hours.trim()),
+    state.activeCount > 0,
+    Boolean(state.logoDataUrl),
+  ];
+  const completionCount = completionItems.filter(Boolean).length;
 
   useEffect(() => {
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -177,6 +186,7 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <span className="uu-chip">最後儲存 {formatSavedTime(lastSavedAt)}</span>
             <span className="uu-chip">{state.activeCount} 項菜單</span>
             <span className="uu-chip">{state.categorySummary.length} 個分類</span>
+            <span className="uu-chip">完成度 {completionCount}/6</span>
             <span className="uu-chip">{state.isPublished ? "公開中" : "已下架"}</span>
           </div>
         </div>
@@ -191,6 +201,16 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
           <a className="uu-btn uu-btn-secondary" href={state.publicPath} target="_blank" rel="noreferrer">
             開啟公開頁
           </a>
+        </div>
+
+        <div className="uu-editor-workbench-progress">
+          <div className="uu-editor-workbench-progress-bar">
+            <span style={{ width: `${(completionCount / 6) * 100}%` }} />
+          </div>
+          <div className="uu-editor-workbench-progress-copy">
+            <strong>發布前檢查</strong>
+            <span>店名、電話、地址、營業時間、菜單內容與 Logo 填得越完整，公開頁越像正式產品。</span>
+          </div>
         </div>
 
         {hasChangedSinceInitial ? (

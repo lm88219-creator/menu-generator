@@ -51,6 +51,24 @@ export function getCategoryLabel(line: string) {
   return cleanupText(line.replace(/^#/, "").replace(/^[\[【]/, "").replace(/[\]】]$/, ""));
 }
 
+function extractNote(raw: string) {
+  const noteMatch = raw.match(/(?:\s*[|｜／/]\s*|\s*[-－]\s+)(.+)$/);
+  if (!noteMatch) return { namePart: raw, note: "" };
+  return {
+    namePart: raw.slice(0, noteMatch.index).trim(),
+    note: cleanupText(noteMatch[1] || ""),
+  };
+}
+
+function extractPrice(raw: string) {
+  const match = raw.match(/^(.*?)(?:\s+)(?:\$|NT\$|nt\$)?(\d+(?:\.\d{1,2})?)(?:\s*(?:元|塊))?$/);
+  if (!match) return null;
+  return {
+    namePart: cleanupText(match[1] || ""),
+    price: String(match[2] || ""),
+  };
+}
+
 export function parseMenuText(raw: string) {
   const lines = raw.split("\n").map((line) => line.trim()).filter(Boolean);
   const items: ParsedMenuItem[] = [];
@@ -62,23 +80,29 @@ export function parseMenuText(raw: string) {
       continue;
     }
 
-    const soldOut = /(?:售完|sold\s*out)/i.test(line);
-    const soldOutTextRemoved = line.replace(/(?:\(|（)?(?:售完|sold\s*out)(?:\)|）)?/gi, "").trim();
-    const match = soldOutTextRemoved.match(/^(.*?)(?:\s+)(\$?\d+(?:\.\d{1,2})?)(?:\s*[|｜\/／-]\s*(.+))?$/);
+    const soldOut = /(?:售完|完售|sold\s*out)/i.test(line);
+    const soldOutTextRemoved = cleanupText(line.replace(/(?:\(|（)?(?:售完|完售|sold\s*out)(?:\)|）)?/gi, " "));
+    const { namePart: lineWithoutNote, note } = extractNote(soldOutTextRemoved);
+    const priceMatch = extractPrice(lineWithoutNote);
 
-    if (match) {
-      const [, rawName, rawPrice, rawNote] = match;
+    if (priceMatch) {
       items.push({
         category: currentCategory,
-        name: cleanupText(rawName),
-        price: rawPrice.replace(/^\$/, ""),
-        note: rawNote ? cleanupText(rawNote) : "",
+        name: cleanupText(priceMatch.namePart),
+        price: priceMatch.price,
+        note,
         soldOut,
       });
       continue;
     }
 
-    items.push({ category: currentCategory, name: cleanupText(soldOutTextRemoved), price: "", note: "", soldOut });
+    items.push({
+      category: currentCategory,
+      name: cleanupText(lineWithoutNote),
+      price: "",
+      note,
+      soldOut,
+    });
   }
 
   return items;

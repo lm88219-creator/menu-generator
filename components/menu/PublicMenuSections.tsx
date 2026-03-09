@@ -40,6 +40,7 @@ export function PublicMenuSections({
           <div className="uu-public-section-title-row">
             <div className="uu-public-section-title uu-public-section-title-refined" style={{ color: tokens.accentStrong, background: tokens.badge, borderColor: tokens.border }}>
               <span className="uu-public-section-dot" />
+              <span className="uu-public-section-title-number">{String(index + 1).padStart(2, "0")}</span>
               {group.category}
             </div>
             <span className="uu-public-section-count">{group.items.length} 項</span>
@@ -53,8 +54,10 @@ export function PublicMenuSections({
                 style={{ borderColor: tokens.border, background: tokens.surfaceSoft }}
               >
                 <div className="uu-public-item-copy">
-                  <strong style={{ color: tokens.title }}>{item.name}</strong>
-                  {item.note ? <p>{item.note}</p> : null}
+                  <div className="uu-public-item-name-line">
+                    <strong style={{ color: tokens.title }}>{item.name}</strong>
+                    {item.note ? <span className="uu-public-item-note-inline">{item.note}</span> : null}
+                  </div>
                   {item.soldOut ? (
                     <span className="uu-public-soldout-pill" style={{ background: tokens.soldoutBg, color: tokens.soldoutText }}>
                       今日售完

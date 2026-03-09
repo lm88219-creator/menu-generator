@@ -14,7 +14,8 @@
 
 .uu-dashboard-hero-v10,
 .uu-dashboard-overview-v10,
-.uu-dashboard-list-shell-v10 {
+.uu-dashboard-list-shell-v10,
+.uu-dashboard-focus-shell {
   border: 1px solid rgba(255,255,255,.06);
   box-shadow: 0 16px 38px rgba(0,0,0,.16);
 }
@@ -38,6 +39,60 @@
 
 .uu-dashboard-stats-v10 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.uu-dashboard-priority-bar,
+.uu-dashboard-focus-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.uu-dashboard-priority-bar {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 14px;
+}
+
+.uu-dashboard-priority-card,
+.uu-dashboard-focus-card {
+  padding: 16px 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.06);
+  background: linear-gradient(180deg, rgba(17,24,39,.74) 0%, rgba(15,23,42,.58) 100%);
+}
+
+.uu-dashboard-priority-card strong,
+.uu-dashboard-focus-card strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.uu-dashboard-priority-card p,
+.uu-dashboard-focus-card p,
+.uu-dashboard-row-summary,
+.uu-dashboard-row-link {
+  margin: 0;
+  color: rgba(226,232,240,.72);
+  line-height: 1.7;
+}
+
+.uu-dashboard-focus-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.uu-dashboard-focus-card {
+  display: grid;
+  gap: 12px;
+}
+
+.uu-dashboard-focus-card span {
+  color: rgba(148,163,184,.9);
+  font-size: 13px;
+}
+
+.uu-dashboard-focus-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .uu-dashboard-list-v9 {
@@ -68,6 +123,16 @@
   border-color: rgba(96,165,250,.22);
 }
 
+.uu-dashboard-row-summary {
+  margin-top: 10px;
+}
+
+.uu-dashboard-row-link {
+  margin-top: 8px;
+  font-size: 12px;
+  word-break: break-all;
+}
+
 .uu-dashboard-list-meta-v10 {
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -78,7 +143,8 @@
     grid-template-columns: minmax(0, 1fr) repeat(2, minmax(160px, 1fr)) auto auto;
   }
 
-  .uu-dashboard-stats-v10 {
+  .uu-dashboard-stats-v10,
+  .uu-dashboard-focus-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -86,17 +152,17 @@
 @media (max-width: 820px) {
   .uu-dashboard-hero-v9,
   .uu-dashboard-overview-v9,
-  .uu-dashboard-list-shell-v9 {
+  .uu-dashboard-list-shell-v9,
+  .uu-dashboard-focus-shell {
     padding: 16px;
   }
 
   .uu-dashboard-searchbar-v9,
-  .uu-dashboard-searchbar-v10 {
+  .uu-dashboard-searchbar-v10,
+  .uu-dashboard-stats-v10,
+  .uu-dashboard-priority-bar,
+  .uu-dashboard-focus-grid {
     grid-template-columns: 1fr;
-  }
-
-  .uu-dashboard-stats-v10 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .uu-dashboard-list-meta-v10 {

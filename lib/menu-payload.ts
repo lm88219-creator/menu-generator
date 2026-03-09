@@ -1,4 +1,4 @@
-import { buildMenuPathSegment } from "@/lib/menu";
+import { buildMenuPathSegment, parseMenuText } from "@/lib/menu";
 import { normalizeTheme, type ThemeType } from "@/lib/theme";
 
 export type MenuPayload = {
@@ -40,9 +40,20 @@ export function readMenuPayload(body: Record<string, unknown>): MenuPayload {
   return { restaurant, phone, address, hours, menuText, theme, logoDataUrl, slug, isPublished };
 }
 
+function isAllowedLogoDataUrl(value: string) {
+  if (!value) return true;
+  return /^data:image\/(png|jpeg|jpg|webp|gif);base64,/i.test(value);
+}
+
 export function validateMenuPayload(payload: MenuPayload) {
   if (!payload.restaurant) return "請輸入餐廳名稱";
   if (!payload.menuText) return "請輸入菜單內容";
   if (payload.logoDataUrl.length > MAX_TEXT_LENGTH.logoDataUrl) return "Logo 圖片太大，請壓縮後再上傳";
+  if (!isAllowedLogoDataUrl(payload.logoDataUrl)) return "Logo 只支援 PNG、JPG、WEBP 或 GIF 圖片";
+
+  const parsedItems = parseMenuText(payload.menuText).filter((item) => Boolean(item.name));
+  if (!parsedItems.length) return "請至少輸入 1 個菜單品項";
+  if (parsedItems.length > 300) return "菜單品項太多，請分批整理後再建立";
+
   return "";
 }

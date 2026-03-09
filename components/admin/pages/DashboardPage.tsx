@@ -50,6 +50,8 @@ export default async function DashboardPage({
   const hiddenCount = menus.length - publishedCount;
   const logoCount = menus.filter((menu) => menu.hasLogo).length;
   const latestUpdate = menus.reduce<number>((latest, menu) => Math.max(latest, Number(menu.updatedAt ?? 0)), 0);
+  const needsAttentionCount = menus.filter((menu) => menu.isPublished === false || !menu.hasLogo || Number(menu.itemCount ?? 0) < 8).length;
+  const recentlyUpdated = filteredMenus.slice(0, 3);
 
   return (
     <main className="uu-admin-shell">
@@ -59,7 +61,7 @@ export default async function DashboardPage({
             <span className="uu-kicker">UU MENU ADMIN</span>
             <div>
               <h1 className="uu-dashboard-title">多店菜單控制台</h1>
-              <p className="uu-dashboard-copy">先用搜尋、狀態與排序把店家縮小到最需要處理的清單，再進入編輯。</p>
+              <p className="uu-dashboard-copy">先用搜尋、狀態與排序縮小清單，再把最需要處理的店家往前排，管理節奏會更快。</p>
             </div>
           </div>
 
@@ -119,7 +121,48 @@ export default async function DashboardPage({
               <strong>{latestUpdate ? formatDateTime(latestUpdate) : "尚無資料"}</strong>
             </div>
           </div>
+
+          <div className="uu-dashboard-priority-bar">
+            <div className="uu-dashboard-priority-card">
+              <strong>目前待整理</strong>
+              <p>有 {needsAttentionCount} 家店需要優先確認，通常是下架中、沒有 Logo，或菜單品項偏少。</p>
+            </div>
+            <div className="uu-dashboard-priority-card">
+              <strong>建議工作順序</strong>
+              <p>先看最近更新，再確認公開狀態與公開頁連結，最後才處理桌號與 QR 分享。</p>
+            </div>
+          </div>
         </section>
+
+        {!!recentlyUpdated.length && !keyword && status === "all" ? (
+          <section className="uu-panel uu-dashboard-focus-shell">
+            <div className="uu-dashboard-list-head-v7 uu-dashboard-list-head-v9 uu-dashboard-list-head-v10">
+              <div>
+                <span className="uu-dashboard-section-label-v7">優先處理</span>
+                <h2>最近更新清單</h2>
+                <p>通常這幾家最有可能還在調整中，先從這裡回頭確認公開頁最省時間。</p>
+              </div>
+            </div>
+            <div className="uu-dashboard-focus-grid">
+              {recentlyUpdated.map((menu) => {
+                const publicPath = getPublicMenuPath(menu.slug || menu.id);
+                return (
+                  <article key={`focus-${menu.id}`} className="uu-dashboard-focus-card">
+                    <div>
+                      <strong>{menu.restaurant || "未命名店家"}</strong>
+                      <span>/{menu.slug || menu.id}</span>
+                    </div>
+                    <p>{menu.isPublished === false ? "目前已下架，若要重新公開請進編輯頁確認。" : "公開中，建議順手檢查手機排版與價格。"}</p>
+                    <div className="uu-dashboard-focus-actions">
+                      <Link href={getDashboardEditPath(menu.id)} className="uu-btn uu-btn-primary">進入編輯</Link>
+                      <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">看公開頁</Link>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
 
         <section className="uu-panel uu-dashboard-list-shell-v7 uu-dashboard-list-shell-v9 uu-dashboard-list-shell-v10">
           <div className="uu-dashboard-list-head-v7 uu-dashboard-list-head-v9 uu-dashboard-list-head-v10">
@@ -144,6 +187,11 @@ export default async function DashboardPage({
               {filteredMenus.map((menu) => {
                 const publicPath = getPublicMenuPath(menu.slug || menu.id);
                 const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
+                const summaryText = menu.isPublished === false
+                  ? "目前是下架狀態，公開頁不建議持續印在桌卡或傳給客人。"
+                  : menu.hasLogo
+                    ? "公開頁已有基本品牌感，可以優先檢查價格與分類。"
+                    : "目前是純文字版菜單，若想更完整可以補 Logo。";
 
                 return (
                   <article key={menu.id} className="uu-dashboard-row-v7 uu-dashboard-row-v8 uu-dashboard-row-v9 uu-dashboard-row-v10">
@@ -169,6 +217,9 @@ export default async function DashboardPage({
                           <span className="uu-dashboard-meta-chip">更新 {formatShortDate(menu.updatedAt)}</span>
                           <span className="uu-dashboard-meta-chip">{menu.hasLogo ? "含 Logo" : "純文字版"}</span>
                         </div>
+
+                        <p className="uu-dashboard-row-summary">{summaryText}</p>
+                        <div className="uu-dashboard-row-link">公開連結：{publicUrl}</div>
                       </div>
                     </div>
 

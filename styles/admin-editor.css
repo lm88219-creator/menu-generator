@@ -75,6 +75,40 @@
   gap: 10px;
 }
 
+.uu-editor-workbench-progress {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(148,163,184,.16);
+  background: rgba(8, 15, 27, 0.46);
+}
+
+.uu-editor-workbench-progress-bar {
+  position: relative;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+}
+
+.uu-editor-workbench-progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #60a5fa 0%, #34d399 100%);
+}
+
+.uu-editor-workbench-progress-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.uu-editor-workbench-progress-copy span {
+  color: rgba(226,232,240,.74);
+  line-height: 1.7;
+}
+
 .uu-editor-workbench-note {
   padding: 12px 14px;
   border-radius: 16px;
