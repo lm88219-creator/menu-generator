@@ -88,6 +88,7 @@ export default async function MenuPage({
     ["--uu-public-soldout-bg" as string]: tokens.soldoutBg,
     ["--uu-public-soldout-text" as string]: tokens.soldoutText,
     ["--uu-public-shadow" as string]: tokens.shadow,
+    ["--uu-public-bg" as string]: tokens.bg,
   };
 
   const cardStyle: CSSProperties = {
@@ -115,20 +116,20 @@ export default async function MenuPage({
           formatMapHref={formatMapHref}
         />
 
+        <PublicMenuCategoryNav
+          categoryLinks={categoryLinks}
+          borderColor={tokens.border}
+          accentStrong={tokens.accentStrong}
+          muted={tokens.muted}
+        />
+
         <section className="uu-public-card uu-public-menu-card uu-public-menu-card-v2" style={cardStyle}>
-          <PublicMenuCategoryNav
-            categoryLinks={categoryLinks}
-            borderColor={tokens.border}
-            accentStrong={tokens.accentStrong}
-            muted={tokens.muted}
-          />
-
           <PublicMenuSections grouped={grouped} categoryLinks={categoryLinks} tokens={tokens} />
-
         </section>
 
-        <a href="#top" className="uu-public-floating-top-link" style={{ color: tokens.accentStrong }}>
-          ↑ Top
+        <a href="#top" className="uu-public-floating-top-link" style={{ color: tokens.accentStrong }} aria-label="回到頁面頂端">
+          <span className="uu-public-floating-top-link-icon">↑</span>
+          <span className="uu-public-floating-top-link-label">Top</span>
         </a>
       </div>
     </main>
