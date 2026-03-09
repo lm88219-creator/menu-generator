@@ -58,7 +58,7 @@ export async function isAdminAuthenticated() {
 
 export async function requireAdmin() {
   const ok = await isAdminAuthenticated();
-  if (!ok) redirect("/uu/login");
+  if (!ok) redirect("/login");
 }
 
 export async function setAdminSession() {

@@ -128,7 +128,7 @@ export function HomeFormCard({
               wordBreak: "break-all",
             }}
           >
-            https://你的網站/uu/menu/{form.customSlug}
+            https://你的網站/menu/{form.customSlug}
           </div>
         ) : null}
         <div style={{ marginTop: 8, color: currentTheme.subText, fontSize: 13, lineHeight: 1.7 }}>

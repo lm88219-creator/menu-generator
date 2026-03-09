@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import crypto from "crypto";
 import { isAdminAuthenticated } from "@/lib/auth";
 import { createMenu, isSlugAvailable } from "@/lib/store";
 import { buildMenuPathSegment } from "@/lib/menu";

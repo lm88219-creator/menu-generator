@@ -1,7 +1,7 @@
 export const ROUTES = {
   home: "/",
-  dashboard: "/uu/dashboard",
-  login: "/uu/login",
+  dashboard: "/dashboard",
+  login: "/login",
 } as const;
 
 export function getDashboardEditPath(id: string) {
@@ -9,5 +9,5 @@ export function getDashboardEditPath(id: string) {
 }
 
 export function getPublicMenuPath(slugOrId: string) {
-  return `/uu/menu/${encodeURIComponent(slugOrId)}`;
+  return `/menu/${encodeURIComponent(slugOrId)}`;
 }

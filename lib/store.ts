@@ -4,15 +4,50 @@ import type { MenuData, MenuRecord, MenuSummaryRecord } from "@/lib/types/menu";
 
 const redis = Redis.fromEnv();
 
-
 const MENU_INDEX_KEY = "menus:index";
+const MENU_SUMMARY_INDEX_KEY = "menus:summary:index";
 
 function getMenuKey(id: string) {
   return `menu:${id}`;
 }
 
+function getMenuSummaryKey(id: string) {
+  return `menu:summary:${id}`;
+}
+
 function getSlugKey(slug: string) {
   return `menu:slug:${slug}`;
+}
+
+function countMenuItems(menuText: string) {
+  return String(menuText || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => Boolean(line) && !/^#/.test(line) && !/^[\[【].+[\]】]$/.test(line) && line.split(/\s+/).length > 1).length;
+}
+
+function toMenuSummary(record: MenuRecord): MenuSummaryRecord {
+  return {
+    id: record.id,
+    restaurant: record.restaurant,
+    phone: record.phone,
+    address: record.address,
+    hours: record.hours,
+    theme: record.theme,
+    logoDataUrl: record.logoDataUrl,
+    slug: record.slug,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt,
+    isPublished: record.isPublished,
+    itemCount: countMenuItems(record.menuText),
+  };
+}
+
+async function writeMenuSummary(id: string, data: MenuData) {
+  const summary = toMenuSummary({ id, ...data });
+  await redis.set(getMenuSummaryKey(id), summary);
+  await redis.sadd(MENU_SUMMARY_INDEX_KEY, id);
+  return summary;
 }
 
 export async function createMenu(id: string, data: MenuData) {
@@ -24,6 +59,7 @@ export async function createMenu(id: string, data: MenuData) {
 
   await redis.set(getMenuKey(id), payload);
   await redis.sadd(MENU_INDEX_KEY, id);
+  await writeMenuSummary(id, payload);
 
   if (slug) {
     await redis.set(getSlugKey(slug), id);
@@ -69,6 +105,7 @@ export async function updateMenu(id: string, patch: Partial<MenuData>) {
 
   await redis.set(getMenuKey(id), next);
   await redis.sadd(MENU_INDEX_KEY, id);
+  await writeMenuSummary(id, next);
 
   if (previousSlug && previousSlug !== nextSlug) {
     await redis.del(getSlugKey(previousSlug));
@@ -84,7 +121,9 @@ export async function updateMenu(id: string, patch: Partial<MenuData>) {
 export async function deleteMenu(id: string) {
   const current = await getMenu(id);
   await redis.del(getMenuKey(id));
+  await redis.del(getMenuSummaryKey(id));
   await redis.srem(MENU_INDEX_KEY, id);
+  await redis.srem(MENU_SUMMARY_INDEX_KEY, id);
 
   const slug = normalizeSlug(current?.slug ?? "");
   if (slug) {
@@ -92,18 +131,34 @@ export async function deleteMenu(id: string) {
   }
 }
 
+async function rebuildIndexesFromMenus(): Promise<Array<{ summary: MenuSummaryRecord }>> {
+  const keys = await redis.keys("menu:*");
+  const ids = keys
+    .filter((key) => !key.startsWith("menu:slug:") && !key.startsWith("menu:summary:"))
+    .map((key) => key.replace("menu:", ""));
+
+  if (ids.length) {
+    await redis.sadd(MENU_INDEX_KEY, ...(ids as [string, ...string[]]));
+  }
+
+  const records = await Promise.all(
+    ids.map(async (id) => {
+      const data = await getMenu(id);
+      if (!data) return null;
+      const summary = await writeMenuSummary(id, data);
+      return { summary };
+    })
+  );
+
+  return records.filter((item): item is { summary: MenuSummaryRecord } => Boolean(item));
+}
+
 export async function listMenus(): Promise<MenuRecord[]> {
   let ids = ((await redis.smembers(MENU_INDEX_KEY)) as string[] | null) ?? [];
 
   if (!ids.length) {
-    const keys = await redis.keys("menu:*");
-    ids = keys
-      .filter((key) => !key.startsWith("menu:slug:"))
-      .map((key) => key.replace("menu:", ""));
-
-    if (ids.length) {
-    await redis.sadd(MENU_INDEX_KEY, ...(ids as [string, ...string[]]));
-    }
+    await rebuildIndexesFromMenus();
+    ids = ((await redis.smembers(MENU_INDEX_KEY)) as string[] | null) ?? [];
   }
 
   const menus = await Promise.all(
@@ -122,32 +177,30 @@ export async function listMenus(): Promise<MenuRecord[]> {
     .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
 }
 
-
-function countMenuItems(menuText: string) {
-  return String(menuText || "")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => Boolean(line) && !/^#/.test(line) && !/^[\[【].+[\]】]$/.test(line) && line.split(/\s+/).length > 1).length;
-}
-
-function toMenuSummary(record: MenuRecord): MenuSummaryRecord {
-  return {
-    id: record.id,
-    restaurant: record.restaurant,
-    phone: record.phone,
-    address: record.address,
-    hours: record.hours,
-    theme: record.theme,
-    logoDataUrl: record.logoDataUrl,
-    slug: record.slug,
-    createdAt: record.createdAt,
-    updatedAt: record.updatedAt,
-    isPublished: record.isPublished,
-    itemCount: countMenuItems(record.menuText),
-  };
-}
-
 export async function listMenuSummaries(): Promise<MenuSummaryRecord[]> {
-  const menus = await listMenus();
-  return menus.map(toMenuSummary);
+  let ids = ((await redis.smembers(MENU_SUMMARY_INDEX_KEY)) as string[] | null) ?? [];
+
+  if (!ids.length) {
+    const rebuilt = await rebuildIndexesFromMenus();
+    if (rebuilt.length) {
+      return rebuilt
+        .map((item) => item.summary)
+        .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
+    }
+    ids = ((await redis.smembers(MENU_SUMMARY_INDEX_KEY)) as string[] | null) ?? [];
+  }
+
+  const summaries = await Promise.all(
+    ids.map(async (id) => {
+      const summary = await redis.get<MenuSummaryRecord>(getMenuSummaryKey(id));
+      if (summary) return summary;
+      const data = await getMenu(id);
+      if (!data) return null;
+      return writeMenuSummary(id, data);
+    })
+  );
+
+  return summaries
+    .filter((item): item is MenuSummaryRecord => Boolean(item))
+    .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
 }
