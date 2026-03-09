@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UU MENU
 
-## Getting Started
+UU MENU 是一個用 Next.js 製作的餐廳菜單管理系統。
 
-First, run the development server:
+你可以在首頁快速建立菜單，進入後台集中管理多家店，並產生可公開分享的菜單網址與桌號 QR Code。整體設計分成兩個面向：
+
+- **後台管理端**：給管理者建立、編輯、上架與下架菜單
+- **公開菜單端**：給客人用手機查看菜單、撥電話、開導航、依分類快速跳轉
+
+---
+
+## 目前功能
+
+- 建立多家餐廳菜單
+- 自動產生可分享的公開網址 slug
+- 後台列表搜尋、狀態篩選、排序
+- 編輯頁可管理店名、電話、地址、營業時間、Logo、主題與上架狀態
+- 支援桌號網址與 QR Code 預覽
+- 公開頁支援分類導覽、價格顯示、售完標記
+- 使用 Upstash Redis 儲存菜單資料與索引
+
+---
+
+## 技術棧
+
+- Next.js 16
+- React 19
+- TypeScript
+- Upstash Redis
+- qrcode.react
+- pinyin-pro
+
+---
+
+## 本機開發
+
+先安裝套件：
+
+```bash
+npm install
+```
+
+啟動開發伺服器：
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+預設開啟：
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 環境變數
 
-To learn more about Next.js, take a look at the following resources:
+請在專案根目錄建立 `.env.local`。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+至少需要：
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+KV_REST_API_URL=
+KV_REST_API_TOKEN=
+```
 
-## Deploy on Vercel
+如果你有設定正式站網址，建議補上：
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+NEXT_PUBLIC_SITE_URL=
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+如果專案內有管理員登入機制，請另外確認 `.env.local` 中是否已設定對應的後台帳密或 session 相關變數。
+
+---
+
+## 路由說明
+
+- `/`：建立新菜單首頁
+- `/login`：管理員登入
+- `/dashboard`：多店菜單控制台
+- `/dashboard/[id]`：單一店家編輯頁
+- `/menu/[slug]`：公開菜單頁
+
+---
+
+## 資料結構說明
+
+菜單資料目前主要儲存在 Redis，並維護以下幾種內容：
+
+- `menu:{id}`：完整菜單資料
+- `menu:summary:{id}`：後台列表摘要資料
+- `menu:slug:{slug}`：公開網址 slug 對應 id
+- `menus:index`：完整菜單 id 索引
+- `menus:summary:index`：摘要資料 id 索引
+
+目前資料已加入 `schemaVersion`，方便後續升級資料結構時做相容處理。
+
+---
+
+## 後台使用流程
+
+1. 先在首頁建立菜單
+2. 到 `/dashboard` 管理所有店家
+3. 進入 `/dashboard/[id]` 編輯店家資訊與菜單內容
+4. 存檔後開啟 `/menu/[slug]` 檢查公開頁
+5. 需要桌號時，在編輯頁底部工具區產生桌號網址與 QR Code
+
+---
+
+## 部署注意事項
+
+1. 正式環境要設定好 Redis / KV 環境變數
+2. `NEXT_PUBLIC_SITE_URL` 建議填正式網域，避免公開網址與 QR Code 仍指向 localhost
+3. 若修改 slug，舊的公開連結與舊 QR Code 可能要一起更新
+4. Logo 目前仍使用 data URL 方式儲存，若未來圖片量變大，建議改成檔案儲存服務
+
+---
+
+## 後續建議
+
+接下來最值得持續優化的方向：
+
+- 將菜單資料改成更完整的結構化欄位
+- 將 Logo 改成 Storage URL 儲存
+- 擴充後台批次操作能力
+- 持續把樣式從大型 CSS 拆成更清楚的模組
+

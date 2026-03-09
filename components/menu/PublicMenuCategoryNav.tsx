@@ -12,10 +12,18 @@ export function PublicMenuCategoryNav({
   borderColor: string;
   accentStrong: string;
 }) {
-  if (categoryLinks.length <= 1) return null;
+  if (!categoryLinks.length) return null;
 
   return (
     <div className="uu-public-mobile-nav" aria-label="菜單分類導覽">
+      <div className="uu-public-nav-head">
+        <div>
+          <span className="uu-public-section-kicker">快速導覽</span>
+          <strong>點分類可快速跳到對應區塊</strong>
+        </div>
+        <span className="uu-public-section-hint">共 {categoryLinks.length} 類</span>
+      </div>
+
       <div className="uu-public-mobile-nav-scroll">
         {categoryLinks.map((link) => (
           <a key={link.id} href={`#${link.id}`} className="uu-public-mobile-nav-chip" style={{ borderColor, color: accentStrong }}>

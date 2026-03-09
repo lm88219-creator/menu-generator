@@ -15,7 +15,7 @@ type SaveArgs = {
   slug: string;
   isPublished: boolean;
   onSyncQuickInput: (items: MenuItemForm[], menuText: string) => void;
-  onSaved: (nextSlug?: string) => void;
+  onSaved: (nextSlug: string | undefined, nextMenuText: string) => void;
 };
 
 export function useEditMenuSave(pushMessage: (text: string) => void) {
@@ -62,7 +62,7 @@ export function useEditMenuSave(pushMessage: (text: string) => void) {
         return;
       }
 
-      args.onSaved(data?.data?.slug);
+      args.onSaved(data?.data?.slug, finalMenuText);
       pushMessage("已成功儲存");
     } catch {
       alert("更新失敗");

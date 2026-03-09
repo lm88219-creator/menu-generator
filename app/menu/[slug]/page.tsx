@@ -62,6 +62,7 @@ export default async function MenuPage({
     label: group.category,
     id: toSectionId(group.category, index),
   }));
+  const totalItems = grouped.reduce((sum, group) => sum + group.items.length, 0);
 
   const shellStyle: CSSProperties = {
     background: `radial-gradient(circle at top, ${tokens.accentTintStrong} 0%, transparent 24%), radial-gradient(circle at bottom right, ${tokens.accentTint} 0%, transparent 28%), linear-gradient(180deg, ${tokens.bg} 0%, ${tokens.bgSoft} 56%, ${tokens.bgDeep} 100%)`,
@@ -101,13 +102,15 @@ export default async function MenuPage({
           phone={data.phone}
           address={data.address}
           table={table}
+          categoryCount={categoryLinks.length}
+          itemCount={totalItems}
           tokens={tokens}
           cardStyle={cardStyle}
           formatPhoneHref={formatPhoneHref}
           formatMapHref={formatMapHref}
         />
 
-        <section className="uu-public-card uu-public-menu-card" style={cardStyle}>
+        <section id="menu-sections" className="uu-public-card uu-public-menu-card" style={cardStyle}>
           <PublicMenuCategoryNav categoryLinks={categoryLinks} borderColor={tokens.border} accentStrong={tokens.accentStrong} />
 
           <div className="uu-public-section-head is-menu-head">

@@ -42,6 +42,7 @@ export function PublicMenuSections({
               <span className="uu-public-section-dot" />
               {group.category}
             </div>
+            <span className="uu-public-section-count">{group.items.length} 項</span>
           </div>
 
           <div className="uu-public-item-list uu-public-item-list-refined">

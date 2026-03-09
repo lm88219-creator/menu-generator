@@ -1,6 +1,9 @@
 import type { ThemeType } from "@/lib/theme";
 
+export const MENU_SCHEMA_VERSION = 2;
+
 export type MenuData = {
+  schemaVersion?: number;
   restaurant: string;
   phone?: string;
   address?: string;
@@ -28,4 +31,5 @@ export type MenuSummaryRecord = {
   isPublished?: boolean;
   itemCount: number;
   hasLogo: boolean;
+  schemaVersion?: number;
 };

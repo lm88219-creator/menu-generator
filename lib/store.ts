@@ -1,6 +1,6 @@
 import { Redis } from "@upstash/redis";
 import { normalizeSlug } from "@/lib/menu";
-import type { MenuData, MenuRecord, MenuSummaryRecord } from "@/lib/types/menu";
+import { MENU_SCHEMA_VERSION, type MenuData, type MenuRecord, type MenuSummaryRecord } from "@/lib/types/menu";
 
 const redis = Redis.fromEnv();
 
@@ -19,6 +19,25 @@ function getSlugKey(slug: string) {
   return `menu:slug:${slug}`;
 }
 
+
+function normalizeMenuData(data: MenuData): MenuData {
+  return {
+    ...data,
+    schemaVersion: MENU_SCHEMA_VERSION,
+    restaurant: String(data.restaurant ?? "").trim(),
+    phone: String(data.phone ?? "").trim() || undefined,
+    address: String(data.address ?? "").trim() || undefined,
+    hours: String(data.hours ?? "").trim() || undefined,
+    menuText: String(data.menuText ?? "").trim(),
+    logoDataUrl: String(data.logoDataUrl ?? "").trim() || undefined,
+    slug: normalizeSlug(data.slug ?? "") || undefined,
+    theme: data.theme,
+    createdAt: Number(data.createdAt ?? 0) || undefined,
+    updatedAt: Number(data.updatedAt ?? 0) || undefined,
+    isPublished: data.isPublished !== false,
+  };
+}
+
 function countMenuItems(menuText: string) {
   return String(menuText || "")
     .split("\n")
@@ -29,6 +48,7 @@ function countMenuItems(menuText: string) {
 function toMenuSummary(record: MenuRecord): MenuSummaryRecord {
   return {
     id: record.id,
+    schemaVersion: MENU_SCHEMA_VERSION,
     restaurant: record.restaurant,
     theme: record.theme,
     slug: record.slug,
@@ -48,11 +68,11 @@ async function writeMenuSummary(id: string, data: MenuData) {
 }
 
 export async function createMenu(id: string, data: MenuData) {
-  const slug = normalizeSlug(data.slug ?? "");
-  const payload: MenuData = {
+  const payload = normalizeMenuData({
     ...data,
-    slug: slug || undefined,
-  };
+    slug: data.slug,
+  });
+  const slug = normalizeSlug(payload.slug ?? "");
 
   await redis.set(getMenuKey(id), payload);
   await redis.sadd(MENU_INDEX_KEY, id);
@@ -67,7 +87,7 @@ export async function createMenu(id: string, data: MenuData) {
 
 export async function getMenu(id: string): Promise<MenuData | null> {
   const data = await redis.get<MenuData>(getMenuKey(id));
-  return data ?? null;
+  return data ? normalizeMenuData(data) : null;
 }
 
 export async function getMenuIdBySlug(slug: string) {
@@ -93,12 +113,12 @@ export async function updateMenu(id: string, patch: Partial<MenuData>) {
   const previousSlug = normalizeSlug(current.slug ?? "");
   const nextSlug = normalizeSlug(patch.slug ?? current.slug ?? "");
 
-  const next: MenuData = {
+  const next = normalizeMenuData({
     ...current,
     ...patch,
     slug: nextSlug || undefined,
     updatedAt: Date.now(),
-  };
+  });
 
   await redis.set(getMenuKey(id), next);
   await redis.sadd(MENU_INDEX_KEY, id);
