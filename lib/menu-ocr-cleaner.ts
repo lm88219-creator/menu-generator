@@ -3,7 +3,8 @@ const HOURS_RE = /(am|pm|營業|時間|open|close|週[一二三四五六日]|星
 const ADDRESS_RE = /(路|街|段|巷|號|市|縣|區|鄉|鎮)/;
 const CATEGORY_HINT_RE = /(主食|熱炒|湯|湯類|湯品|炸物|飲料|海鮮|招牌|小菜|快炒|飯類|麵類|鍋物|甜點|便當|冷盤|素食|肉類|魚類|青菜|蛋香|魚味|酥炸|鵝肉)/;
 const CATEGORY_WORDS = ["主食", "熱炒", "湯類", "湯品", "炸物", "飲料", "海鮮", "招牌", "小菜", "快炒", "飯類", "麵類", "鍋物", "甜點", "冷盤", "青菜", "蛋香", "魚味", "酥炸", "鵝肉"];
-const VALID_STANDALONE_DISHES = new Set(["白飯", "炒飯", "炒麵", "米粉", "冬粉", "肉羹", "魚湯", "蛤湯", "蚵仔", "青菜", "高麗菜", "空心菜", "菠菜", "地瓜葉"]);
+const VALID_STANDALONE_DISHES = new Set(["白飯", "炒飯", "炒麵", "米粉", "冬粉", "肉羹", "魚湯", "蛤湯", "蚵仔", "青菜", "高麗菜", "空心菜", "菠菜", "地瓜葉", "沙拉", "腰子", "白肉", "羊肉", "豬肉"]);
+const RESTAURANT_HINT_RE = /(海產|熱炒|小吃|餐廳|便當|牛肉麵|鵝肉|海鮮|食堂|咖啡|茶飲|鍋燒|鍋物|早午餐)/;
 const FRAGMENT_JOINERS = [
   "炒",
   "炸",
@@ -30,15 +31,20 @@ const FRAGMENT_JOINERS = [
   "十全藥膳",
   "十還膳",
   "十全",
+  "藥膳",
   "上提",
   "扣",
   "扣肉",
+  "紅燒",
+  "白",
+  "炒",
   "牛",
   "豬",
   "雞",
   "鵝",
   "蝦",
   "魚",
+  "羊",
 ];
 const DISH_WORD_FIXES: Array<[RegExp, string]> = [
   [/炒\s*8\s*球/g, "炒蝦球"],
@@ -51,6 +57,8 @@ const DISH_WORD_FIXES: Array<[RegExp, string]> = [
   [/三\s*杯/g, "三杯"],
   [/炒\s*飯/g, "炒飯"],
   [/炒\s*麵/g, "炒麵"],
+  [/炒\s*米\s*粉/g, "炒米粉"],
+  [/冬\s*粉/g, "冬粉"],
   [/青\s*蛙/g, "青蛙"],
   [/螺\s*肉/g, "螺肉"],
   [/鵝\s*肉/g, "鵝肉"],
@@ -62,6 +70,8 @@ const DISH_WORD_FIXES: Array<[RegExp, string]> = [
   [/星\s*桔/g, "宮保"],
   [/理\s*雞/g, "椒鹽雞"],
   [/十\s*還\s*膳/g, "十全藥膳"],
+  [/十\s*全\s*藥\s*膳/g, "十全藥膳"],
+  [/十\s*全\s*藥\s*膳\s*湯/g, "十全藥膳湯"],
   [/和\s*肉/g, "扣肉"],
   [/沙\s*茶/g, "沙茶"],
   [/紅\s*灶/g, "紅燒"],
@@ -69,10 +79,13 @@ const DISH_WORD_FIXES: Array<[RegExp, string]> = [
   [/蒜\s*苗/g, "蒜苗"],
   [/二\s*對\s*飯/g, "白飯"],
   [/米\s*粉/g, "米粉"],
-  [/冬\s*粉/g, "冬粉"],
   [/湯\s*類/g, "湯類"],
   [/主\s*食/g, "主食"],
   [/熱\s*炒/g, "熱炒"],
+  [/腰\s*子/g, "腰子"],
+  [/沙\s*拉/g, "沙拉"],
+  [/紅\s*燒\s*青\s*蛙/g, "紅燒青蛙"],
+  [/清\s*炒\s*花\s*枝/g, "清炒花枝"],
   [/友\s*愛\s*熱\s*炒/g, "友愛熱炒"],
   [/外\s*送/g, "外送"],
   [/預\s*約/g, "預約"],
@@ -110,12 +123,22 @@ function countCjk(line: string) {
   return (line.match(/[\u4e00-\u9fff]/g) || []).length;
 }
 
+function countLetters(line: string) {
+  return (line.match(/[A-Za-z]/g) || []).length;
+}
+
 function isShortDishFragment(name: string) {
   const value = name.replace(/\s+/g, "");
   if (!value) return true;
   if (VALID_STANDALONE_DISHES.has(value)) return false;
   const cjk = countCjk(value);
   return cjk <= 1;
+}
+
+function containsStrongNoise(line: string) {
+  const letters = countLetters(line);
+  const cjk = countCjk(line);
+  return /[€£@#]/.test(line) || (letters > cjk && letters >= 3);
 }
 
 export function cleanOcrLine(input: string) {
@@ -130,6 +153,7 @@ export function cleanOcrLine(input: string) {
     .replace(/[／/]/g, " ")
     .replace(/[：:]/g, ":")
     .replace(/[。．]/g, " ")
+    .replace(/[€£¥@#]/g, " ")
     .trim();
 
   line = line
@@ -154,7 +178,7 @@ function isMostlyNoise(line: string) {
   if (!line) return true;
   const cjk = countCjk(line);
   const digits = (line.match(/\d/g) || []).length;
-  const letters = (line.match(/[A-Za-z]/g) || []).length;
+  const letters = countLetters(line);
   if (cjk === 0 && digits === 0) return true;
   if (letters > cjk * 1.5 && cjk < 2 && digits < 2) return true;
   if (line.length <= 1) return true;
@@ -239,6 +263,7 @@ function shouldDropLine(line: string) {
   if (looksLikePhone(line) || looksLikeHours(line) || looksLikeAddress(line)) return true;
   if (/^[\d\s:-]+$/.test(line)) return true;
   if (countCjk(line) === 0 && !extractPrice(line)) return true;
+  if (containsStrongNoise(line) && !extractPrice(line)) return true;
   return false;
 }
 
@@ -297,13 +322,22 @@ function maybeJoinFragments(lines: string[]) {
       next &&
       nextPrice &&
       compact &&
-      compact.length <= 4 &&
+      compact.length <= 6 &&
       nextNamePart &&
-      nextNamePart.length <= 6 &&
+      nextNamePart.length <= 8 &&
       FRAGMENT_JOINERS.some((item) => compact.endsWith(item) || item.endsWith(compact) || compact.startsWith(item))
     ) {
       const joinedName = cleanupDishName(`${compact}${nextNamePart}`);
       const joinedLine = normalizeMenuLine(`${joinedName} ${nextPrice}`);
+      if (joinedLine) {
+        output.push(joinedLine);
+        index += 1;
+        continue;
+      }
+    }
+
+    if (!currentPrice && nextPrice) {
+      const joinedLine = normalizeMenuLine(`${compact} ${nextPrice}`);
       if (joinedLine) {
         output.push(joinedLine);
         index += 1;
@@ -317,10 +351,28 @@ function maybeJoinFragments(lines: string[]) {
   return output;
 }
 
+function mergeSplitPriceLines(lines: string[]) {
+  const output: string[] = [];
+  for (let i = 0; i < lines.length; i += 1) {
+    const current = lines[i];
+    const next = lines[i + 1] || "";
+    if (!current) continue;
+    if (!extractPrice(current) && /^\d{2,4}$/.test(next.trim())) {
+      const joined = normalizeMenuLine(`${current} ${next.trim()}`);
+      if (joined) {
+        output.push(joined);
+        i += 1;
+        continue;
+      }
+    }
+    output.push(current);
+  }
+  return output;
+}
+
 function formatMenuDraft(lines: string[]) {
   const output: string[] = [];
   let hasMenu = false;
-  let lastWasCategory = false;
 
   for (const line of lines) {
     if (!line || shouldDropLine(line)) continue;
@@ -329,7 +381,6 @@ function formatMenuDraft(lines: string[]) {
       if (!output.length || output[output.length - 1] !== category) {
         output.push(category);
       }
-      lastWasCategory = true;
       continue;
     }
 
@@ -338,9 +389,6 @@ function formatMenuDraft(lines: string[]) {
     if (!hasMenu) {
       output.push("精選菜單");
       hasMenu = true;
-    }
-    if (lastWasCategory) {
-      lastWasCategory = false;
     }
     output.push(menuLine);
   }
@@ -351,24 +399,75 @@ function formatMenuDraft(lines: string[]) {
   });
 }
 
+function restaurantScore(line: string) {
+  const cleaned = cleanOcrLine(line).replace(/\s+/g, "").trim();
+  if (!cleaned) return -999;
+  if (cleaned.length < 2 || cleaned.length > 18) return -999;
+  if (looksLikePhone(cleaned) || looksLikeHours(cleaned) || looksLikeAddress(cleaned)) return -999;
+  if (MENU_BLACKLIST_RE.test(cleaned)) return -999;
+  const cjk = countCjk(cleaned);
+  const letters = countLetters(cleaned);
+  if (cjk < 2) return -999;
+  if (letters > 0) return -999;
+  let score = cjk;
+  if (RESTAURANT_HINT_RE.test(cleaned)) score += 10;
+  if (/友愛|魚香|阿明|老|小|大/.test(cleaned)) score += 1;
+  return score;
+}
+
+function detectRestaurantName(lines: string[]) {
+  const candidates = lines
+    .map((line) => ({ line: cleanOcrLine(line), score: restaurantScore(line) }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score);
+  return candidates[0]?.line || "";
+}
+
+function detectAddress(lines: string[], rawText: string) {
+  const direct = extractAddressLine(lines);
+  if (direct) return direct;
+  const flattened = cleanOcrLine(rawText).replace(/\s+/g, " ");
+  const match = flattened.match(/([\u4e00-\u9fff]{0,8}(?:市|縣)[\u4e00-\u9fff0-9]{0,20}(?:區|鄉|鎮)?[\u4e00-\u9fff0-9]{0,20}(?:路|街)[\u4e00-\u9fff0-9巷段弄]{0,20}\d+號?)/);
+  return cleanOcrLine(match?.[1] || "");
+}
+
+function detectHours(lines: string[], rawText: string) {
+  const full = extractFullTextHours(rawText);
+  if (full) return full;
+  const candidate = lines.find((line) => looksLikeHours(line) && !looksLikePhone(line) && !looksLikeAddress(line));
+  return candidate || "";
+}
+
+function detectPhone(lines: string[], rawText: string) {
+  const fromLines = lines.find((line) => looksLikePhone(line));
+  if (fromLines) return fromLines.match(PHONE_RE)?.[1] || fromLines.match(PHONE_RE)?.[0] || fromLines;
+  const match = normalizeDigits(rawText).match(PHONE_RE);
+  return cleanOcrLine(match?.[1] || match?.[0] || "");
+}
+
+function removeMetadataLines(lines: string[], metadata: string[]) {
+  const keys = new Set(metadata.filter(Boolean).map((item) => item.replace(/\s+/g, "").trim()));
+  return lines.filter((line) => {
+    const key = line.replace(/\s+/g, "").trim();
+    if (keys.has(key)) return false;
+    if (restaurantScore(line) > 0) return false;
+    if (looksLikePhone(line) || looksLikeHours(line) || looksLikeAddress(line)) return false;
+    if (containsStrongNoise(line) && !extractPrice(line)) return false;
+    return true;
+  });
+}
+
 export function parseRecognizedMenu(rawText: string) {
   const initialLines = buildSmartLines(rawText);
-  const restaurant =
-    initialLines.find((line) => {
-      if (line.length < 2 || line.length > 24) return false;
-      if (/\d/.test(line)) return false;
-      if (PHONE_RE.test(line) || HOURS_RE.test(line) || ADDRESS_RE.test(line)) return false;
-      if (MENU_BLACKLIST_RE.test(line)) return false;
-      return /[\u4e00-\u9fff]/.test(line);
-    }) || "";
+  const restaurant = detectRestaurantName(initialLines);
+  const phone = detectPhone(initialLines, rawText);
+  const hours = detectHours(initialLines, rawText);
+  const address = detectAddress(initialLines, rawText);
 
-  const phone = initialLines.find((line) => PHONE_RE.test(line)) || "";
-  const hours = extractFullTextHours(rawText) || initialLines.find((line) => HOURS_RE.test(line) && !PHONE_RE.test(line)) || "";
-  const address = extractAddressLine(initialLines);
-
-  const filtered = initialLines.filter((line) => ![restaurant, phone, hours, address].includes(line));
-  const joined = maybeJoinFragments(filtered);
-  const menuLines = formatMenuDraft(joined);
+  const filtered = removeMetadataLines(initialLines, [restaurant, phone, hours, address]);
+  const merged = maybeJoinFragments(filtered);
+  const mergedPrices = mergeSplitPriceLines(merged);
+  const menuLines = formatMenuDraft(mergedPrices);
 
   return {
     restaurant,
