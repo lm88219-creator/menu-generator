@@ -12,9 +12,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     const rawText = String(body.text ?? "").trim();
     const existingRestaurant = String(body.restaurant ?? "").trim();
+    const words = Array.isArray(body.words) ? body.words : [];
     if (!rawText) return Response.json({ error: "沒有可辨識文字" }, { status: 400 });
 
-    const parsed = parseRecognizedMenu(rawText);
+    const parsed = parseRecognizedMenu(rawText, words);
     const restaurant = existingRestaurant || parsed.restaurant;
 
     return Response.json({

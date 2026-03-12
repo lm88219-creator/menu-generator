@@ -1,3 +1,4 @@
+import { parseOcrWordsToStructuredMenu, type OcrWordBox } from "@/lib/menu-layout-parser";
 const PHONE_RE = /(09\d{2}[-\s]?\d{3}[-\s]?\d{3}|0\d{1,2}[-\s]?\d{3,4}[-\s]?\d{3,4})/;
 const HOURS_RE = /(am|pm|營業|時間|open|close|週[一二三四五六日]|星期|每日|公休|\d{1,2}[:：]\d{2})/i;
 const ADDRESS_RE = /(路|街|段|巷|號|市|縣|區|鄉|鎮)/;
@@ -457,12 +458,18 @@ function removeMetadataLines(lines: string[], metadata: string[]) {
   });
 }
 
-export function parseRecognizedMenu(rawText: string) {
-  const initialLines = buildSmartLines(rawText);
-  const restaurant = detectRestaurantName(initialLines);
-  const phone = detectPhone(initialLines, rawText);
-  const hours = detectHours(initialLines, rawText);
-  const address = detectAddress(initialLines, rawText);
+export function parseRecognizedMenu(rawText: string, words?: OcrWordBox[]) {
+  const structured = words?.length ? parseOcrWordsToStructuredMenu(words) : null;
+
+  const seededRaw = [rawText, structured?.menuLines?.join("\n") || ""]
+    .filter(Boolean)
+    .join("\n");
+
+  const initialLines = buildSmartLines(seededRaw);
+  const restaurant = structured?.restaurant || detectRestaurantName(initialLines);
+  const phone = structured?.phone || detectPhone(initialLines, seededRaw);
+  const hours = structured?.hours || detectHours(initialLines, seededRaw);
+  const address = structured?.address || detectAddress(initialLines, seededRaw);
 
   const filtered = removeMetadataLines(initialLines, [restaurant, phone, hours, address]);
   const merged = maybeJoinFragments(filtered);

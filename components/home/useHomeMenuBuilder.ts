@@ -87,7 +87,20 @@ export function useHomeMenuBuilder() {
       await worker.terminate();
 
       const recognizedText = String(result?.data?.text ?? "").trim();
-      if (!recognizedText) {
+      const recognizedWords = Array.isArray(result?.data?.words)
+        ? result.data.words.map((word: { text?: string; bbox?: { x0?: number; y0?: number; x1?: number; y1?: number }; confidence?: number }) => ({
+            text: String(word?.text ?? ""),
+            bbox: {
+              x0: Number(word?.bbox?.x0 ?? 0),
+              y0: Number(word?.bbox?.y0 ?? 0),
+              x1: Number(word?.bbox?.x1 ?? 0),
+              y1: Number(word?.bbox?.y1 ?? 0),
+            },
+            confidence: Number(word?.confidence ?? 0),
+          }))
+        : [];
+
+      if (!recognizedText && recognizedWords.length === 0) {
         setRecognitionNotice("這張圖片沒有辨識到清楚文字，建議換一張更正面、字更清楚的菜單圖。");
         return;
       }
@@ -95,7 +108,7 @@ export function useHomeMenuBuilder() {
       const res = await fetch("/api/menus/recognize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: recognizedText, restaurant: form.restaurant }),
+        body: JSON.stringify({ text: recognizedText, words: recognizedWords, restaurant: form.restaurant }),
       });
       const data = (await res.json()) as RecognitionResponse & { error?: string };
       if (!res.ok) {
