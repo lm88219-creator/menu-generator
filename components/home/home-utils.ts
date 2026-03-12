@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { buildMenuPathSegment, normalizeSlug } from "@/lib/menu";
-import { getThemeSurface, type ThemeType } from "@/lib/theme";
+import { getPublicThemeTokens, getPreviewTokens, getThemeSurface, type ThemeType } from "@/lib/theme";
 
 export type HomeFormState = {
   restaurant: string;
@@ -89,16 +89,12 @@ export function getHomeButtonStyles(args: {
     fontWeight: 600,
   };
 
+  const surface = getThemeSurface(theme);
   const mainButtonStyle: CSSProperties = {
     padding: "10px 16px",
     borderRadius: 12,
     border: "none",
-    background:
-      theme === "warm"
-        ? "linear-gradient(180deg, #8b5e34, #6f4623)"
-        : theme === "classic"
-        ? "linear-gradient(180deg, #b91c1c, #991b1b)"
-        : "linear-gradient(180deg, #2563eb, #1d4ed8)",
+    background: `linear-gradient(180deg, ${surface.border}, ${surface.text === "#ffffff" ? "#0f172a" : surface.text})`,
     color: currentTheme.buttonMainText,
     cursor: "pointer",
     fontSize: 15,
@@ -128,29 +124,19 @@ export function getThemeCardStyle(theme: ThemeType, selectedTheme: ThemeType): C
 }
 
 export function getThemePreviewShell(theme: ThemeType) {
+  const publicTokens = getPublicThemeTokens(theme);
+  const previewTokens = getPreviewTokens(theme);
   return {
-    background:
-      theme === "dark"
-        ? "radial-gradient(circle at top,#1b1b1b 0%,#080808 70%)"
-        : theme === "light"
-        ? "linear-gradient(180deg,#ffffff 0%,#f3f3f3 100%)"
-        : theme === "classic"
-        ? "radial-gradient(circle at top,#ffffff 0%,#fbf7f1 55%,#f6f0e6 100%)"
-        : "linear-gradient(180deg,#fffaf3 0%,#f1e0cb 100%)",
-    border: theme === "dark" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)",
-    color:
-      theme === "dark"
-        ? "#fff"
-        : theme === "light"
-        ? "#111"
-        : theme === "warm"
-        ? "#4e3426"
-        : theme === "ocean"
-        ? "#0f3550"
-        : theme === "forest"
-        ? "#233b2c"
-        : theme === "classic"
-        ? "#111827"
-        : "#5a3141",
+    background: `linear-gradient(180deg, ${publicTokens.bg} 0%, ${publicTokens.bgSoft} 100%)`,
+    border: `1px solid ${publicTokens.border}`,
+    color: publicTokens.text,
+    accent: publicTokens.accentStrong,
+    accentSoft: publicTokens.accentTint,
+    muted: publicTokens.muted,
+    line: publicTokens.border,
+    panel: previewTokens.panel,
+    priceBg: publicTokens.priceBg,
+    priceText: publicTokens.priceText,
+    title: publicTokens.title,
   };
 }

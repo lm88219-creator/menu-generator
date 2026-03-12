@@ -11,6 +11,15 @@ import {
   type HomeFormState,
 } from "./home-utils";
 
+type RecognitionResponse = {
+  restaurant?: string;
+  phone?: string;
+  address?: string;
+  hours?: string;
+  menuText?: string;
+  note?: string;
+};
+
 export function useHomeMenuBuilder() {
   const [form, setForm] = useState<HomeFormState>(getInitialHomeFormState);
   const [isMobile, setIsMobile] = useState(false);
@@ -18,6 +27,8 @@ export function useHomeMenuBuilder() {
   const [creating, setCreating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [downloadingPoster, setDownloadingPoster] = useState(false);
+  const [recognizing, setRecognizing] = useState(false);
+  const [recognitionNotice, setRecognitionNotice] = useState("");
 
   const themeOptions = useMemo(() => getThemeOptions(), []);
   const currentTheme = getHomeTheme(form.theme, "warm");
@@ -49,12 +60,65 @@ export function useHomeMenuBuilder() {
     setForm(getExampleHomeFormState());
     setQrText("");
     setCopied(false);
+    setRecognitionNotice("");
   }
 
   function clearAll() {
     setForm(getInitialHomeFormState());
     setQrText("");
     setCopied(false);
+    setRecognitionNotice("");
+  }
+
+  async function recognizeMenuImage(file: File | null | undefined) {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      alert("請上傳圖片檔");
+      return;
+    }
+
+    setRecognizing(true);
+    setRecognitionNotice("正在辨識圖片文字，請稍候...");
+
+    try {
+      const { createWorker } = await import("tesseract.js");
+      const worker = await createWorker("chi_tra+eng");
+      const result = await worker.recognize(file);
+      await worker.terminate();
+
+      const recognizedText = String(result?.data?.text ?? "").trim();
+      if (!recognizedText) {
+        setRecognitionNotice("這張圖片沒有辨識到清楚文字，建議換一張更正面、字更清楚的菜單圖。");
+        return;
+      }
+
+      const res = await fetch("/api/menus/recognize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: recognizedText, restaurant: form.restaurant }),
+      });
+      const data = (await res.json()) as RecognitionResponse & { error?: string };
+      if (!res.ok) {
+        alert(data?.error || "圖片辨識失敗");
+        return;
+      }
+
+      setForm((current) => ({
+        ...current,
+        restaurant: data.restaurant?.trim() || current.restaurant,
+        phone: data.phone?.trim() || current.phone,
+        address: data.address?.trim() || current.address,
+        hours: data.hours?.trim() || current.hours,
+        menu: data.menuText?.trim() || current.menu,
+        customSlug: nextSlugFromRestaurant(data.restaurant?.trim() || current.restaurant, current.customSlug),
+      }));
+      setRecognitionNotice(data.note || "辨識完成，已將文字填入表單草稿，請再檢查一次內容。");
+    } catch (error) {
+      console.error(error);
+      setRecognitionNotice("圖片辨識失敗，請稍後再試或改用手動輸入。");
+    } finally {
+      setRecognizing(false);
+    }
   }
 
   async function generateMenu() {
@@ -130,6 +194,8 @@ export function useHomeMenuBuilder() {
     copied,
     downloadingPoster,
     setDownloadingPoster,
+    recognizing,
+    recognitionNotice,
     themeOptions,
     currentTheme,
     patchForm,
@@ -138,6 +204,7 @@ export function useHomeMenuBuilder() {
     fillExample,
     clearAll,
     generateMenu,
+    recognizeMenuImage,
     copyUrl,
     uploadLogo,
     removeLogo: () => patchForm({ logoDataUrl: "" }),

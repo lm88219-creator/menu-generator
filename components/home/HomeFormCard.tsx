@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
-import { getThemeCardStyle, type HomeFormState, type HomeThemeOption } from "./home-utils";
 import type { ThemeType } from "@/lib/theme";
+import type { HomeFormState, HomeThemeOption } from "./home-utils";
+import { MenuImageUpload } from "./MenuImageUpload";
 
 export function HomeFormCard({
   form,
@@ -11,6 +12,8 @@ export function HomeFormCard({
   ghostButtonStyle,
   mainButtonStyle,
   creating,
+  recognizing,
+  recognitionNotice,
   onRestaurantChange,
   onPhoneChange,
   onHoursChange,
@@ -23,6 +26,7 @@ export function HomeFormCard({
   onGenerate,
   onFillExample,
   onClear,
+  onRecognizeImage,
 }: {
   form: HomeFormState;
   isMobile: boolean;
@@ -39,6 +43,8 @@ export function HomeFormCard({
   ghostButtonStyle: CSSProperties;
   mainButtonStyle: CSSProperties;
   creating: boolean;
+  recognizing: boolean;
+  recognitionNotice: string;
   onRestaurantChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onHoursChange: (value: string) => void;
@@ -51,7 +57,10 @@ export function HomeFormCard({
   onGenerate: () => void;
   onFillExample: () => void;
   onClear: () => void;
+  onRecognizeImage: (file: File | null | undefined) => Promise<void>;
 }) {
+  const selectedTheme = themeOptions.find((item) => item.value === form.theme) ?? themeOptions[0];
+
   return (
     <div
       style={{
@@ -91,9 +100,7 @@ export function HomeFormCard({
           maxWidth: 640,
         }}
       >
-        先填店名、貼上菜單、挑好風格。
-        <br />
-        其他像電話、地址、Logo 與網址代稱放到進階設定，不會一開始塞滿畫面。
+        先填店名、貼上菜單、挑好風格。現在也能先上傳菜單圖片，自動辨識後幫你把資料帶進表單。
       </p>
 
       <div
@@ -106,7 +113,7 @@ export function HomeFormCard({
       >
         {[
           ["先填基本資料", "店名、菜單、主題先完成就能生成"],
-          ["進階設定可折疊", "電話、地址、Logo、slug 收進同一區"],
+          ["圖片可先辨識", "菜單圖會先轉成草稿，再帶入表單"],
           ["生成後直接分享", "公開網址與 QR Code 會一起產生"],
         ].map(([title, desc]) => (
           <div key={title} style={{ padding: 14, borderRadius: 16, border: currentTheme.inputBorder, background: currentTheme.inputBg }}>
@@ -121,23 +128,48 @@ export function HomeFormCard({
       </FieldBlock>
 
       <FieldBlock label="菜單風格">
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))", gap: 12 }}>
-          {themeOptions.map(({ value, label: title, desc, accent }) => {
-            const surface = getThemeCardStyle(value, form.theme);
-            return (
-              <button key={value} type="button" onClick={() => onThemeChange(value)} style={surface}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ width: 6, height: 30, borderRadius: 999, background: accent, display: "inline-block" }} />
-                    <div style={{ fontWeight: 800, fontSize: 15 }}>{title}</div>
-                  </div>
-                  {form.theme === value ? <span style={{ fontSize: 12, color: "inherit", fontWeight: 700 }}>已選</span> : null}
-                </div>
-                <div style={{ fontSize: 13, opacity: 0.76, marginTop: 10, textAlign: "left" }}>{desc}</div>
-              </button>
-            );
-          })}
+        <label style={{ display: "block" }}>
+          <select value={form.theme} onChange={(e) => onThemeChange(e.target.value as ThemeType)} style={{ ...inputStyle, appearance: "none", cursor: "pointer" }}>
+            {themeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div
+          style={{
+            marginTop: 10,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            padding: "12px 14px",
+            borderRadius: 14,
+            border: currentTheme.inputBorder,
+            background: currentTheme.inputBg,
+            flexWrap: "wrap",
+          }}
+        >
+          <div>
+            <div style={{ fontWeight: 800 }}>{selectedTheme.label}</div>
+            <div style={{ marginTop: 4, color: currentTheme.subText, fontSize: 13, lineHeight: 1.7 }}>{selectedTheme.desc}</div>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            {selectedTheme.preview.map((color, index) => (
+              <span key={`${selectedTheme.value}-${index}`} style={{ width: 20, height: 20, borderRadius: 999, background: color, border: "1px solid rgba(0,0,0,0.08)" }} />
+            ))}
+          </div>
         </div>
+      </FieldBlock>
+
+      <FieldBlock label="菜單圖片辨識">
+        <MenuImageUpload
+          currentTheme={currentTheme}
+          recognizing={recognizing}
+          recognitionNotice={recognitionNotice}
+          onRecognizeImage={onRecognizeImage}
+        />
       </FieldBlock>
 
       <FieldBlock label="菜單內容">
@@ -242,7 +274,7 @@ export function HomeFormCard({
 
       <div className="uu-home-helper-panel" style={{ color: currentTheme.subText }}>
         <strong style={{ color: currentTheme.text }}>建議流程</strong>
-        <span>店名與菜單先完成即可生成，其他品牌資訊可之後再進編輯頁補齊。</span>
+        <span>店名與菜單先完成即可生成，圖片辨識完也記得再看一下草稿，確認後再建立公開頁。</span>
       </div>
 
       <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>

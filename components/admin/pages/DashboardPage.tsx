@@ -66,7 +66,7 @@ export default async function DashboardPage({
             <span className="uu-kicker">UU MENU ADMIN</span>
             <div>
               <h1 className="uu-dashboard-title">多店菜單控制台</h1>
-              <p className="uu-dashboard-copy">先找到店家，再進入編輯。列表現在多了篩選、排序與待整理提醒，方便你先處理最重要的店。</p>
+              <p className="uu-dashboard-copy">列表改成更清楚的三區結構，先看店名與狀態，再看品項與更新時間，最後直接做操作。</p>
             </div>
           </div>
 
@@ -180,10 +180,10 @@ export default async function DashboardPage({
 
                     <div className="uu-dashboard-row-zone uu-dashboard-row-zone-middle">
                       <span className="uu-dashboard-meta-chip">{menu.itemCount} 項菜單</span>
-                      <span className="uu-dashboard-meta-chip">{getThemeLabel(menu.theme)}</span>
-                      <span className="uu-dashboard-meta-chip">更新 {formatShortDate(menu.updatedAt)}</span>
-                      <span className="uu-dashboard-meta-chip">{menu.hasLogo ? "含 Logo" : "純文字版"}</span>
-                      <span className="uu-dashboard-meta-chip">網址 {publicPath}</span>
+                      <span className="uu-dashboard-meta-chip">主題：{getThemeLabel(menu.theme)}</span>
+                      <span className="uu-dashboard-meta-chip">更新：{formatShortDate(menu.updatedAt)}</span>
+                      <span className="uu-dashboard-meta-chip">{menu.hasLogo ? "品牌 Logo 已上傳" : "尚未放 Logo"}</span>
+                      {missingInfoCount ? <span className="uu-dashboard-meta-chip">缺資料：{missingInfoCount}</span> : <span className="uu-dashboard-meta-chip">資料完整</span>}
                     </div>
 
                     <div className="uu-dashboard-row-zone uu-dashboard-row-zone-right">

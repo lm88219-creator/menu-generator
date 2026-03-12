@@ -60,7 +60,7 @@ export function ShopInfoSection(props: Props) {
             <label className="uu-field uu-editor-v4-shop-form-note-field">
               <span>網址 slug</span>
               <input className="uu-input" value={slug} onChange={(e) => setSlug(sanitizeSlugInput(e.target.value))} placeholder="例如：you-ai-re-chao" />
-              <small>可輸入英文、數字與 -，公開網址會沿用這組 slug。</small>
+              <small>預設會依店名自動產生，可輸入英文、數字與 - 來自訂公開網址。</small>
             </label>
             <Field label="電話"><input className="uu-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="例如：0912-345-678" /></Field>
             <Field label="營業時間"><input className="uu-input" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="例如：17:00 - 01:00" /></Field>

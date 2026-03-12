@@ -608,8 +608,8 @@ export function getThemeOptions() {
       value,
       label: config.label,
       desc: config.option.desc,
-      accent: config.home.accent,
-      preview: config.option.preview,
+      accent: config.publicPage.accentStrong,
+      preview: [config.publicPage.bg, config.publicPage.surfaceSoft, config.publicPage.accentStrong] as [string, string, string],
     };
   });
 }

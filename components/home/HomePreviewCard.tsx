@@ -64,22 +64,22 @@ export function HomePreviewCard({
                 height: 92,
                 borderRadius: "50%",
                 margin: "0 auto 14px",
-                background: form.theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
+                background: previewShell.accentSoft,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: 12,
-                color: form.theme === "dark" ? "#aaa" : "#666",
-                border: form.theme === "dark" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.06)",
+                color: previewShell.muted,
+                border: `1px solid ${previewShell.line}`,
               }}
             >
               LOGO
             </div>
           )}
 
-          <div style={{ fontSize: 12, letterSpacing: 3, opacity: 0.7, marginBottom: 8 }}>DIGITAL MENU</div>
-          <h2 style={{ margin: 0, fontSize: 28 }}>{form.restaurant || "餐廳名稱"}</h2>
-          <div style={{ marginTop: 10, fontSize: 14, opacity: 0.8, lineHeight: 1.8 }}>
+          <div style={{ fontSize: 12, letterSpacing: 3, color: previewShell.muted, marginBottom: 8 }}>DIGITAL MENU</div>
+          <h2 style={{ margin: 0, fontSize: 28, color: previewShell.title }}>{form.restaurant || "餐廳名稱"}</h2>
+          <div style={{ marginTop: 10, fontSize: 14, color: previewShell.muted, lineHeight: 1.8 }}>
             {form.phone || "電話"}
             <br />
             {form.address || "地址"}
@@ -88,7 +88,7 @@ export function HomePreviewCard({
           </div>
         </div>
 
-        <div style={{ marginTop: 22, borderTop: form.theme === "dark" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)", paddingTop: 16 }}>
+        <div style={{ marginTop: 22, borderTop: `1px solid ${previewShell.line}`, paddingTop: 16 }}>
           {parseMenuLines(form.menu || "熱炒\n炒飯 80\n炒麵 80").map((line, index) =>
             isLikelyCategory(line) ? (
               <div
@@ -97,7 +97,7 @@ export function HomePreviewCard({
                   marginTop: index === 0 ? 0 : 14,
                   marginBottom: 6,
                   fontWeight: 700,
-                  color: form.theme === "dark" ? "#f4d58d" : form.theme === "light" ? "#0b57d0" : form.theme === "classic" ? "#b91c1c" : "#8b5e34",
+                  color: previewShell.accent,
                 }}
               >
                 {line}
@@ -110,12 +110,14 @@ export function HomePreviewCard({
                   justifyContent: "space-between",
                   gap: 12,
                   padding: "8px 0",
-                  borderBottom: form.theme === "dark" ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.06)",
+                  borderBottom: `1px solid ${previewShell.line}`,
                   fontSize: 15,
                 }}
               >
                 <span>{line.replace(/\s+\S+$/, "")}</span>
-                <span>{line.match(/\S+$/)?.[0]}</span>
+                <span style={{ color: previewShell.priceText, background: previewShell.priceBg, padding: "2px 8px", borderRadius: 999 }}>
+                  {line.match(/\S+$/)?.[0]}
+                </span>
               </div>
             )
           )}

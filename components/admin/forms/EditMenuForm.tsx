@@ -14,9 +14,9 @@ import { useLogoUpload } from "./edit-menu/hooks/useLogoUpload";
 export type { InitialData, MenuItemForm, ThemeType } from "./edit-menu/shared-ui";
 
 const SECTION_LINKS = [
-  { href: "#shop-info", label: "店家資訊" },
-  { href: "#menu-items", label: "菜單品項" },
-  { href: "#appearance-settings", label: "外觀設定" },
+  { href: "#shop-info", label: "基本資訊" },
+  { href: "#menu-items", label: "菜單內容" },
+  { href: "#appearance-settings", label: "外觀" },
   { href: "#advanced-tools", label: "分享工具" },
 ];
 
@@ -145,50 +145,27 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
       <div className="uu-editor-workbench">
         <div className="uu-editor-workbench-main">
-          <strong>編輯工作台</strong>
-          <span>完成度 {completion}% ・ {state.activeCount} 項品項 ・ slug：/{state.safeSlug}</span>
+          <strong>{state.restaurant || "未命名店家"}</strong>
+          <span>/{state.safeSlug} ・ {state.isPublished ? "公開中" : "目前下架"}</span>
         </div>
         <div className="uu-editor-workbench-side">
           <span className={`uu-editor-dirty-chip ${isDirty ? "is-dirty" : "is-clean"}`}>
             {isDirty ? "尚未儲存變更" : "已與伺服器同步"}
           </span>
-          <span className="uu-editor-last-saved">{state.isPublished ? "公開中" : "目前下架"}</span>
+          <span className="uu-editor-last-saved">{lastSavedAt ? `最後儲存：${formatDateTime(lastSavedAt)}` : `完成度 ${completion}%`}</span>
         </div>
       </div>
 
       <section className="uu-editor-overview-panel uu-panel">
         <div className="uu-editor-overview-topbar">
           <div className="uu-editor-overview-titleblock">
-            <strong>{state.restaurant || "未命名店家"}</strong>
-            <span>/{state.safeSlug}</span>
+            <strong>編輯導覽</strong>
+            <span>先補基本資訊，再整理菜單，最後調整外觀與分享工具。</span>
           </div>
           <div className="uu-editor-overview-statusbar">
-            <span className={`uu-editor-dirty-chip ${isDirty ? "is-dirty" : "is-clean"}`}>{isDirty ? "尚未儲存" : "已同步"}</span>
-            <span className="uu-editor-overview-minor">{lastSavedAt ? `最後儲存：${formatDateTime(lastSavedAt)}` : "尚未重新儲存"}</span>
+            <span className="uu-editor-overview-minor">菜單 {state.activeCount} 項</span>
+            <span className="uu-editor-overview-minor">缺資料 {infoMissingCount} 項</span>
           </div>
-        </div>
-
-        <div className="uu-editor-overview-grid uu-editor-overview-grid-compact">
-          <article className="uu-editor-overview-card">
-            <span>基本資訊</span>
-            <strong>{infoMissingCount ? `尚缺 ${infoMissingCount} 項` : "已填完整"}</strong>
-            <small>店名、電話、地址、營業時間</small>
-          </article>
-          <article className="uu-editor-overview-card">
-            <span>菜單內容</span>
-            <strong>{state.activeCount} 項供應中</strong>
-            <small>{state.categorySummary.length || 1} 個分類</small>
-          </article>
-          <article className="uu-editor-overview-card">
-            <span>外觀</span>
-            <strong>{state.selectedTheme.label}</strong>
-            <small>{state.logoDataUrl ? "Logo 已設定" : "尚未上傳 Logo"}</small>
-          </article>
-          <article className="uu-editor-overview-card">
-            <span>分享工具</span>
-            <strong>{state.isPublished ? "公開中" : "目前下架"}</strong>
-            <small>{state.publicPath}</small>
-          </article>
         </div>
 
         <div className="uu-editor-section-nav">
