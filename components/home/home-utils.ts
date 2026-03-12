@@ -13,6 +13,21 @@ export type HomeFormState = {
   customSlug: string;
 };
 
+export type HomeRecognitionSummary = {
+  fileName: string;
+  previewUrl: string;
+  menuCount: number;
+  confidenceAverage: number;
+  confidenceLabel: string;
+  warnings: string[];
+  fieldStatus: Array<{
+    field: string;
+    label: string;
+    value: string;
+    filled: boolean;
+  }>;
+};
+
 export type HomeThemeOption = {
   value: ThemeType;
   label: string;

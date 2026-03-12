@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { ThemeType } from "@/lib/theme";
-import type { HomeFormState, HomeThemeOption } from "./home-utils";
+import type { HomeFormState, HomeThemeOption, HomeRecognitionSummary } from "./home-utils";
 import { MenuImageUpload } from "./MenuImageUpload";
 
 export function HomeFormCard({
@@ -14,6 +14,7 @@ export function HomeFormCard({
   creating,
   recognizing,
   recognitionNotice,
+  recognitionSummary,
   onRestaurantChange,
   onPhoneChange,
   onHoursChange,
@@ -27,6 +28,7 @@ export function HomeFormCard({
   onFillExample,
   onClear,
   onRecognizeImage,
+  onClearRecognition,
 }: {
   form: HomeFormState;
   isMobile: boolean;
@@ -45,6 +47,7 @@ export function HomeFormCard({
   creating: boolean;
   recognizing: boolean;
   recognitionNotice: string;
+  recognitionSummary: HomeRecognitionSummary | null;
   onRestaurantChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onHoursChange: (value: string) => void;
@@ -58,6 +61,7 @@ export function HomeFormCard({
   onFillExample: () => void;
   onClear: () => void;
   onRecognizeImage: (file: File | null | undefined) => Promise<void>;
+  onClearRecognition: () => void;
 }) {
   const selectedTheme = themeOptions.find((item) => item.value === form.theme) ?? themeOptions[0];
 
@@ -113,8 +117,8 @@ export function HomeFormCard({
       >
         {[
           ["先填基本資料", "店名、菜單、主題先完成就能生成"],
-          ["圖片可先辨識", "菜單圖會先轉成草稿，再帶入表單"],
-          ["生成後直接分享", "公開網址與 QR Code 會一起產生"],
+          ["圖片先清晰化", "上傳後會先做對比強化，再開始辨識"],
+          ["辨識後先確認", "會顯示摘要，讓你逐項檢查再生成"],
         ].map(([title, desc]) => (
           <div key={title} style={{ padding: 14, borderRadius: 16, border: currentTheme.inputBorder, background: currentTheme.inputBg }}>
             <div style={{ fontWeight: 800, fontSize: 14 }}>{title}</div>
@@ -128,7 +132,9 @@ export function HomeFormCard({
           currentTheme={currentTheme}
           recognizing={recognizing}
           recognitionNotice={recognitionNotice}
+          recognitionSummary={recognitionSummary}
           onRecognizeImage={onRecognizeImage}
+          onClearRecognition={onClearRecognition}
         />
       </FieldBlock>
 
@@ -289,7 +295,7 @@ export function HomeFormCard({
 
       <div className="uu-home-helper-panel" style={{ color: currentTheme.subText }}>
         <strong style={{ color: currentTheme.text }}>建議流程</strong>
-        <span>店名與菜單先完成即可生成，圖片辨識完也記得再看一下草稿，確認後再建立公開頁。</span>
+        <span>先上傳菜單圖片辨識，再看辨識摘要是否有抓到店名、電話與菜單筆數，確認後再建立公開頁。</span>
       </div>
 
       <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>

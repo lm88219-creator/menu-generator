@@ -108,6 +108,15 @@ function normalizeWhitespace(value: string) {
   return value.replace(/\s+/g, " ").trim();
 }
 
+function normalizePhoneValue(value: string) {
+  const digits = normalizeDigits(value).replace(/[^\d]/g, "");
+  if (digits.length === 10 && digits.startsWith("09")) return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+  if (digits.length === 9 && digits.startsWith("0")) return `${digits.slice(0, 2)}-${digits.slice(2, 5)}-${digits.slice(5)}`;
+  if (digits.length === 10 && digits.startsWith("0") && !digits.startsWith("09")) return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6)}`;
+  if (digits.length === 11 && digits.startsWith("0")) return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  return normalizeWhitespace(value);
+}
+
 function looksLikeAddress(line: string) {
   return ADDRESS_RE.test(line) && /(路|街|段|巷|號|市|縣|區|鄉|鎮)/.test(line) && /\d/.test(line);
 }
@@ -239,10 +248,7 @@ function extractFullTextHours(rawText: string) {
 }
 
 function extractAddressLine(lines: string[]) {
-  return (
-    lines.find((line) => looksLikeAddress(line) && !/(元|\$|\d{2,4}\s*$)/.test(line) && /[\u4e00-\u9fff]/.test(line)) ||
-    ""
-  );
+  return lines.find((line) => looksLikeAddress(line) && !/(元|\$|\d{2,4}\s*$)/.test(line) && /[\u4e00-\u9fff]/.test(line)) || "";
 }
 
 function splitMergedMenuText(text: string) {
@@ -441,9 +447,9 @@ function detectHours(lines: string[], rawText: string) {
 
 function detectPhone(lines: string[], rawText: string) {
   const fromLines = lines.find((line) => looksLikePhone(line));
-  if (fromLines) return fromLines.match(PHONE_RE)?.[1] || fromLines.match(PHONE_RE)?.[0] || fromLines;
+  if (fromLines) return normalizePhoneValue(fromLines.match(PHONE_RE)?.[1] || fromLines.match(PHONE_RE)?.[0] || fromLines);
   const match = normalizeDigits(rawText).match(PHONE_RE);
-  return cleanOcrLine(match?.[1] || match?.[0] || "");
+  return normalizePhoneValue(cleanOcrLine(match?.[1] || match?.[0] || ""));
 }
 
 function removeMetadataLines(lines: string[], metadata: string[]) {
@@ -467,7 +473,7 @@ export function parseRecognizedMenu(rawText: string, words?: OcrWordBox[]) {
 
   const initialLines = buildSmartLines(seededRaw);
   const restaurant = structured?.restaurant || detectRestaurantName(initialLines);
-  const phone = structured?.phone || detectPhone(initialLines, seededRaw);
+  const phone = structured?.phone ? normalizePhoneValue(structured.phone) : detectPhone(initialLines, seededRaw);
   const hours = structured?.hours || detectHours(initialLines, seededRaw);
   const address = structured?.address || detectAddress(initialLines, seededRaw);
 

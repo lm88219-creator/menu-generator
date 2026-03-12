@@ -9,6 +9,7 @@ import {
   nextSlugFromRestaurant,
   sanitizeCustomSlug,
   type HomeFormState,
+  type HomeRecognitionSummary,
 } from "./home-utils";
 
 type RecognitionResponse = {
@@ -18,7 +19,78 @@ type RecognitionResponse = {
   hours?: string;
   menuText?: string;
   note?: string;
+  menuCount?: number;
+  confidence?: { average?: number; label?: string };
+  warnings?: string[];
+  fieldStatus?: Array<{
+    field?: string;
+    label?: string;
+    value?: string;
+    filled?: boolean;
+  }>;
 };
+
+function loadImage(file: Blob) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(img);
+    };
+    img.onerror = (error) => {
+      URL.revokeObjectURL(objectUrl);
+      reject(error);
+    };
+    img.src = objectUrl;
+  });
+}
+
+async function preprocessImageForOcr(file: File) {
+  const image = await loadImage(file);
+  const maxWidth = 2200;
+  const scale = Math.min(1, maxWidth / Math.max(image.width, 1));
+  const width = Math.max(1, Math.round(image.width * scale));
+  const height = Math.max(1, Math.round(image.height * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) throw new Error("無法處理圖片");
+
+  ctx.drawImage(image, 0, 0, width, height);
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+
+  let min = 255;
+  let max = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    const gray = Math.round(data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+    min = Math.min(min, gray);
+    max = Math.max(max, gray);
+  }
+
+  const contrastRange = Math.max(1, max - min);
+  for (let i = 0; i < data.length; i += 4) {
+    const gray = Math.round(data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+    const normalized = Math.max(0, Math.min(255, ((gray - min) / contrastRange) * 255));
+    const boosted = normalized > 188 ? 255 : normalized < 82 ? 0 : Math.round(normalized * 1.06);
+    data[i] = boosted;
+    data[i + 1] = boosted;
+    data[i + 2] = boosted;
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+
+  const processedBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png", 1));
+  if (!processedBlob) throw new Error("圖片處理失敗");
+
+  return {
+    blob: processedBlob,
+    previewUrl: canvas.toDataURL("image/jpeg", 0.92),
+  };
+}
 
 export function useHomeMenuBuilder() {
   const [form, setForm] = useState<HomeFormState>(getInitialHomeFormState);
@@ -29,6 +101,7 @@ export function useHomeMenuBuilder() {
   const [downloadingPoster, setDownloadingPoster] = useState(false);
   const [recognizing, setRecognizing] = useState(false);
   const [recognitionNotice, setRecognitionNotice] = useState("");
+  const [recognitionSummary, setRecognitionSummary] = useState<HomeRecognitionSummary | null>(null);
 
   const themeOptions = useMemo(() => getThemeOptions(), []);
   const currentTheme = getHomeTheme(form.theme, "warm");
@@ -61,6 +134,7 @@ export function useHomeMenuBuilder() {
     setQrText("");
     setCopied(false);
     setRecognitionNotice("");
+    setRecognitionSummary(null);
   }
 
   function clearAll() {
@@ -68,6 +142,7 @@ export function useHomeMenuBuilder() {
     setQrText("");
     setCopied(false);
     setRecognitionNotice("");
+    setRecognitionSummary(null);
   }
 
   async function recognizeMenuImage(file: File | null | undefined) {
@@ -78,15 +153,22 @@ export function useHomeMenuBuilder() {
     }
 
     setRecognizing(true);
-    setRecognitionNotice("正在辨識圖片文字，請稍候...");
+    setRecognitionSummary(null);
+    setRecognitionNotice("正在整理圖片，先幫你做清晰化處理...");
 
     try {
+      const { blob, previewUrl } = await preprocessImageForOcr(file);
+      setRecognitionNotice("圖片已優化，開始辨識文字中，請稍候...");
+
       const { createWorker } = await import("tesseract.js");
       const worker = await createWorker("chi_tra+eng");
-      const result = await worker.recognize(file);
+      const result = await worker.recognize(blob);
       await worker.terminate();
 
-      const ocrData = (result?.data ?? {}) as { text?: string; words?: Array<{ text?: string; bbox?: { x0?: number; y0?: number; x1?: number; y1?: number }; confidence?: number }> };
+      const ocrData = (result?.data ?? {}) as {
+        text?: string;
+        words?: Array<{ text?: string; bbox?: { x0?: number; y0?: number; x1?: number; y1?: number }; confidence?: number }>;
+      };
       const recognizedText = String(ocrData.text ?? "").trim();
       const recognizedWords = Array.isArray(ocrData.words)
         ? ocrData.words.map((word) => ({
@@ -106,6 +188,7 @@ export function useHomeMenuBuilder() {
         return;
       }
 
+      setRecognitionNotice("文字辨識完成，正在整理菜單欄位...");
       const res = await fetch("/api/menus/recognize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -126,6 +209,23 @@ export function useHomeMenuBuilder() {
         menu: data.menuText?.trim() || current.menu,
         customSlug: nextSlugFromRestaurant(data.restaurant?.trim() || current.restaurant, current.customSlug),
       }));
+
+      setRecognitionSummary({
+        fileName: file.name,
+        previewUrl,
+        menuCount: Number(data.menuCount ?? 0),
+        confidenceAverage: Number(data.confidence?.average ?? 0),
+        confidenceLabel: String(data.confidence?.label ?? "未提供"),
+        warnings: Array.isArray(data.warnings) ? data.warnings.map((item) => String(item)) : [],
+        fieldStatus: Array.isArray(data.fieldStatus)
+          ? data.fieldStatus.map((item, index) => ({
+              field: String(item?.field ?? `field-${index}`),
+              label: String(item?.label ?? `欄位 ${index + 1}`),
+              value: String(item?.value ?? ""),
+              filled: Boolean(item?.filled),
+            }))
+          : [],
+      });
       setRecognitionNotice(data.note || "辨識完成，已將文字填入表單草稿，請再檢查一次內容。");
     } catch (error) {
       console.error(error);
@@ -210,6 +310,7 @@ export function useHomeMenuBuilder() {
     setDownloadingPoster,
     recognizing,
     recognitionNotice,
+    recognitionSummary,
     themeOptions,
     currentTheme,
     patchForm,
@@ -219,6 +320,10 @@ export function useHomeMenuBuilder() {
     clearAll,
     generateMenu,
     recognizeMenuImage,
+    clearRecognition: () => {
+      setRecognitionNotice("");
+      setRecognitionSummary(null);
+    },
     copyUrl,
     uploadLogo,
     removeLogo: () => patchForm({ logoDataUrl: "" }),

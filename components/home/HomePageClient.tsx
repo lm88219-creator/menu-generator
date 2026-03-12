@@ -19,6 +19,7 @@ export default function HomePageClient() {
     setDownloadingPoster,
     recognizing,
     recognitionNotice,
+    recognitionSummary,
     themeOptions,
     currentTheme,
     patchForm,
@@ -28,6 +29,7 @@ export default function HomePageClient() {
     clearAll,
     generateMenu,
     recognizeMenuImage,
+    clearRecognition,
     copyUrl,
     uploadLogo,
     removeLogo,
@@ -78,6 +80,7 @@ export default function HomePageClient() {
             creating={creating}
             recognizing={recognizing}
             recognitionNotice={recognitionNotice}
+            recognitionSummary={recognitionSummary}
             onRestaurantChange={setRestaurant}
             onPhoneChange={(phone) => patchForm({ phone })}
             onHoursChange={(hours) => patchForm({ hours })}
@@ -91,6 +94,7 @@ export default function HomePageClient() {
             onFillExample={fillExample}
             onClear={clearAll}
             onRecognizeImage={recognizeMenuImage}
+            onClearRecognition={clearRecognition}
           />
 
           <HomePreviewCard form={form} isMobile={isMobile} currentTheme={currentTheme} />
