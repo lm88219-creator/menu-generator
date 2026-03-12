@@ -43,10 +43,6 @@ function toCategoryNavLabel(category: string) {
   return category.split("｜")[0]?.trim() || category.trim();
 }
 
-type ExtendedMenuData = Awaited<ReturnType<typeof getMenu>> & {
-  closedDay?: string;
-  coverImageDataUrl?: string;
-};
 
 export default async function MenuPage({
   params,
@@ -58,7 +54,7 @@ export default async function MenuPage({
   const { slug } = await params;
   const query = searchParams ? await searchParams : {};
   const id = await getMenuIdBySlug(decodeURIComponent(slug));
-  const data = (id ? await getMenu(id) : null) as ExtendedMenuData | null;
+  const data = id ? await getMenu(id) : null;
 
   if (!data) return renderMessage("找不到菜單", "這份菜單可能不存在，或網址有誤。請確認餐廳提供的連結是否正確。");
   if (data.isPublished === false) return renderMessage("這份菜單暫時未公開", "店家目前暫停顯示這份菜單，請稍後再試。");

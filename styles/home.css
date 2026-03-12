@@ -62,3 +62,22 @@
   }
 }
 
+
+
+.uu-home-advanced-panel {
+  margin-top: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  padding: 14px 16px;
+}
+
+.uu-home-advanced-summary {
+  cursor: pointer;
+  font-weight: 800;
+  list-style: none;
+}
+
+.uu-home-advanced-summary::-webkit-details-marker {
+  display: none;
+}

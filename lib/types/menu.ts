@@ -7,7 +7,9 @@ export type MenuData = {
   phone?: string;
   address?: string;
   hours?: string;
+  closedDay?: string;
   menuText: string;
+  coverImageDataUrl?: string;
   theme?: ThemeType;
   logoDataUrl?: string;
   slug?: string;

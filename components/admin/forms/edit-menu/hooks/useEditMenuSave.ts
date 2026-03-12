@@ -40,7 +40,7 @@ export function useEditMenuSave(pushMessage: (text: string) => void) {
 
     setSaving(true);
     try {
-      const res = await fetch(`/api/menu/${args.id}`, {
+      const res = await fetch(`/api/menus/${args.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

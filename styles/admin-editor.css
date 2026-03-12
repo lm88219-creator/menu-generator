@@ -409,3 +409,45 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.uu-editor-overview-topbar {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.uu-editor-overview-titleblock {
+  display: grid;
+  gap: 4px;
+}
+
+.uu-editor-overview-titleblock span,
+.uu-editor-overview-minor {
+  color: rgba(255,255,255,0.68);
+  font-size: 13px;
+}
+
+.uu-editor-overview-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.uu-editor-overview-grid-compact {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 980px) {
+  .uu-editor-overview-topbar {
+    grid-template-columns: 1fr;
+  }
+
+  .uu-editor-overview-statusbar {
+    justify-content: flex-start;
+  }
+}

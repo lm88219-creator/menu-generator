@@ -13,7 +13,7 @@ export default function DeleteMenuButton({ id }: { id: string }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`/api/menu/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/menus/${id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) {
         alert(data?.error || "刪除失敗");

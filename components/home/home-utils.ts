@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { normalizeSlug } from "@/lib/menu";
+import { buildMenuPathSegment, normalizeSlug } from "@/lib/menu";
 import { getThemeSurface, type ThemeType } from "@/lib/theme";
 
 export type HomeFormState = {
@@ -53,7 +53,7 @@ export function sanitizeCustomSlug(value: string) {
 
 export function nextSlugFromRestaurant(name: string, previousCustomSlug: string) {
   if (previousCustomSlug) return previousCustomSlug;
-  return normalizeSlug(name);
+  return buildMenuPathSegment("", name);
 }
 
 export function parseMenuLines(raw: string) {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { normalizeSlug } from "@/lib/menu";
+import { buildMenuPathSegment, normalizeSlug } from "@/lib/menu";
 import { joinPublicUrl } from "@/lib/public-url";
 import { getPublicMenuPath } from "@/lib/routes";
 import {
@@ -14,7 +14,7 @@ import {
 } from "../shared-ui";
 
 export function useEditMenuFormState(id: string, initialData: InitialData) {
-  const [restaurant, setRestaurant] = useState(initialData.restaurant);
+  const [restaurant, setRestaurantState] = useState(initialData.restaurant);
   const [phone, setPhone] = useState(initialData.phone);
   const [address, setAddress] = useState(initialData.address);
   const [hours, setHours] = useState(initialData.hours);
@@ -24,10 +24,11 @@ export function useEditMenuFormState(id: string, initialData: InitialData) {
   const [bulkDirty, setBulkDirty] = useState(false);
   const [theme, setTheme] = useState<ThemeType>(initialData.theme || "dark");
   const [logoDataUrl, setLogoDataUrl] = useState(initialData.logoDataUrl || "");
-  const [slug, setSlug] = useState(initialData.slug || "");
+  const [slug, setSlugState] = useState(initialData.slug || "");
+  const [slugTouched, setSlugTouched] = useState(Boolean(initialData.slug));
   const [isPublished, setIsPublished] = useState(initialData.isPublished !== false);
 
-  const safeSlug = normalizeSlug(slug || restaurant) || id;
+  const safeSlug = normalizeSlug(slug || restaurant) || buildMenuPathSegment("", restaurant) || id;
   const publicPath = getPublicMenuPath(safeSlug);
   const publicUrl = joinPublicUrl(publicPath);
   const activeCount = formItems.filter((item) => item.name.trim() && !item.soldOut).length;
@@ -47,6 +48,19 @@ export function useEditMenuFormState(id: string, initialData: InitialData) {
   const previewItems = formItems.filter((item) => item.name.trim()).slice(0, 4);
   const previewCategory = categorySummary[0]?.name || "主廚推薦";
   const previewSubtitle = address || phone || hours || "今日精選菜單";
+
+  function setRestaurant(value: string) {
+    setRestaurantState(value);
+    if (!slugTouched) {
+      setSlugState(buildMenuPathSegment("", value));
+    }
+  }
+
+  function setSlug(value: string) {
+    setSlugTouched(true);
+    setSlugState(normalizeSlug(value));
+  }
+
 
   useEffect(() => {
     const nextMenuText = toMenuText(formItems);

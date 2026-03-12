@@ -1,4 +1,3 @@
-
 import { Redis } from "@upstash/redis";
 import { normalizeSlug } from "@/lib/menu";
 import { normalizeTheme } from "@/lib/theme";
@@ -36,15 +35,18 @@ function countMissingInfo(record: MenuData) {
 
 function normalizeMenuData(data: MenuData | null | undefined): MenuData | null {
   if (!data) return null;
+
   return {
     schemaVersion: MENU_SCHEMA_VERSION,
     restaurant: String(data.restaurant ?? "").trim(),
     phone: String(data.phone ?? "").trim(),
     address: String(data.address ?? "").trim(),
     hours: String(data.hours ?? "").trim(),
+    closedDay: String(data.closedDay ?? "").trim(),
     menuText: String(data.menuText ?? "").trim(),
     theme: normalizeTheme(data.theme),
     logoDataUrl: String(data.logoDataUrl ?? "").trim(),
+    coverImageDataUrl: String(data.coverImageDataUrl ?? "").trim(),
     slug: normalizeSlug(data.slug ?? "") || undefined,
     createdAt: Number(data.createdAt ?? 0) || undefined,
     updatedAt: Number(data.updatedAt ?? 0) || undefined,
@@ -71,10 +73,27 @@ function toMenuSummary(record: MenuRecord): MenuSummaryRecord {
 async function writeMenuSummary(id: string, data: MenuData) {
   const normalized = normalizeMenuData(data);
   if (!normalized) return null;
+
   const summary = toMenuSummary({ id, ...normalized });
   await redis.set(getMenuSummaryKey(id), summary);
   await redis.sadd(MENU_SUMMARY_INDEX_KEY, id);
   return summary;
+}
+
+async function readIndexedIds() {
+  const [menuIds, summaryIds] = await Promise.all([
+    redis.smembers(MENU_INDEX_KEY) as Promise<string[] | null>,
+    redis.smembers(MENU_SUMMARY_INDEX_KEY) as Promise<string[] | null>,
+  ]);
+
+  const ids = Array.from(new Set([...(menuIds ?? []), ...(summaryIds ?? [])].filter(Boolean)));
+  if (ids.length) return ids;
+
+  const summaryKeys = ((await redis.keys("menu:summary:*") as string[]) ?? []).map((key) => key.replace("menu:summary:", ""));
+  if (summaryKeys.length) {
+    await redis.sadd(MENU_SUMMARY_INDEX_KEY, ...(summaryKeys as [string, ...string[]]));
+  }
+  return summaryKeys;
 }
 
 export async function createMenu(id: string, data: MenuData) {
@@ -100,7 +119,9 @@ export async function getMenu(id: string): Promise<MenuData | null> {
   if (
     normalized.schemaVersion !== data?.schemaVersion ||
     normalized.theme !== data?.theme ||
-    normalized.slug !== data?.slug
+    normalized.slug !== data?.slug ||
+    normalized.closedDay !== data?.closedDay ||
+    normalized.coverImageDataUrl !== data?.coverImageDataUrl
   ) {
     await redis.set(getMenuKey(id), normalized);
     await writeMenuSummary(id, normalized);
@@ -169,35 +190,8 @@ export async function deleteMenu(id: string) {
   }
 }
 
-async function rebuildIndexesFromMenus(): Promise<Array<{ summary: MenuSummaryRecord }>> {
-  const keys = (await redis.keys("menu:*")) as string[];
-  const ids = keys
-    .filter((key: string) => !key.startsWith("menu:slug:") && !key.startsWith("menu:summary:"))
-    .map((key: string) => key.replace("menu:", ""));
-
-  if (ids.length) {
-    await redis.sadd(MENU_INDEX_KEY, ...(ids as [string, ...string[]]));
-  }
-
-  const records = await Promise.all(
-    ids.map(async (id: string) => {
-      const data = await getMenu(id);
-      if (!data) return null;
-      const summary = await writeMenuSummary(id, data);
-      return summary ? { summary } : null;
-    })
-  );
-
-  return records.filter((item: { summary: MenuSummaryRecord } | null): item is { summary: MenuSummaryRecord } => Boolean(item));
-}
-
 export async function listMenus(): Promise<MenuRecord[]> {
-  let ids = ((await redis.smembers(MENU_INDEX_KEY)) as string[] | null) ?? [];
-
-  if (!ids.length) {
-    await rebuildIndexesFromMenus();
-    ids = ((await redis.smembers(MENU_INDEX_KEY)) as string[] | null) ?? [];
-  }
+  const ids = await readIndexedIds();
 
   const menus = await Promise.all(
     ids.map(async (id: string) => {
@@ -216,17 +210,7 @@ export async function listMenus(): Promise<MenuRecord[]> {
 }
 
 export async function listMenuSummaries(): Promise<MenuSummaryRecord[]> {
-  let ids = ((await redis.smembers(MENU_SUMMARY_INDEX_KEY)) as string[] | null) ?? [];
-
-  if (!ids.length) {
-    const rebuilt = await rebuildIndexesFromMenus();
-    if (rebuilt.length) {
-      return rebuilt
-        .map((item) => item.summary)
-        .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
-    }
-    ids = ((await redis.smembers(MENU_SUMMARY_INDEX_KEY)) as string[] | null) ?? [];
-  }
+  const ids = await readIndexedIds();
 
   const summaries = await Promise.all(
     ids.map(async (id: string) => {

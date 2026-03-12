@@ -158,50 +158,35 @@ export default async function DashboardPage({
                 const publicPath = getPublicMenuPath(menu.slug || menu.id);
                 const publicUrl = baseUrl ? `${baseUrl}${publicPath}` : publicPath;
                 const missingInfoCount = menu.missingInfoCount ?? 0;
-                const healthScore = Math.max(0, 100 - missingInfoCount * 15 - (menu.isPublished === false ? 20 : 0));
 
                 return (
-                  <article key={menu.id} className="uu-dashboard-row-v7 uu-dashboard-row-v8 uu-dashboard-row-v9">
-                    <div className="uu-dashboard-row-main-v7 uu-dashboard-row-main-v8">
+                  <article key={menu.id} className="uu-dashboard-row-v7 uu-dashboard-row-v8 uu-dashboard-row-v9 uu-dashboard-row-v10">
+                    <div className="uu-dashboard-row-zone uu-dashboard-row-zone-left">
                       <div className="uu-store-logo uu-dashboard-store-logo-v7 uu-dashboard-store-logo-v8">
                         <span>{menu.restaurant?.slice(0, 2) || "菜單"}</span>
                       </div>
 
                       <div className="uu-dashboard-store-copy-v7 uu-dashboard-store-copy-v8">
-                        <div className="uu-dashboard-store-title-v7 uu-dashboard-store-title-v8">
-                          <div>
-                            <h3 className="uu-store-name">{menu.restaurant || "未命名店家"}</h3>
-                            <p className="uu-dashboard-store-subtitle-v8">{menu.slug || menu.id}</p>
-                          </div>
-                          <div className="uu-dashboard-status-stack">
-                            <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
-                              {menu.isPublished === false ? "已下架" : "上架中"}
-                            </span>
-                            {missingInfoCount ? <span className="uu-status is-warn">待補 {missingInfoCount} 項</span> : null}
-                          </div>
-                        </div>
-
-                        <div className="uu-dashboard-store-meta-v7 uu-dashboard-store-meta-v8">
-                          <span className="uu-dashboard-meta-chip">{getThemeLabel(menu.theme)}</span>
-                          <span className="uu-dashboard-meta-chip">{menu.itemCount} 項菜單</span>
-                          <span className="uu-dashboard-meta-chip">更新 {formatShortDate(menu.updatedAt)}</span>
-                          <span className="uu-dashboard-meta-chip">{menu.hasLogo ? "含 Logo" : "純文字版"}</span>
-                        </div>
-
-                        <div className="uu-dashboard-row-health">
-                          <div>
-                            <span>整理度</span>
-                            <strong>{healthScore}%</strong>
-                          </div>
-                          <div>
-                            <span>公開網址</span>
-                            <strong>{publicPath}</strong>
-                          </div>
+                        <h3 className="uu-store-name">{menu.restaurant || "未命名店家"}</h3>
+                        <p className="uu-dashboard-store-subtitle-v8">/{menu.slug || menu.id}</p>
+                        <div className="uu-dashboard-status-stack">
+                          <span className={`uu-status ${menu.isPublished === false ? "is-off" : "is-on"}`}>
+                            {menu.isPublished === false ? "已下架" : "上架中"}
+                          </span>
+                          {missingInfoCount ? <span className="uu-status is-warn">待補 {missingInfoCount} 項</span> : null}
                         </div>
                       </div>
                     </div>
 
-                    <div className="uu-dashboard-row-actions-wrap-v8 uu-dashboard-row-actions-wrap-v9 uu-dashboard-row-actions-wrap-compact">
+                    <div className="uu-dashboard-row-zone uu-dashboard-row-zone-middle">
+                      <span className="uu-dashboard-meta-chip">{menu.itemCount} 項菜單</span>
+                      <span className="uu-dashboard-meta-chip">{getThemeLabel(menu.theme)}</span>
+                      <span className="uu-dashboard-meta-chip">更新 {formatShortDate(menu.updatedAt)}</span>
+                      <span className="uu-dashboard-meta-chip">{menu.hasLogo ? "含 Logo" : "純文字版"}</span>
+                      <span className="uu-dashboard-meta-chip">網址 {publicPath}</span>
+                    </div>
+
+                    <div className="uu-dashboard-row-zone uu-dashboard-row-zone-right">
                       <div className="uu-dashboard-row-actions-v7 uu-dashboard-row-actions-v8 uu-dashboard-row-actions-v10">
                         <Link href={getDashboardEditPath(menu.id)} className="uu-btn uu-btn-primary">編輯</Link>
                         <Link href={publicPath} target="_blank" className="uu-btn uu-btn-secondary">公開頁</Link>

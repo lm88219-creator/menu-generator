@@ -71,7 +71,7 @@ export function useHomeMenuBuilder() {
     setCreating(true);
 
     try {
-      const res = await fetch("/api/menu", {
+      const res = await fetch("/api/menus", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

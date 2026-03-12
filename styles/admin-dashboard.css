@@ -102,3 +102,41 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.uu-dashboard-row-v10 {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.1fr) minmax(220px, 0.9fr) auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.uu-dashboard-row-zone {
+  min-width: 0;
+}
+
+.uu-dashboard-row-zone-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.uu-dashboard-row-zone-middle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.uu-dashboard-row-zone-right {
+  justify-self: end;
+}
+
+@media (max-width: 1100px) {
+  .uu-dashboard-row-v10 {
+    grid-template-columns: 1fr;
+  }
+
+  .uu-dashboard-row-zone-right {
+    justify-self: stretch;
+  }
+}

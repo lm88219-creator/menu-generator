@@ -17,7 +17,7 @@ const SECTION_LINKS = [
   { href: "#shop-info", label: "店家資訊" },
   { href: "#menu-items", label: "菜單品項" },
   { href: "#appearance-settings", label: "外觀設定" },
-  { href: "#advanced-tools", label: "進階工具" },
+  { href: "#advanced-tools", label: "分享工具" },
 ];
 
 export default function EditMenuForm({ id, initialData }: { id: string; initialData: InitialData }) {
@@ -82,16 +82,8 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
 
   const isDirty = savedSnapshot !== null && snapshot !== savedSnapshot;
 
-  const readinessItems = useMemo(
-    () => [
-      { label: "店家資訊", done: Boolean(state.restaurant.trim() && state.phone.trim() && state.address.trim() && state.hours.trim()) },
-      { label: "菜單品項", done: state.activeCount > 0 },
-      { label: "外觀設定", done: Boolean(state.theme) },
-      { label: "品牌 Logo", done: Boolean(state.logoDataUrl) },
-      { label: "公開狀態", done: state.isPublished },
-    ],
-    [state.restaurant, state.phone, state.address, state.hours, state.activeCount, state.theme, state.logoDataUrl, state.isPublished]
-  );
+
+
 
   function pushMessage(text: string) {
     setMessage(text);
@@ -154,60 +146,48 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
       <div className="uu-editor-workbench">
         <div className="uu-editor-workbench-main">
           <strong>編輯工作台</strong>
-          <span>完成度 {completion}% ・ {state.activeCount} 項品項 ・ {state.isPublished ? "公開中" : "目前下架"}</span>
+          <span>完成度 {completion}% ・ {state.activeCount} 項品項 ・ slug：/{state.safeSlug}</span>
         </div>
         <div className="uu-editor-workbench-side">
           <span className={`uu-editor-dirty-chip ${isDirty ? "is-dirty" : "is-clean"}`}>
             {isDirty ? "尚未儲存變更" : "已與伺服器同步"}
           </span>
-          <span className="uu-editor-last-saved">{lastSavedAt ? `最後儲存：${formatDateTime(lastSavedAt)}` : "尚未重新儲存"}</span>
+          <span className="uu-editor-last-saved">{state.isPublished ? "公開中" : "目前下架"}</span>
         </div>
       </div>
 
       <section className="uu-editor-overview-panel uu-panel">
-        <div className="uu-editor-flow-grid">
-          <article className="uu-editor-flow-card is-active">
-            <span>STEP 1</span>
-            <strong>先補齊店家資訊</strong>
-            <small>店名、電話、地址、營業時間會直接影響公開頁完整度。</small>
-          </article>
-          <article className="uu-editor-flow-card">
-            <span>STEP 2</span>
-            <strong>整理菜單品項</strong>
-            <small>先用整份輸入快速貼上，再用逐項微調修價格、備註與停售狀態。</small>
-          </article>
-          <article className="uu-editor-flow-card">
-            <span>STEP 3</span>
-            <strong>確認品牌外觀</strong>
-            <small>主題與 Logo 會同步套用到客人看的公開頁。</small>
-          </article>
-          <article className="uu-editor-flow-card">
-            <span>STEP 4</span>
-            <strong>最後做分享工具</strong>
-            <small>公開網址、桌號 QR 與快速複製都集中在最下方。</small>
-          </article>
+        <div className="uu-editor-overview-topbar">
+          <div className="uu-editor-overview-titleblock">
+            <strong>{state.restaurant || "未命名店家"}</strong>
+            <span>/{state.safeSlug}</span>
+          </div>
+          <div className="uu-editor-overview-statusbar">
+            <span className={`uu-editor-dirty-chip ${isDirty ? "is-dirty" : "is-clean"}`}>{isDirty ? "尚未儲存" : "已同步"}</span>
+            <span className="uu-editor-overview-minor">{lastSavedAt ? `最後儲存：${formatDateTime(lastSavedAt)}` : "尚未重新儲存"}</span>
+          </div>
         </div>
 
-        <div className="uu-editor-overview-grid">
+        <div className="uu-editor-overview-grid uu-editor-overview-grid-compact">
           <article className="uu-editor-overview-card">
-            <span>公開網址</span>
-            <strong>{state.safeSlug}</strong>
-            <small>{state.publicPath}</small>
-          </article>
-          <article className="uu-editor-overview-card">
-            <span>店家資料</span>
+            <span>基本資訊</span>
             <strong>{infoMissingCount ? `尚缺 ${infoMissingCount} 項` : "已填完整"}</strong>
-            <small>{state.logoDataUrl ? "品牌 Logo 已設定" : "尚未上傳 Logo"}</small>
+            <small>店名、電話、地址、營業時間</small>
           </article>
           <article className="uu-editor-overview-card">
-            <span>菜單結構</span>
-            <strong>{state.categorySummary.length || 1} 個分類</strong>
-            <small>{state.activeCount} 項供應中</small>
+            <span>菜單內容</span>
+            <strong>{state.activeCount} 項供應中</strong>
+            <small>{state.categorySummary.length || 1} 個分類</small>
           </article>
           <article className="uu-editor-overview-card">
-            <span>目前主題</span>
+            <span>外觀</span>
             <strong>{state.selectedTheme.label}</strong>
-            <small>{state.isPublished ? "公開頁會立即套用" : "儲存後等待重新上架"}</small>
+            <small>{state.logoDataUrl ? "Logo 已設定" : "尚未上傳 Logo"}</small>
+          </article>
+          <article className="uu-editor-overview-card">
+            <span>分享工具</span>
+            <strong>{state.isPublished ? "公開中" : "目前下架"}</strong>
+            <small>{state.publicPath}</small>
           </article>
         </div>
 
@@ -216,15 +196,6 @@ export default function EditMenuForm({ id, initialData }: { id: string; initialD
             <a key={item.href} href={item.href} className="uu-editor-section-pill">
               {item.label}
             </a>
-          ))}
-        </div>
-
-        <div className="uu-editor-readiness-grid">
-          {readinessItems.map((item) => (
-            <div key={item.label} className={`uu-editor-readiness-chip ${item.done ? "is-done" : "is-pending"}`}>
-              <span>{item.done ? "✓" : "•"}</span>
-              <strong>{item.label}</strong>
-            </div>
           ))}
         </div>
       </section>
