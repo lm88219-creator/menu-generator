@@ -29,6 +29,8 @@ export function HomeFormCard({
   onClear,
   onRecognizeImage,
   onClearRecognition,
+  onToggleRecognitionField,
+  onApplySelectedRecognition,
 }: {
   form: HomeFormState;
   isMobile: boolean;
@@ -62,6 +64,8 @@ export function HomeFormCard({
   onClear: () => void;
   onRecognizeImage: (file: File | null | undefined) => Promise<void>;
   onClearRecognition: () => void;
+  onToggleRecognitionField: (field: string) => void;
+  onApplySelectedRecognition: () => void;
 }) {
   const selectedTheme = themeOptions.find((item) => item.value === form.theme) ?? themeOptions[0];
 
@@ -135,6 +139,8 @@ export function HomeFormCard({
           recognitionSummary={recognitionSummary}
           onRecognizeImage={onRecognizeImage}
           onClearRecognition={onClearRecognition}
+          onToggleField={onToggleRecognitionField}
+          onApplySelected={onApplySelectedRecognition}
         />
       </FieldBlock>
 

@@ -28,7 +28,7 @@ type Column = {
   rows: Row[];
 };
 
-const CATEGORY_WORDS = ["鵝肉", "主食", "熱炒", "酥炸", "魚味", "蛋香", "青菜", "湯類", "湯品", "湯", "海鮮", "招牌", "小菜", "飲料"];
+const CATEGORY_WORDS = ["鵝肉", "主食", "熱炒", "酥炸", "魚味", "蛋香", "青菜", "湯類", "湯品", "湯", "海鮮", "招牌", "小菜", "飲料", "飯類", "麵類"];
 const RESTAURANT_HINT_RE = /(海產|熱炒|小吃|餐廳|鵝肉|海鮮|食堂|便當|牛肉麵|早午餐|咖啡|鍋物)/;
 const ADDRESS_RE = /(市|縣|區|路|街|段|巷|弄|號)/;
 const HOURS_RE = /((?:AM|PM|am|pm)?\s*\d{1,2}[:：]\d{2}\s*[~\-－到至]\s*(?:AM|PM|am|pm)?\s*\d{1,2}[:：]\d{2})/;
@@ -110,12 +110,12 @@ function normalizeWords(words: OcrWordBox[]) {
     if (confidence > 0 && confidence < 18 && text.length <= 2 && !/\d/.test(text)) continue;
     normalized.push({ text, x0, y0, x1, y1, xc: (x0 + x1) / 2, yc: (y0 + y1) / 2, confidence });
   }
-  return normalized.sort((a, b) => (a.y0 - b.y0) || (a.x0 - b.x0));
+  return normalized.sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0);
 }
 
 function clusterRows(words: NormalizedWord[], tolerance = 18) {
   const rows: Row[] = [];
-  for (const word of [...words].sort((a, b) => (a.yc - b.yc) || (a.x0 - b.x0))) {
+  for (const word of [...words].sort((a, b) => a.yc - b.yc || a.x0 - b.x0)) {
     const last = rows[rows.length - 1];
     if (last && Math.abs(last.y - word.yc) <= tolerance) {
       last.text = `${last.text} ${word.text}`.replace(/\s+/g, " ").trim();
@@ -130,9 +130,11 @@ function clusterRows(words: NormalizedWord[], tolerance = 18) {
 }
 
 function buildColumns(words: NormalizedWord[]) {
-  const sorted = [...words].sort((a, b) => a.x0 - b.x0);
+  if (!words.length) return [] as Column[];
+  const width = Math.max(...words.map((word) => word.x1)) - Math.min(...words.map((word) => word.x0));
+  const gapThreshold = Math.max(56, Math.round(width * 0.08));
+  const sorted = [...words].sort((a, b) => a.xc - b.xc);
   const columns: Column[] = [];
-  const gapThreshold = 72;
 
   for (const word of sorted) {
     const last = columns[columns.length - 1];
@@ -140,15 +142,19 @@ function buildColumns(words: NormalizedWord[]) {
       columns.push({ x0: word.x0, x1: word.x1, rows: [] });
     } else {
       last.x1 = Math.max(last.x1, word.x1);
+      last.x0 = Math.min(last.x0, word.x0);
     }
   }
 
   for (const column of columns) {
-    const columnWords = words.filter((word) => word.xc >= column.x0 - 10 && word.xc <= column.x1 + 10);
+    const padding = Math.max(12, Math.round((column.x1 - column.x0) * 0.18));
+    const columnWords = words.filter((word) => word.xc >= column.x0 - padding && word.xc <= column.x1 + padding);
     column.rows = clusterRows(columnWords, 22);
   }
 
-  return columns.filter((column) => column.rows.length >= 2);
+  return columns
+    .filter((column) => column.rows.length >= 2)
+    .sort((a, b) => a.x0 - b.x0);
 }
 
 function pickRestaurant(topRows: Row[]) {
@@ -182,15 +188,14 @@ function pushDefaultCategory(output: string[]) {
 function parseColumn(column: Column) {
   const rows = column.rows.map((row) => cleanWord(row.text)).filter(Boolean);
   const output: string[] = [];
-  let category = "";
 
   for (let i = 0; i < rows.length; i += 1) {
     const current = rows[i];
     const next = rows[i + 1] || "";
+    const nextNext = rows[i + 2] || "";
     const foundCategory = normalizeCategory(current);
     if (foundCategory) {
-      category = foundCategory;
-      if (!output.includes(category)) output.push(category);
+      if (!output.includes(foundCategory)) output.push(foundCategory);
       continue;
     }
 
@@ -211,15 +216,12 @@ function parseColumn(column: Column) {
       }
     }
 
-    if (looksLikeDish(current) && looksLikeDish(next)) {
-      const nextNext = rows[i + 2] || "";
-      if (/^\d{2,4}$/.test(nextNext)) {
-        const joined = normalizeMenuLine(`${current}${next} ${nextNext}`);
-        if (joined) {
-          pushDefaultCategory(output);
-          output.push(joined);
-          i += 2;
-        }
+    if (looksLikeDish(current) && looksLikeDish(next) && /^\d{2,4}$/.test(nextNext)) {
+      const joined = normalizeMenuLine(`${current}${next} ${nextNext}`);
+      if (joined) {
+        pushDefaultCategory(output);
+        output.push(joined);
+        i += 2;
       }
     }
   }
@@ -235,7 +237,7 @@ export function parseOcrWordsToStructuredMenu(words: OcrWordBox[]) {
 
   const minY = Math.min(...normalized.map((word) => word.y0));
   const maxY = Math.max(...normalized.map((word) => word.y1));
-  const splitY = minY + (maxY - minY) * 0.22;
+  const splitY = minY + (maxY - minY) * 0.24;
   const topWords = normalized.filter((word) => word.y1 <= splitY);
   const menuWords = normalized.filter((word) => word.y0 > splitY - 4);
 
@@ -246,6 +248,10 @@ export function parseOcrWordsToStructuredMenu(words: OcrWordBox[]) {
   const hours = pickHours(topText);
   const address = pickAddress(topRows, topText);
 
+  const rowFallback = clusterRows(menuWords, 20)
+    .map((row) => row.text)
+    .filter(Boolean);
+
   const columns = buildColumns(menuWords);
   const menuLines: string[] = [];
   for (const column of columns) {
@@ -253,6 +259,14 @@ export function parseOcrWordsToStructuredMenu(words: OcrWordBox[]) {
       if (!line) continue;
       const prev = menuLines[menuLines.length - 1];
       if (prev !== line) menuLines.push(line);
+    }
+  }
+
+  for (const row of rowFallback) {
+    const line = normalizeMenuLine(row);
+    if (line && !menuLines.includes(line)) {
+      if (!menuLines.length) menuLines.push("精選菜單");
+      menuLines.push(line);
     }
   }
 

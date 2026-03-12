@@ -25,6 +25,9 @@ export type HomeRecognitionSummary = {
     label: string;
     value: string;
     filled: boolean;
+    selected: boolean;
+    applied: boolean;
+    confidence?: number;
   }>;
 };
 

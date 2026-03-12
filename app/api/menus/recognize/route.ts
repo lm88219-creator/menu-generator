@@ -17,7 +17,20 @@ function getConfidenceSummary(words: Array<{ confidence?: number }>) {
   return { average, label };
 }
 
-function buildFieldStatus(field: RecognitionField, value: string) {
+function guessFieldConfidence(field: RecognitionField, value: string, overall: number) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return 0;
+  if (field === "menuText") {
+    const lineCount = trimmed.split(/\r?\n/).filter(Boolean).length;
+    return Math.max(40, Math.min(96, overall + Math.min(18, lineCount * 2)));
+  }
+  if (field === "phone") return /\d{2,}/.test(trimmed) ? Math.max(overall, 78) : Math.max(0, overall - 18);
+  if (field === "address") return /(?:市|縣).+\d+號?/.test(trimmed) ? Math.max(overall, 74) : Math.max(0, overall - 10);
+  if (field === "hours") return /\d{1,2}[:：]\d{2}/.test(trimmed) ? Math.max(overall, 72) : Math.max(0, overall - 12);
+  return Math.max(overall, trimmed.length >= 3 ? 70 : 55);
+}
+
+function buildFieldStatus(field: RecognitionField, value: string, overall: number) {
   const trimmed = String(value || "").trim();
   return {
     field,
@@ -33,6 +46,7 @@ function buildFieldStatus(field: RecognitionField, value: string) {
               : "菜單內容",
     value: trimmed,
     filled: Boolean(trimmed),
+    confidence: guessFieldConfidence(field, trimmed, overall),
   };
 }
 
@@ -57,18 +71,22 @@ export async function POST(req: Request) {
       .length;
 
     const warnings: string[] = [];
-    if (confidence.average > 0 && confidence.average < 60) warnings.push("這張圖辨識信心偏低，建議改用更正面、更清楚的菜單照片。")
-    if (!restaurant) warnings.push("餐廳名稱尚未穩定辨識，請手動確認店名。")
-    if (!parsed.phone) warnings.push("電話沒有穩定抓到，可直接手動補上。")
-    if (!parsed.hours) warnings.push("營業時間沒有穩定抓到，建議再手動檢查。")
-    if (menuCount < 3) warnings.push("菜單項目偏少，複雜版面可能沒有完整抓到。")
+    if (confidence.average > 0 && confidence.average < 60) warnings.push("這張圖辨識信心偏低，建議改用更正面、更清楚的菜單照片。");
+    if (!restaurant) warnings.push("餐廳名稱尚未穩定辨識，請手動確認店名。");
+    if (!parsed.phone) warnings.push("電話沒有穩定抓到，可直接手動補上。");
+    if (!parsed.hours) warnings.push("營業時間沒有穩定抓到，建議再手動檢查。");
+    if (!parsed.address) warnings.push("地址沒有完整抓到，若要公開頁顯示地圖，記得補上地址。");
+    if (menuCount < 3) warnings.push("菜單項目偏少，複雜版面可能沒有完整抓到。");
+    if (menuCount >= 3 && !/(主食|熱炒|湯類|湯品|飲料|小菜|海鮮|青菜|精選菜單)/.test(parsed.menuText)) {
+      warnings.push("已抓到菜單，但分類還不夠完整，建議再看一下分類標題是否正確。");
+    }
 
     const fieldStatus = [
-      buildFieldStatus("restaurant", restaurant),
-      buildFieldStatus("phone", parsed.phone),
-      buildFieldStatus("address", parsed.address),
-      buildFieldStatus("hours", parsed.hours),
-      buildFieldStatus("menuText", parsed.menuText),
+      buildFieldStatus("restaurant", restaurant, confidence.average),
+      buildFieldStatus("phone", parsed.phone, confidence.average),
+      buildFieldStatus("address", parsed.address, confidence.average),
+      buildFieldStatus("hours", parsed.hours, confidence.average),
+      buildFieldStatus("menuText", parsed.menuText, confidence.average),
     ];
 
     return Response.json({
@@ -82,7 +100,7 @@ export async function POST(req: Request) {
       warnings,
       fieldStatus,
       note: parsed.menuText
-        ? "辨識完成，已先幫你整理出較乾淨的店家資訊與菜單草稿；請看下方辨識摘要再確認。"
+        ? "辨識完成，已整理出較乾淨的店家資訊、菜名價格與分類草稿；建議先勾選欄位再套用。"
         : "已辨識出部分店家資訊，但菜單內容仍較亂，建議手動整理後再生成。",
     });
   } catch (error) {

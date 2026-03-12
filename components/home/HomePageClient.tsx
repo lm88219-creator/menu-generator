@@ -29,6 +29,8 @@ export default function HomePageClient() {
     clearAll,
     generateMenu,
     recognizeMenuImage,
+    toggleRecognitionField,
+    applySelectedRecognition,
     clearRecognition,
     copyUrl,
     uploadLogo,
@@ -95,6 +97,8 @@ export default function HomePageClient() {
             onClear={clearAll}
             onRecognizeImage={recognizeMenuImage}
             onClearRecognition={clearRecognition}
+            onToggleRecognitionField={toggleRecognitionField}
+            onApplySelectedRecognition={applySelectedRecognition}
           />
 
           <HomePreviewCard form={form} isMobile={isMobile} currentTheme={currentTheme} />

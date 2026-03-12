@@ -1,4 +1,5 @@
 import { parseOcrWordsToStructuredMenu, type OcrWordBox } from "@/lib/menu-layout-parser";
+
 const PHONE_RE = /(09\d{2}[-\s]?\d{3}[-\s]?\d{3}|0\d{1,2}[-\s]?\d{3,4}[-\s]?\d{3,4})/;
 const HOURS_RE = /(am|pm|營業|時間|open|close|週[一二三四五六日]|星期|每日|公休|\d{1,2}[:：]\d{2})/i;
 const ADDRESS_RE = /(路|街|段|巷|號|市|縣|區|鄉|鎮)/;
@@ -6,47 +7,7 @@ const CATEGORY_HINT_RE = /(主食|熱炒|湯|湯類|湯品|炸物|飲料|海鮮|
 const CATEGORY_WORDS = ["主食", "熱炒", "湯類", "湯品", "炸物", "飲料", "海鮮", "招牌", "小菜", "快炒", "飯類", "麵類", "鍋物", "甜點", "冷盤", "青菜", "蛋香", "魚味", "酥炸", "鵝肉"];
 const VALID_STANDALONE_DISHES = new Set(["白飯", "炒飯", "炒麵", "米粉", "冬粉", "肉羹", "魚湯", "蛤湯", "蚵仔", "青菜", "高麗菜", "空心菜", "菠菜", "地瓜葉", "沙拉", "腰子", "白肉", "羊肉", "豬肉"]);
 const RESTAURANT_HINT_RE = /(海產|熱炒|小吃|餐廳|便當|牛肉麵|鵝肉|海鮮|食堂|咖啡|茶飲|鍋燒|鍋物|早午餐)/;
-const FRAGMENT_JOINERS = [
-  "炒",
-  "炸",
-  "煎",
-  "烤",
-  "滷",
-  "燙",
-  "拌",
-  "蒸",
-  "麻油",
-  "三杯",
-  "清炒",
-  "紅燒",
-  "宮保",
-  "沙茶",
-  "酥炸",
-  "椒鹽",
-  "鹽酥",
-  "鹽水",
-  "蒜泥",
-  "蒜苗",
-  "魚味",
-  "蛋香",
-  "十全藥膳",
-  "十還膳",
-  "十全",
-  "藥膳",
-  "上提",
-  "扣",
-  "扣肉",
-  "紅燒",
-  "白",
-  "炒",
-  "牛",
-  "豬",
-  "雞",
-  "鵝",
-  "蝦",
-  "魚",
-  "羊",
-];
+const FRAGMENT_JOINERS = ["炒", "炸", "煎", "烤", "滷", "燙", "拌", "蒸", "麻油", "三杯", "清炒", "紅燒", "宮保", "沙茶", "酥炸", "椒鹽", "鹽酥", "鹽水", "蒜泥", "蒜苗", "魚味", "蛋香", "十全藥膳", "十還膳", "十全", "藥膳", "扣", "扣肉", "白", "牛", "豬", "雞", "鵝", "蝦", "魚", "羊"];
 const DISH_WORD_FIXES: Array<[RegExp, string]> = [
   [/炒\s*8\s*球/g, "炒蝦球"],
   [/炒\s*蝦\s*蝦\s*球/g, "炒蝦球"],
@@ -177,11 +138,7 @@ export function cleanOcrLine(input: string) {
     .replace(/\s{2,}/g, " ")
     .trim();
 
-  line = applyWordFixes(line)
-    .replace(/\s{2,}/g, " ")
-    .trim();
-
-  return line;
+  return applyWordFixes(line).replace(/\s{2,}/g, " ").trim();
 }
 
 function isMostlyNoise(line: string) {
@@ -224,8 +181,7 @@ function normalizeMenuLine(line: string) {
   if (!name) return "";
   const cjk = countCjk(name);
   if (cjk === 0 && name.length < 3) return "";
-  if (cjk < 1) return "";
-  if (name.length > 14) return "";
+  if (cjk < 1 || name.length > 16) return "";
   if (MENU_BLACKLIST_RE.test(name)) return "";
   if (looksLikeAddress(name) || looksLikeHours(name) || looksLikePhone(name)) return "";
   if (isShortDishFragment(name)) return "";
@@ -234,11 +190,21 @@ function normalizeMenuLine(line: string) {
 
 function normalizeCategory(line: string) {
   const value = applyWordFixes(line.replace(/\s+/g, "").trim()).replace(/\d+/g, "").trim();
-  if (!value) return "";
-  if (value.length > 8) return "";
+  if (!value || value.length > 8) return "";
   if (/[A-Za-z]{2,}/.test(value) && !/[\u4e00-\u9fff]/.test(value)) return "";
   const direct = CATEGORY_WORDS.find((item) => value.includes(item));
   return direct || (CATEGORY_HINT_RE.test(value) ? value : "");
+}
+
+function guessCategoryFromDish(line: string) {
+  const name = line.replace(/\d{2,4}$/, "").trim();
+  if (!name) return "";
+  if (/(飯|麵|米粉|冬粉|粥|便當)/.test(name)) return "主食";
+  if (/(湯|羹|鍋|丸)/.test(name)) return "湯類";
+  if (/(茶|奶|咖啡|可樂|雪碧|汽水|紅茶|綠茶|冬瓜|果汁)/.test(name)) return "飲料";
+  if (/(青菜|高麗菜|空心菜|菠菜|地瓜葉|川燙|燙青菜)/.test(name)) return "青菜";
+  if (/(炸|酥|雞塊|薯條)/.test(name)) return "炸物";
+  return "熱炒";
 }
 
 function extractFullTextHours(rawText: string) {
@@ -258,10 +224,7 @@ function splitMergedMenuText(text: string) {
     .replace(/(\d{2,4})\s*([\u4e00-\u9fff]{2,8})/g, "$1\n$2")
     .replace(/\n{2,}/g, "\n");
 
-  return normalized
-    .split(/\n+/)
-    .map(cleanOcrLine)
-    .filter(Boolean);
+  return normalized.split(/\n+/).map(cleanOcrLine).filter(Boolean);
 }
 
 function shouldDropLine(line: string) {
@@ -281,11 +244,7 @@ function buildSmartLines(rawText: string) {
     .filter(Boolean);
 
   const merged = splitMergedMenuText(String(rawText || ""));
-  return [...baseLines, ...merged]
-    .map(cleanOcrLine)
-    .filter(Boolean)
-    .filter((line) => !isMostlyNoise(line))
-    .slice(0, 800);
+  return [...baseLines, ...merged].map(cleanOcrLine).filter(Boolean).filter((line) => !isMostlyNoise(line)).slice(0, 1000);
 }
 
 function dedupeWithPreference(lines: string[]) {
@@ -302,21 +261,19 @@ function dedupeWithPreference(lines: string[]) {
 
 function maybeJoinFragments(lines: string[]) {
   const output: string[] = [];
-
   for (let index = 0; index < lines.length; index += 1) {
     const current = lines[index];
     const next = lines[index + 1] || "";
+    const third = lines[index + 2] || "";
     if (!current) continue;
 
     const currentPrice = extractPrice(current);
     const nextPrice = extractPrice(next);
     const currentCategory = normalizeCategory(current);
-
     if (currentCategory) {
       output.push(currentCategory);
       continue;
     }
-
     if (currentPrice) {
       output.push(current);
       continue;
@@ -325,15 +282,7 @@ function maybeJoinFragments(lines: string[]) {
     const compact = current.replace(/\s+/g, "");
     const nextNamePart = cleanupDishName(next.replace(/\d{2,4}/g, "").trim()).replace(/\s+/g, "");
 
-    if (
-      next &&
-      nextPrice &&
-      compact &&
-      compact.length <= 6 &&
-      nextNamePart &&
-      nextNamePart.length <= 8 &&
-      FRAGMENT_JOINERS.some((item) => compact.endsWith(item) || item.endsWith(compact) || compact.startsWith(item))
-    ) {
+    if (next && nextPrice && compact && compact.length <= 6 && nextNamePart && nextNamePart.length <= 8 && FRAGMENT_JOINERS.some((item) => compact.endsWith(item) || item.endsWith(compact) || compact.startsWith(item))) {
       const joinedName = cleanupDishName(`${compact}${nextNamePart}`);
       const joinedLine = normalizeMenuLine(`${joinedName} ${nextPrice}`);
       if (joinedLine) {
@@ -352,9 +301,17 @@ function maybeJoinFragments(lines: string[]) {
       }
     }
 
+    if (next && third && !extractPrice(current) && !extractPrice(next) && /^\d{2,4}$/.test(third.trim())) {
+      const joinedLine = normalizeMenuLine(`${current}${next} ${third.trim()}`);
+      if (joinedLine) {
+        output.push(joinedLine);
+        index += 2;
+        continue;
+      }
+    }
+
     output.push(current);
   }
-
   return output;
 }
 
@@ -363,7 +320,9 @@ function mergeSplitPriceLines(lines: string[]) {
   for (let i = 0; i < lines.length; i += 1) {
     const current = lines[i];
     const next = lines[i + 1] || "";
+    const nextNext = lines[i + 2] || "";
     if (!current) continue;
+
     if (!extractPrice(current) && /^\d{2,4}$/.test(next.trim())) {
       const joined = normalizeMenuLine(`${current} ${next.trim()}`);
       if (joined) {
@@ -372,35 +331,56 @@ function mergeSplitPriceLines(lines: string[]) {
         continue;
       }
     }
+
+    if (!extractPrice(current) && !extractPrice(next) && /^\d{2,4}$/.test(nextNext.trim())) {
+      const joined = normalizeMenuLine(`${current}${next} ${nextNext.trim()}`);
+      if (joined) {
+        output.push(joined);
+        i += 2;
+        continue;
+      }
+    }
+
     output.push(current);
   }
   return output;
 }
 
 function formatMenuDraft(lines: string[]) {
-  const output: string[] = [];
-  let hasMenu = false;
-
+  const normalizedMenuLines = dedupeWithPreference(lines.map((line) => normalizeMenuLine(line)).filter(Boolean));
+  const explicitCategories = new Map<string, string>();
+  let lastCategory = "";
   for (const line of lines) {
-    if (!line || shouldDropLine(line)) continue;
     const category = normalizeCategory(line);
     if (category) {
-      if (!output.length || output[output.length - 1] !== category) {
-        output.push(category);
-      }
+      lastCategory = category;
       continue;
     }
-
     const menuLine = normalizeMenuLine(line);
     if (!menuLine) continue;
-    if (!hasMenu) {
-      output.push("精選菜單");
-      hasMenu = true;
-    }
-    output.push(menuLine);
+    explicitCategories.set(menuLine, lastCategory || explicitCategories.get(menuLine) || "");
   }
 
-  return dedupeWithPreference(output).filter((line, index, array) => {
+  const grouped = new Map<string, string[]>();
+  for (const menuLine of normalizedMenuLines) {
+    const category = explicitCategories.get(menuLine) || guessCategoryFromDish(menuLine) || "精選菜單";
+    if (!grouped.has(category)) grouped.set(category, []);
+    grouped.get(category)?.push(menuLine);
+  }
+
+  const categoryOrder = ["精選菜單", "鵝肉", "招牌", "主食", "熱炒", "海鮮", "青菜", "湯類", "飲料", "小菜"];
+  const output: string[] = [];
+  for (const category of categoryOrder) {
+    const items = grouped.get(category);
+    if (!items?.length) continue;
+    output.push(category, ...items);
+    grouped.delete(category);
+  }
+  for (const [category, items] of grouped.entries()) {
+    output.push(category, ...items);
+  }
+
+  return output.filter((line, index, array) => {
     if (CATEGORY_WORDS.includes(line) && array[index + 1] && CATEGORY_WORDS.includes(array[index + 1])) return false;
     return true;
   });
@@ -408,14 +388,12 @@ function formatMenuDraft(lines: string[]) {
 
 function restaurantScore(line: string) {
   const cleaned = cleanOcrLine(line).replace(/\s+/g, "").trim();
-  if (!cleaned) return -999;
-  if (cleaned.length < 2 || cleaned.length > 18) return -999;
+  if (!cleaned || cleaned.length < 2 || cleaned.length > 18) return -999;
   if (looksLikePhone(cleaned) || looksLikeHours(cleaned) || looksLikeAddress(cleaned)) return -999;
   if (MENU_BLACKLIST_RE.test(cleaned)) return -999;
   const cjk = countCjk(cleaned);
   const letters = countLetters(cleaned);
-  if (cjk < 2) return -999;
-  if (letters > 0) return -999;
+  if (cjk < 2 || letters > 0) return -999;
   let score = cjk;
   if (RESTAURANT_HINT_RE.test(cleaned)) score += 10;
   if (/友愛|魚香|阿明|老|小|大/.test(cleaned)) score += 1;
@@ -467,10 +445,7 @@ function removeMetadataLines(lines: string[], metadata: string[]) {
 export function parseRecognizedMenu(rawText: string, words?: OcrWordBox[]) {
   const structured = words?.length ? parseOcrWordsToStructuredMenu(words) : null;
 
-  const seededRaw = [rawText, structured?.menuLines?.join("\n") || ""]
-    .filter(Boolean)
-    .join("\n");
-
+  const seededRaw = [rawText, structured?.menuLines?.join("\n") || ""].filter(Boolean).join("\n");
   const initialLines = buildSmartLines(seededRaw);
   const restaurant = structured?.restaurant || detectRestaurantName(initialLines);
   const phone = structured?.phone ? normalizePhoneValue(structured.phone) : detectPhone(initialLines, seededRaw);
