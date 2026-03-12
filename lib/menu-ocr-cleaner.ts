@@ -3,8 +3,47 @@ const HOURS_RE = /(am|pm|營業|時間|open|close|週[一二三四五六日]|星
 const ADDRESS_RE = /(路|街|段|巷|號|市|縣|區|鄉|鎮)/;
 const CATEGORY_HINT_RE = /(主食|熱炒|湯|湯類|湯品|炸物|飲料|海鮮|招牌|小菜|快炒|飯類|麵類|鍋物|甜點|便當|冷盤|素食|肉類|魚類|青菜|蛋香|魚味|酥炸|鵝肉)/;
 const CATEGORY_WORDS = ["主食", "熱炒", "湯類", "湯品", "炸物", "飲料", "海鮮", "招牌", "小菜", "快炒", "飯類", "麵類", "鍋物", "甜點", "冷盤", "青菜", "蛋香", "魚味", "酥炸", "鵝肉"];
+const VALID_STANDALONE_DISHES = new Set(["白飯", "炒飯", "炒麵", "米粉", "冬粉", "肉羹", "魚湯", "蛤湯", "蚵仔", "青菜", "高麗菜", "空心菜", "菠菜", "地瓜葉"]);
+const FRAGMENT_JOINERS = [
+  "炒",
+  "炸",
+  "煎",
+  "烤",
+  "滷",
+  "燙",
+  "拌",
+  "蒸",
+  "麻油",
+  "三杯",
+  "清炒",
+  "紅燒",
+  "宮保",
+  "沙茶",
+  "酥炸",
+  "椒鹽",
+  "鹽酥",
+  "鹽水",
+  "蒜泥",
+  "蒜苗",
+  "魚味",
+  "蛋香",
+  "十全藥膳",
+  "十還膳",
+  "十全",
+  "上提",
+  "扣",
+  "扣肉",
+  "牛",
+  "豬",
+  "雞",
+  "鵝",
+  "蝦",
+  "魚",
+];
 const DISH_WORD_FIXES: Array<[RegExp, string]> = [
   [/炒\s*8\s*球/g, "炒蝦球"],
+  [/炒\s*蝦\s*蝦\s*球/g, "炒蝦球"],
+  [/炒\s*螺\s*肉/g, "炒螺肉"],
   [/球\s*(\d{2,4})$/g, "蝦球 $1"],
   [/魚\s*柳/g, "魚柳"],
   [/肥\s*腸/g, "肥腸"],
@@ -34,6 +73,10 @@ const DISH_WORD_FIXES: Array<[RegExp, string]> = [
   [/湯\s*類/g, "湯類"],
   [/主\s*食/g, "主食"],
   [/熱\s*炒/g, "熱炒"],
+  [/友\s*愛\s*熱\s*炒/g, "友愛熱炒"],
+  [/外\s*送/g, "外送"],
+  [/預\s*約/g, "預約"],
+  [/營\s*業\s*時\s*間/g, "營業時間"],
 ];
 const MENU_BLACKLIST_RE = /(facebook|instagram|line\s*id|官方|訂位|預約|外送|歡迎|營業時間|地址|電話|digital|menu|logo|uu\s*menu|qr)/i;
 
@@ -47,6 +90,34 @@ function applyWordFixes(value: string) {
   return next;
 }
 
+function normalizeWhitespace(value: string) {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function looksLikeAddress(line: string) {
+  return ADDRESS_RE.test(line) && /(路|街|段|巷|號|市|縣|區|鄉|鎮)/.test(line) && /\d/.test(line);
+}
+
+function looksLikeHours(line: string) {
+  return HOURS_RE.test(line) && /(am|pm|\d{1,2}[:：]\d{2})/i.test(line);
+}
+
+function looksLikePhone(line: string) {
+  return PHONE_RE.test(line);
+}
+
+function countCjk(line: string) {
+  return (line.match(/[\u4e00-\u9fff]/g) || []).length;
+}
+
+function isShortDishFragment(name: string) {
+  const value = name.replace(/\s+/g, "");
+  if (!value) return true;
+  if (VALID_STANDALONE_DISHES.has(value)) return false;
+  const cjk = countCjk(value);
+  return cjk <= 1;
+}
+
 export function cleanOcrLine(input: string) {
   let line = normalizeDigits(String(input || ""))
     .replace(/[“”"'`~^]/g, "")
@@ -58,7 +129,7 @@ export function cleanOcrLine(input: string) {
     .replace(/[＄$]/g, " ")
     .replace(/[／/]/g, " ")
     .replace(/[：:]/g, ":")
-    .replace(/\s+/g, " ")
+    .replace(/[。．]/g, " ")
     .trim();
 
   line = line
@@ -68,6 +139,7 @@ export function cleanOcrLine(input: string) {
     .replace(/\$\s*(\d{2,4})/g, "$1")
     .replace(/[?？×xX]+$/g, "")
     .replace(/[A-Za-z]{4,}/g, " ")
+    .replace(/(^|\s)[A-Za-z](?=\s|$)/g, " ")
     .replace(/\s{2,}/g, " ")
     .trim();
 
@@ -80,7 +152,7 @@ export function cleanOcrLine(input: string) {
 
 function isMostlyNoise(line: string) {
   if (!line) return true;
-  const cjk = (line.match(/[\u4e00-\u9fff]/g) || []).length;
+  const cjk = countCjk(line);
   const digits = (line.match(/\d/g) || []).length;
   const letters = (line.match(/[A-Za-z]/g) || []).length;
   if (cjk === 0 && digits === 0) return true;
@@ -116,11 +188,13 @@ function normalizeMenuLine(line: string) {
   let name = cleanupDishName(line.slice(0, line.lastIndexOf(price)).trim());
   name = name.replace(/(主食|熱炒|湯類|湯品|招牌|海鮮|小菜|青菜|蛋香|魚味)$/, "").trim();
   if (!name) return "";
-  const cjk = (name.match(/[\u4e00-\u9fff]/g) || []).length;
+  const cjk = countCjk(name);
   if (cjk === 0 && name.length < 3) return "";
   if (cjk < 1) return "";
   if (name.length > 14) return "";
   if (MENU_BLACKLIST_RE.test(name)) return "";
+  if (looksLikeAddress(name) || looksLikeHours(name) || looksLikePhone(name)) return "";
+  if (isShortDishFragment(name)) return "";
   return `${name} ${price}`;
 }
 
@@ -141,7 +215,7 @@ function extractFullTextHours(rawText: string) {
 
 function extractAddressLine(lines: string[]) {
   return (
-    lines.find((line) => ADDRESS_RE.test(line) && !/(元|\$|\d{2,4}\s*$)/.test(line) && /[\u4e00-\u9fff]/.test(line)) ||
+    lines.find((line) => looksLikeAddress(line) && !/(元|\$|\d{2,4}\s*$)/.test(line) && /[\u4e00-\u9fff]/.test(line)) ||
     ""
   );
 }
@@ -149,14 +223,23 @@ function extractAddressLine(lines: string[]) {
 function splitMergedMenuText(text: string) {
   const normalized = cleanOcrLine(text)
     .replace(/\b(主\s*食|熱\s*炒|湯\s*類|湯\s*品|炸\s*物|飲\s*料|海\s*鮮|招\s*牌|小\s*菜|青\s*菜|鵝\s*肉|魚\s*味|蛋\s*香)\b/g, (_m) => `\n${cleanOcrLine(_m)}\n`)
-    .replace(/([\u4e00-\u9fff]{1,10})\s*(\d{2,4})(?=\s|$)/g, (_, name, price) => `\n${String(name).trim()} ${price}\n`)
-    .replace(/(\d{2,4})\s*([\u4e00-\u9fff]{1,8})/g, "$1\n$2")
+    .replace(/([\u4e00-\u9fff]{2,10})\s*(\d{2,4})(?=\s|$)/g, (_, name, price) => `\n${String(name).trim()} ${price}\n`)
+    .replace(/(\d{2,4})\s*([\u4e00-\u9fff]{2,8})/g, "$1\n$2")
     .replace(/\n{2,}/g, "\n");
 
   return normalized
     .split(/\n+/)
     .map(cleanOcrLine)
     .filter(Boolean);
+}
+
+function shouldDropLine(line: string) {
+  if (!line) return true;
+  if (MENU_BLACKLIST_RE.test(line)) return true;
+  if (looksLikePhone(line) || looksLikeHours(line) || looksLikeAddress(line)) return true;
+  if (/^[\d\s:-]+$/.test(line)) return true;
+  if (countCjk(line) === 0 && !extractPrice(line)) return true;
+  return false;
 }
 
 function buildSmartLines(rawText: string) {
@@ -185,6 +268,89 @@ function dedupeWithPreference(lines: string[]) {
   return output;
 }
 
+function maybeJoinFragments(lines: string[]) {
+  const output: string[] = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const current = lines[index];
+    const next = lines[index + 1] || "";
+    if (!current) continue;
+
+    const currentPrice = extractPrice(current);
+    const nextPrice = extractPrice(next);
+    const currentCategory = normalizeCategory(current);
+
+    if (currentCategory) {
+      output.push(currentCategory);
+      continue;
+    }
+
+    if (currentPrice) {
+      output.push(current);
+      continue;
+    }
+
+    const compact = current.replace(/\s+/g, "");
+    const nextNamePart = cleanupDishName(next.replace(/\d{2,4}/g, "").trim()).replace(/\s+/g, "");
+
+    if (
+      next &&
+      nextPrice &&
+      compact &&
+      compact.length <= 4 &&
+      nextNamePart &&
+      nextNamePart.length <= 6 &&
+      FRAGMENT_JOINERS.some((item) => compact.endsWith(item) || item.endsWith(compact) || compact.startsWith(item))
+    ) {
+      const joinedName = cleanupDishName(`${compact}${nextNamePart}`);
+      const joinedLine = normalizeMenuLine(`${joinedName} ${nextPrice}`);
+      if (joinedLine) {
+        output.push(joinedLine);
+        index += 1;
+        continue;
+      }
+    }
+
+    output.push(current);
+  }
+
+  return output;
+}
+
+function formatMenuDraft(lines: string[]) {
+  const output: string[] = [];
+  let hasMenu = false;
+  let lastWasCategory = false;
+
+  for (const line of lines) {
+    if (!line || shouldDropLine(line)) continue;
+    const category = normalizeCategory(line);
+    if (category) {
+      if (!output.length || output[output.length - 1] !== category) {
+        output.push(category);
+      }
+      lastWasCategory = true;
+      continue;
+    }
+
+    const menuLine = normalizeMenuLine(line);
+    if (!menuLine) continue;
+    if (!hasMenu) {
+      output.push("精選菜單");
+      hasMenu = true;
+    }
+    if (lastWasCategory) {
+      lastWasCategory = false;
+    }
+    output.push(menuLine);
+  }
+
+  return dedupeWithPreference(output).filter((line, index, array) => {
+    if (CATEGORY_WORDS.includes(line) && array[index + 1] && CATEGORY_WORDS.includes(array[index + 1])) return false;
+    return true;
+  });
+}
+
 export function parseRecognizedMenu(rawText: string) {
   const initialLines = buildSmartLines(rawText);
   const restaurant =
@@ -200,45 +366,15 @@ export function parseRecognizedMenu(rawText: string) {
   const hours = extractFullTextHours(rawText) || initialLines.find((line) => HOURS_RE.test(line) && !PHONE_RE.test(line)) || "";
   const address = extractAddressLine(initialLines);
 
-  const result: string[] = [];
-  let currentCategory = "";
-
-  for (const rawLine of initialLines) {
-    if (!rawLine) continue;
-    if ([restaurant, phone, hours, address].includes(rawLine)) continue;
-    if (MENU_BLACKLIST_RE.test(rawLine)) continue;
-    if (PHONE_RE.test(rawLine)) continue;
-    if (ADDRESS_RE.test(rawLine) && !extractPrice(rawLine)) continue;
-
-    const categoryCandidate = normalizeCategory(rawLine);
-    if (categoryCandidate) {
-      if (result[result.length - 1] !== categoryCandidate) {
-        currentCategory = categoryCandidate;
-        result.push(categoryCandidate);
-      }
-      continue;
-    }
-
-    const menuLine = normalizeMenuLine(rawLine);
-    if (menuLine) {
-      if (!currentCategory) {
-        currentCategory = "精選菜單";
-        if (result[result.length - 1] !== currentCategory) result.push(currentCategory);
-      }
-      result.push(menuLine);
-    }
-  }
-
-  const deduped = dedupeWithPreference(result).filter((line, index, array) => {
-    if (CATEGORY_WORDS.includes(line) && array[index + 1] && CATEGORY_WORDS.includes(array[index + 1])) return false;
-    return true;
-  });
+  const filtered = initialLines.filter((line) => ![restaurant, phone, hours, address].includes(line));
+  const joined = maybeJoinFragments(filtered);
+  const menuLines = formatMenuDraft(joined);
 
   return {
     restaurant,
     phone,
     hours,
     address,
-    menuText: deduped.join("\n").trim(),
+    menuText: menuLines.join("\n").trim(),
   };
 }
