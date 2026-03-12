@@ -155,7 +155,7 @@ export const THEME_CONFIG: Record<ThemeType, ThemeConfig> = {
     surface: { bg: "#23262d", text: "#f4efe7", muted: "#b8a99a", border: "rgba(212,169,93,0.22)" },
   },
   light: {
-    label: "簡約白",
+    label: "極簡純白",
     home: {
       name: "簡約白色",
       pageBg: "linear-gradient(180deg,#f8f8f8 0%,#eeeeee 100%)",

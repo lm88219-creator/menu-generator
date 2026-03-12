@@ -128,15 +128,30 @@ export function HomeFormCard({
       </FieldBlock>
 
       <FieldBlock label="菜單風格">
-        <label style={{ display: "block" }}>
-          <select value={form.theme} onChange={(e) => onThemeChange(e.target.value as ThemeType)} style={{ ...inputStyle, appearance: "none", cursor: "pointer" }}>
+        <div style={{ position: "relative" }}>
+          <select value={form.theme} onChange={(e) => onThemeChange(e.target.value as ThemeType)} style={{ ...inputStyle, appearance: "none", cursor: "pointer", paddingRight: 52 }}>
             {themeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
           </select>
-        </label>
+          <span
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              right: 18,
+              top: "50%",
+              transform: "translateY(-50%)",
+              pointerEvents: "none",
+              color: currentTheme.subText,
+              fontSize: 14,
+              fontWeight: 900,
+            }}
+          >
+            ▼
+          </span>
+        </div>
         <div
           style={{
             marginTop: 10,

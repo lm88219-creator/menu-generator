@@ -149,7 +149,7 @@ export async function downloadPosterImage(form: HomeFormState, qrText: string) {
   ctx.fillStyle = posterTheme.muted;
   ctx.font = "bold 22px Arial";
   ctx.textAlign = "center";
-  ctx.fillText("DIGITAL MENU", canvas.width / 2, y);
+  ctx.fillText("MENU", canvas.width / 2, y);
   y += 52;
 
   ctx.fillStyle = posterTheme.title;

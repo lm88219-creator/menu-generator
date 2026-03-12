@@ -41,9 +41,9 @@ export function HomePreviewCard({
           {form.logoDataUrl ? (
             <div
               style={{
-                width: 92,
+                width: 132,
                 height: 92,
-                borderRadius: "50%",
+                borderRadius: 18,
                 margin: "0 auto 14px",
                 background: "#fff",
                 display: "flex",
@@ -52,7 +52,7 @@ export function HomePreviewCard({
                 boxShadow: "0 8px 24px rgba(0,0,0,0.14)",
                 border: "1px solid rgba(0,0,0,0.06)",
                 overflow: "hidden",
-                padding: 10,
+                padding: 12,
               }}
             >
               <img src={form.logoDataUrl} alt="logo preview" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
@@ -60,9 +60,9 @@ export function HomePreviewCard({
           ) : (
             <div
               style={{
-                width: 92,
+                width: 132,
                 height: 92,
-                borderRadius: "50%",
+                borderRadius: 18,
                 margin: "0 auto 14px",
                 background: previewShell.accentSoft,
                 display: "flex",
@@ -77,7 +77,7 @@ export function HomePreviewCard({
             </div>
           )}
 
-          <div style={{ fontSize: 12, letterSpacing: 3, color: previewShell.muted, marginBottom: 8 }}>DIGITAL MENU</div>
+          <div style={{ fontSize: 12, letterSpacing: 3, color: previewShell.muted, marginBottom: 8 }}>MENU</div>
           <h2 style={{ margin: 0, fontSize: 28, color: previewShell.title }}>{form.restaurant || "餐廳名稱"}</h2>
           <div style={{ marginTop: 10, fontSize: 14, color: previewShell.muted, lineHeight: 1.8 }}>
             {form.phone || "電話"}
