@@ -1,7 +1,7 @@
 const PHONE_RE = /(09\d{2}[-\s]?\d{3}[-\s]?\d{3}|0\d{1,2}[-\s]?\d{3,4}[-\s]?\d{3,4})/;
 const HOURS_RE = /(am|pm|營業|時間|open|close|週[一二三四五六日]|星期|\d{1,2}[:：]\d{2})/i;
 const ADDRESS_RE = /(路|街|段|巷|號|市|縣|區|鄉|鎮)/;
-const CATEGORY_HINT_RE = /(主食|熱炒|湯|湯類|炸物|飲料|海鮮|招牌|小菜|快炒|飯|麵|鍋|甜點|便當|冷盤|素食|肉類|魚類|青菜|蛋香|魚味|酥炸|鵝肉)/;
+const CATEGORY_HINT_RE = /(主食|熱炒|湯|湯類|炸物|飲料|海鮮|招牌|小菜|快炒|飯類|麵類|鍋物|甜點|便當|冷盤|素食|肉類|魚類|青菜|蛋香|魚味|酥炸|鵝肉)/;
 
 function normalizeDigits(value: string) {
   return value.replace(/[０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 65248));
@@ -14,6 +14,9 @@ export function cleanOcrLine(input: string) {
     .replace(/[｜|¦]/g, " ")
     .replace(/[•●▪◆★☆]/g, " ")
     .replace(/[，,;；]/g, " ")
+    .replace(/[、]/g, " ")
+    .replace(/[（）()]+/g, " ")
+    .replace(/[＄$]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
@@ -22,6 +25,7 @@ export function cleanOcrLine(input: string) {
     .replace(/([0-9]{2,4})\]/g, "$1")
     .replace(/\bNT\$?\s*/gi, "")
     .replace(/\$\s*(\d{2,4})/g, "$1")
+    .replace(/[?？×xX]+$/g, "")
     .replace(/\s{2,}/g, " ")
     .trim();
 
@@ -35,6 +39,7 @@ function isMostlyNoise(line: string) {
   const letters = (line.match(/[A-Za-z]/g) || []).length;
   if (cjk === 0 && digits === 0) return true;
   if (letters > cjk * 2 && cjk < 2 && digits < 2) return true;
+  if (line.length <= 1) return true;
   return false;
 }
 
@@ -46,19 +51,24 @@ function extractPrice(line: string) {
   return match[1];
 }
 
+function cleanupDishName(name: string) {
+  return name
+    .replace(/^[^\u4e00-\u9fffA-Za-z]+/, "")
+    .replace(/[A-Za-z]{2,}/g, " ")
+    .replace(/[^\u4e00-\u9fffA-Za-z0-9\-\s]+/g, " ")
+    .replace(/\b[\d]{1,2}\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function normalizeMenuLine(line: string) {
   const price = extractPrice(line);
   if (!price) return "";
-  let name = line.slice(0, line.lastIndexOf(price)).trim();
-  name = name
-    .replace(/^[^\u4e00-\u9fffA-Za-z]+/, "")
-    .replace(/[^\u4e00-\u9fffA-Za-z0-9()（）\-\s]+$/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-
+  let name = cleanupDishName(line.slice(0, line.lastIndexOf(price)).trim());
   if (!name) return "";
   const cjk = (name.match(/[\u4e00-\u9fff]/g) || []).length;
   if (cjk === 0 && name.length < 3) return "";
+  if (cjk < 2 && /[A-Za-z]/.test(name)) return "";
   return `${name} ${price}`;
 }
 
@@ -71,8 +81,20 @@ function normalizeCategory(line: string) {
   return value;
 }
 
+function splitMergedMenuText(text: string) {
+  const normalized = cleanOcrLine(text)
+    .replace(/\b(主食|熱炒|湯類|湯品|炸物|飲料|海鮮|招牌|小菜|青菜|鵝肉|魚味|蛋香)\b/g, "\n$1\n")
+    .replace(/([\u4e00-\u9fffA-Za-z()（）\-\s]{2,18})\s*(\d{2,4})(?=\s|$)/g, (_, name, price) => `\n${String(name).trim()} ${price}\n`)
+    .replace(/\n{2,}/g, "\n");
+
+  return normalized
+    .split(/\n+/)
+    .map(cleanOcrLine)
+    .filter(Boolean);
+}
+
 export function parseRecognizedMenu(rawText: string) {
-  const lines = String(rawText || "")
+  const initialLines = String(rawText || "")
     .split(/\r?\n+/)
     .map(cleanOcrLine)
     .filter(Boolean)
@@ -80,7 +102,7 @@ export function parseRecognizedMenu(rawText: string) {
     .slice(0, 320);
 
   const restaurant =
-    lines.find((line) => {
+    initialLines.find((line) => {
       if (line.length < 2 || line.length > 24) return false;
       if (/\d/.test(line)) return false;
       if (PHONE_RE.test(line) || HOURS_RE.test(line) || ADDRESS_RE.test(line)) return false;
@@ -88,9 +110,13 @@ export function parseRecognizedMenu(rawText: string) {
       return /[\u4e00-\u9fff]/.test(line);
     }) || "";
 
-  const phone = lines.find((line) => PHONE_RE.test(line)) || "";
-  const hours = lines.find((line) => HOURS_RE.test(line) && !PHONE_RE.test(line)) || "";
-  const address = lines.find((line) => ADDRESS_RE.test(line) && !/\$|元/.test(line)) || "";
+  const phone = initialLines.find((line) => PHONE_RE.test(line)) || "";
+  const hours = initialLines.find((line) => HOURS_RE.test(line) && !PHONE_RE.test(line)) || "";
+  const address = initialLines.find((line) => ADDRESS_RE.test(line) && !/\$|元/.test(line)) || "";
+
+  const lines = splitMergedMenuText(String(rawText || ""))
+    .filter((line) => !isMostlyNoise(line))
+    .slice(0, 500);
 
   const result: string[] = [];
   let currentCategory = "";

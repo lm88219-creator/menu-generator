@@ -43,7 +43,7 @@ export function getExampleHomeFormState(): HomeFormState {
     theme: "warm",
     logoDataUrl: "",
     customSlug: "",
-    menu: `鵝肉\n鹽水鵝肉 200\n麻油鵝肉 220\n\n主食\n炒飯 80\n炒麵 80\n\n熱炒\n炒蝦球 200\n炒螺肉 120\n燙青菜 50`,
+    menu: `鵝肉\n鹽水鵝肉 200\n麻油鵝肉 220\n\n主食\n炒飯 80\n炒麵 80\n\n熱炒\n炒蝦球 200\n燙青菜 50`,
   };
 }
 

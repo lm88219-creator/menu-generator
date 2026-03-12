@@ -123,15 +123,24 @@ export function HomeFormCard({
         ))}
       </div>
 
+      <FieldBlock label="菜單圖片辨識">
+        <MenuImageUpload
+          currentTheme={currentTheme}
+          recognizing={recognizing}
+          recognitionNotice={recognitionNotice}
+          onRecognizeImage={onRecognizeImage}
+        />
+      </FieldBlock>
+
       <FieldBlock label="餐廳名稱">
         <input value={form.restaurant} onChange={(e) => onRestaurantChange(e.target.value)} style={inputStyle} placeholder="例如：友愛熱炒" />
       </FieldBlock>
 
       <FieldBlock label="菜單風格">
         <div style={{ position: "relative" }}>
-          <select value={form.theme} onChange={(e) => onThemeChange(e.target.value as ThemeType)} style={{ ...inputStyle, appearance: "none", cursor: "pointer", paddingRight: 52 }}>
+          <select value={form.theme} onChange={(e) => onThemeChange(e.target.value as ThemeType)} style={{ ...inputStyle, appearance: "none", cursor: "pointer", paddingRight: 52, color: currentTheme.text, background: currentTheme.inputBg }}>
             {themeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option key={option.value} value={option.value} style={{ color: currentTheme.text, background: currentTheme.cardBg }}>
                 {option.label}
               </option>
             ))}
@@ -176,15 +185,6 @@ export function HomeFormCard({
             ))}
           </div>
         </div>
-      </FieldBlock>
-
-      <FieldBlock label="菜單圖片辨識">
-        <MenuImageUpload
-          currentTheme={currentTheme}
-          recognizing={recognizing}
-          recognitionNotice={recognitionNotice}
-          onRecognizeImage={onRecognizeImage}
-        />
       </FieldBlock>
 
       <FieldBlock label="菜單內容">
