@@ -86,9 +86,10 @@ export function useHomeMenuBuilder() {
       const result = await worker.recognize(file);
       await worker.terminate();
 
-      const recognizedText = String(result?.data?.text ?? "").trim();
-      const recognizedWords = Array.isArray(result?.data?.words)
-        ? result.data.words.map((word: { text?: string; bbox?: { x0?: number; y0?: number; x1?: number; y1?: number }; confidence?: number }) => ({
+      const ocrData = (result?.data ?? {}) as { text?: string; words?: Array<{ text?: string; bbox?: { x0?: number; y0?: number; x1?: number; y1?: number }; confidence?: number }> };
+      const recognizedText = String(ocrData.text ?? "").trim();
+      const recognizedWords = Array.isArray(ocrData.words)
+        ? ocrData.words.map((word) => ({
             text: String(word?.text ?? ""),
             bbox: {
               x0: Number(word?.bbox?.x0 ?? 0),
