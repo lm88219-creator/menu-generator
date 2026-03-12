@@ -13,22 +13,39 @@ export type HomeFormState = {
   customSlug: string;
 };
 
+export type HomeRecognitionField = {
+  field: "restaurant" | "phone" | "address" | "hours";
+  label: string;
+  value: string;
+  filled: boolean;
+  selected: boolean;
+  applied: boolean;
+  confidence?: number;
+  status: "ready" | "review" | "missing";
+};
+
+export type HomeRecognitionItem = {
+  id: string;
+  name: string;
+  price: string;
+  category: string;
+  selected: boolean;
+  confidence?: number;
+  status: "ready" | "review" | "missing";
+};
+
 export type HomeRecognitionSummary = {
   fileName: string;
   previewUrl: string;
+  note: string;
+  sourceLabel: string;
   menuCount: number;
+  selectedMenuCount: number;
   confidenceAverage: number;
   confidenceLabel: string;
   warnings: string[];
-  fieldStatus: Array<{
-    field: string;
-    label: string;
-    value: string;
-    filled: boolean;
-    selected: boolean;
-    applied: boolean;
-    confidence?: number;
-  }>;
+  fieldStatus: HomeRecognitionField[];
+  menuItems: HomeRecognitionItem[];
 };
 
 export type HomeThemeOption = {
@@ -61,7 +78,7 @@ export function getExampleHomeFormState(): HomeFormState {
     theme: "warm",
     logoDataUrl: "",
     customSlug: "",
-    menu: `鵝肉\n鹽水鵝肉 200\n麻油鵝肉 220\n\n主食\n炒飯 80\n炒麵 80\n\n熱炒\n炒蝦球 200\n燙青菜 50`,
+    menu: `# 鵝肉\n鹽水鵝肉 200\n麻油鵝肉 220\n\n# 主食\n炒飯 80\n炒麵 80\n\n# 熱炒\n炒蝦球 200\n燙青菜 50`,
   };
 }
 

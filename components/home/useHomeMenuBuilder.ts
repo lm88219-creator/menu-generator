@@ -9,39 +9,36 @@ import {
   nextSlugFromRestaurant,
   sanitizeCustomSlug,
   type HomeFormState,
+  type HomeRecognitionItem,
   type HomeRecognitionSummary,
 } from "./home-utils";
 
-type RecognitionResponse = {
-  restaurant?: string;
-  phone?: string;
-  address?: string;
-  hours?: string;
-  menuText?: string;
+type VisionFieldStatus = {
+  field?: "restaurant" | "phone" | "address" | "hours";
+  label?: string;
+  value?: string;
+  filled?: boolean;
+  confidence?: number;
+  status?: "ready" | "review" | "missing";
+};
+
+type VisionItem = {
+  id?: string;
+  name?: string;
+  price?: string;
+  category?: string;
+  confidence?: number;
+  status?: "ready" | "review" | "missing";
+};
+
+type VisionResponse = {
   note?: string;
+  sourceLabel?: string;
   menuCount?: number;
   confidence?: { average?: number; label?: string };
   warnings?: string[];
-  fieldStatus?: Array<{
-    field?: string;
-    label?: string;
-    value?: string;
-    filled?: boolean;
-    confidence?: number;
-  }>;
-};
-
-type OcrWord = {
-  text?: string;
-  bbox?: { x0?: number; y0?: number; x1?: number; y1?: number };
-  confidence?: number;
-};
-
-type OcrResultLike = {
-  data?: {
-    text?: string;
-    words?: OcrWord[];
-  };
+  fieldStatus?: VisionFieldStatus[];
+  menuItems?: VisionItem[];
 };
 
 function loadImage(file: Blob) {
@@ -67,166 +64,74 @@ function makeCanvas(width: number, height: number) {
   return canvas;
 }
 
-function normalizeCanvasForOcr(source: HTMLCanvasElement) {
-  const canvas = makeCanvas(source.width, source.height);
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  if (!ctx) throw new Error("無法處理圖片");
-
-  ctx.drawImage(source, 0, 0);
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const data = imageData.data;
-
-  let min = 255;
-  let max = 0;
-  const histogram = new Array<number>(256).fill(0);
-
-  for (let i = 0; i < data.length; i += 4) {
-    const gray = Math.round(data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-    histogram[gray] += 1;
-    min = Math.min(min, gray);
-    max = Math.max(max, gray);
-  }
-
-  const total = canvas.width * canvas.height;
-  let running = 0;
-  let threshold = 160;
-  for (let i = 0; i < histogram.length; i += 1) {
-    running += histogram[i];
-    if (running / Math.max(total, 1) >= 0.62) {
-      threshold = i;
-      break;
-    }
-  }
-
-  const contrastRange = Math.max(1, max - min);
-  for (let i = 0; i < data.length; i += 4) {
-    const gray = Math.round(data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-    const normalized = Math.max(0, Math.min(255, ((gray - min) / contrastRange) * 255));
-    const boosted = normalized >= threshold ? 255 : normalized <= threshold - 36 ? 0 : Math.round(normalized * 1.08);
-    data[i] = boosted;
-    data[i + 1] = boosted;
-    data[i + 2] = boosted;
-  }
-
-  ctx.putImageData(imageData, 0, 0);
-  return canvas;
-}
-
-async function preprocessImageForOcr(file: File) {
+async function prepareImageForVision(file: File) {
   const image = await loadImage(file);
-  const maxWidth = 2800;
+  const maxWidth = 2200;
   const scale = Math.min(1, maxWidth / Math.max(image.width, 1));
   const width = Math.max(1, Math.round(image.width * scale));
   const height = Math.max(1, Math.round(image.height * scale));
+  const canvas = makeCanvas(width, height);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("無法處理圖片");
+  ctx.drawImage(image, 0, 0, width, height);
 
-  const baseCanvas = makeCanvas(width, height);
-  const baseCtx = baseCanvas.getContext("2d", { willReadFrequently: true });
-  if (!baseCtx) throw new Error("無法處理圖片");
-  baseCtx.drawImage(image, 0, 0, width, height);
-
-  const normalizedCanvas = normalizeCanvasForOcr(baseCanvas);
-  const processedBlob = await new Promise<Blob | null>((resolve) => normalizedCanvas.toBlob(resolve, "image/png", 1));
-  if (!processedBlob) throw new Error("圖片處理失敗");
-
-  return {
-    canvas: normalizedCanvas,
-    blob: processedBlob,
-    previewUrl: normalizedCanvas.toDataURL("image/jpeg", 0.92),
-  };
+  const imageDataUrl = canvas.toDataURL("image/jpeg", 0.92);
+  const previewUrl = imageDataUrl;
+  return { imageDataUrl, previewUrl };
 }
 
-async function canvasToBlob(canvas: HTMLCanvasElement) {
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png", 1));
-  if (!blob) throw new Error("切圖失敗");
-  return blob;
-}
+function buildMenuTextFromItems(items: HomeRecognitionItem[]) {
+  const selected = items
+    .filter((item) => item.selected && item.name.trim())
+    .map((item) => ({
+      category: item.category.trim() || "精選菜單",
+      name: item.name.trim(),
+      price: item.price.trim(),
+    }));
 
-async function buildOcrSlices(canvas: HTMLCanvasElement) {
-  const regions: Array<{ id: string; x: number; y: number; width: number; height: number; scale?: number }> = [
-    { id: "full", x: 0, y: 0, width: canvas.width, height: canvas.height },
-    { id: "header", x: 0, y: 0, width: canvas.width, height: Math.max(180, Math.round(canvas.height * 0.24)) },
-    { id: "body", x: 0, y: Math.round(canvas.height * 0.18), width: canvas.width, height: Math.max(220, Math.round(canvas.height * 0.82)) },
-  ];
+  if (!selected.length) return "";
 
-  if (canvas.width >= 720) {
-    const bodyY = Math.round(canvas.height * 0.18);
-    const bodyHeight = Math.max(220, canvas.height - bodyY);
-    const half = Math.max(180, Math.round(canvas.width / 2));
-    const quarterHeight = Math.max(180, Math.round(bodyHeight / 2));
-    regions.push(
-      { id: "left", x: 0, y: bodyY, width: half, height: bodyHeight, scale: 1.35 },
-      { id: "right", x: Math.max(0, canvas.width - half), y: bodyY, width: half, height: bodyHeight, scale: 1.35 },
-      { id: "left-top", x: 0, y: bodyY, width: half, height: quarterHeight, scale: 1.7 },
-      { id: "left-bottom", x: 0, y: Math.max(bodyY, canvas.height - quarterHeight), width: half, height: quarterHeight, scale: 1.7 },
-      { id: "right-top", x: Math.max(0, canvas.width - half), y: bodyY, width: half, height: quarterHeight, scale: 1.7 },
-      { id: "right-bottom", x: Math.max(0, canvas.width - half), y: Math.max(bodyY, canvas.height - quarterHeight), width: half, height: quarterHeight, scale: 1.7 },
-    );
-  } else {
-    const halfH = Math.max(180, Math.round(canvas.height / 2));
-    regions.push(
-      { id: "top", x: 0, y: 0, width: canvas.width, height: halfH, scale: 1.25 },
-      { id: "bottom", x: 0, y: Math.max(0, canvas.height - halfH), width: canvas.width, height: halfH, scale: 1.25 },
-    );
+  const groups = new Map<string, Array<{ name: string; price: string }>>();
+  for (const item of selected) {
+    const key = item.category;
+    const bucket = groups.get(key) ?? [];
+    bucket.push({ name: item.name, price: item.price });
+    groups.set(key, bucket);
   }
 
-  const unique = new Map<string, { blob: Blob; x: number; y: number }>();
-  for (const region of regions) {
-    const scaledWidth = Math.max(1, Math.round(region.width * (region.scale || 1)));
-    const scaledHeight = Math.max(1, Math.round(region.height * (region.scale || 1)));
-    const slice = makeCanvas(scaledWidth, scaledHeight);
-    const ctx = slice.getContext("2d", { willReadFrequently: true });
-    if (!ctx) continue;
-    ctx.drawImage(canvas, region.x, region.y, region.width, region.height, 0, 0, scaledWidth, scaledHeight);
-    const normalized = normalizeCanvasForOcr(slice);
-    unique.set(region.id, { blob: await canvasToBlob(normalized), x: region.x, y: region.y });
+  const lines: string[] = [];
+  for (const [category, groupItems] of groups.entries()) {
+    lines.push(`# ${category}`);
+    for (const item of groupItems) {
+      lines.push(item.price ? `${item.name} ${item.price}` : item.name);
+    }
+    lines.push("");
   }
 
-  return [...unique.values()];
-}
-
-function normalizeWords(words: OcrWord[] | undefined, offsetX = 0, offsetY = 0) {
-  return Array.isArray(words)
-    ? words.map((word) => ({
-        text: String(word?.text ?? ""),
-        bbox: {
-          x0: Number(word?.bbox?.x0 ?? 0) + offsetX,
-          y0: Number(word?.bbox?.y0 ?? 0) + offsetY,
-          x1: Number(word?.bbox?.x1 ?? 0) + offsetX,
-          y1: Number(word?.bbox?.y1 ?? 0) + offsetY,
-        },
-        confidence: Number(word?.confidence ?? 0),
-      }))
-    : [];
-}
-
-function dedupeWords(words: ReturnType<typeof normalizeWords>) {
-  const seen = new Set<string>();
-  return words.filter((word) => {
-    const key = `${word.text}|${Math.round(word.bbox.x0)}|${Math.round(word.bbox.y0)}|${Math.round(word.bbox.x1)}|${Math.round(word.bbox.y1)}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  return lines.join("\n").trim();
 }
 
 function applyRecognitionToForm(current: HomeFormState, summary: HomeRecognitionSummary) {
   const next = { ...current };
+
   for (const item of summary.fieldStatus) {
     if (!item.selected || !item.filled) continue;
     const value = item.value.trim();
     if (item.field === "restaurant" && value) {
       next.restaurant = value;
       next.customSlug = nextSlugFromRestaurant(value, current.customSlug);
-    } else if (item.field === "phone" && value) {
+    } else if (item.field === "phone") {
       next.phone = value;
-    } else if (item.field === "address" && value) {
+    } else if (item.field === "address") {
       next.address = value;
-    } else if (item.field === "hours" && value) {
+    } else if (item.field === "hours") {
       next.hours = value;
-    } else if (item.field === "menuText" && value) {
-      next.menu = value;
     }
   }
+
+  const menuText = buildMenuTextFromItems(summary.menuItems);
+  if (menuText) next.menu = menuText;
+
   return next;
 }
 
@@ -292,70 +197,64 @@ export function useHomeMenuBuilder() {
 
     setRecognizing(true);
     setRecognitionSummary(null);
-    setRecognitionNotice("正在整理圖片，先幫你做灰階、對比強化與去雜訊...");
+    setRecognitionNotice("正在整理圖片，準備送交 AI Vision 分析...");
 
     try {
-      const { canvas, previewUrl } = await preprocessImageForOcr(file);
-      setRecognitionNotice("圖片已優化，開始做整張 + 分區辨識，雙欄菜單會一起分析...");
+      const { imageDataUrl, previewUrl } = await prepareImageForVision(file);
+      setRecognitionNotice("AI 正在看懂菜單圖片內容，整理店家資訊與菜單草稿...");
 
-      const { createWorker } = await import("tesseract.js");
-      const worker = await createWorker("chi_tra+eng");
-      const slices = await buildOcrSlices(canvas);
-      let mergedText = "";
-      let mergedWords: ReturnType<typeof normalizeWords> = [];
-
-      for (let index = 0; index < slices.length; index += 1) {
-        const slice = slices[index];
-        setRecognitionNotice(`圖片已優化，正在辨識第 ${index + 1} / ${slices.length} 個區塊...`);
-        const result = (await worker.recognize(slice.blob)) as OcrResultLike;
-        mergedText += `\n${String(result?.data?.text ?? "").trim()}`;
-        mergedWords = mergedWords.concat(normalizeWords(result?.data?.words, slice.x, slice.y));
-      }
-      await worker.terminate();
-
-      const recognizedText = mergedText.trim();
-      const recognizedWords = dedupeWords(mergedWords);
-
-      if (!recognizedText && recognizedWords.length === 0) {
-        setRecognitionNotice("這張圖片沒有辨識到清楚文字，建議換一張更正面、字更清楚的菜單圖。");
-        return;
-      }
-
-      setRecognitionNotice("文字辨識完成，正在整理菜名、價格、分類與店家資訊...");
-      const res = await fetch("/api/menus/recognize", {
+      const res = await fetch("/api/menus/vision", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: recognizedText, words: recognizedWords, restaurant: form.restaurant }),
+        body: JSON.stringify({ imageDataUrl, restaurantHint: form.restaurant }),
       });
-      const data = (await res.json()) as RecognitionResponse & { error?: string };
+
+      const data = (await res.json()) as VisionResponse & { error?: string };
       if (!res.ok) {
-        alert(data?.error || "圖片辨識失敗");
+        alert(data?.error || "AI 辨識失敗");
         return;
       }
+
+      const menuItems = Array.isArray(data.menuItems)
+        ? data.menuItems.map((item, index) => ({
+            id: String(item?.id ?? `item-${index + 1}`),
+            name: String(item?.name ?? ""),
+            price: String(item?.price ?? ""),
+            category: String(item?.category ?? "精選菜單"),
+            selected: Boolean(item?.name),
+            confidence: Number(item?.confidence ?? data.confidence?.average ?? 0),
+            status: item?.status ?? "review",
+          }))
+        : [];
 
       setRecognitionSummary({
         fileName: file.name,
         previewUrl,
-        menuCount: Number(data.menuCount ?? 0),
+        note: String(data.note ?? "AI 已先整理出候選結果，請逐項確認後再匯入表單。"),
+        sourceLabel: String(data.sourceLabel ?? "AI Vision"),
+        menuCount: Number(data.menuCount ?? menuItems.length ?? 0),
+        selectedMenuCount: menuItems.filter((item) => item.selected && item.name.trim()).length,
         confidenceAverage: Number(data.confidence?.average ?? 0),
         confidenceLabel: String(data.confidence?.label ?? "未提供"),
         warnings: Array.isArray(data.warnings) ? data.warnings.map((item) => String(item)) : [],
         fieldStatus: Array.isArray(data.fieldStatus)
           ? data.fieldStatus.map((item, index) => ({
-              field: String(item?.field ?? `field-${index}`),
+              field: item?.field ?? (["restaurant", "phone", "address", "hours"][index] as "restaurant" | "phone" | "address" | "hours"),
               label: String(item?.label ?? `欄位 ${index + 1}`),
               value: String(item?.value ?? ""),
               filled: Boolean(item?.filled),
               selected: Boolean(item?.filled),
               applied: false,
               confidence: Number(item?.confidence ?? data.confidence?.average ?? 0),
+              status: item?.status ?? (item?.filled ? "review" : "missing"),
             }))
           : [],
+        menuItems,
       });
-      setRecognitionNotice(data.note || "辨識完成，請先勾選要套用的欄位，再套用到表單。");
+      setRecognitionNotice("AI 分析完成，現在可以先編輯候選結果，再勾選匯入。");
     } catch (error) {
       console.error(error);
-      setRecognitionNotice("圖片辨識失敗，請稍後再試或改用手動輸入。");
+      setRecognitionNotice("AI 辨識失敗，請稍後再試，或先手動輸入菜單。");
     } finally {
       setRecognizing(false);
     }
@@ -373,10 +272,99 @@ export function useHomeMenuBuilder() {
     });
   }
 
+  function updateRecognitionField(field: string, value: string) {
+    setRecognitionSummary((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        fieldStatus: current.fieldStatus.map((item) =>
+          item.field === field
+            ? {
+                ...item,
+                value,
+                filled: Boolean(value.trim()),
+                selected: value.trim() ? item.selected : false,
+                status: value.trim() ? "review" : "missing",
+              }
+            : item,
+        ),
+      };
+    });
+  }
+
+  function toggleRecognitionMenuItem(id: string) {
+    setRecognitionSummary((current) => {
+      if (!current) return current;
+      const nextItems = current.menuItems.map((item) =>
+        item.id === id && item.name.trim() ? { ...item, selected: !item.selected } : item,
+      );
+      return {
+        ...current,
+        menuItems: nextItems,
+        selectedMenuCount: nextItems.filter((item) => item.selected && item.name.trim()).length,
+      };
+    });
+  }
+
+  function updateRecognitionMenuItem(id: string, patch: Partial<HomeRecognitionItem>) {
+    setRecognitionSummary((current) => {
+      if (!current) return current;
+      const nextItems = current.menuItems.map((item) => {
+        if (item.id !== id) return item;
+        const next = { ...item, ...patch };
+        next.status = next.name.trim() ? next.status : "missing";
+        if (!next.name.trim()) next.selected = false;
+        return next;
+      });
+      return {
+        ...current,
+        menuItems: nextItems,
+        selectedMenuCount: nextItems.filter((item) => item.selected && item.name.trim()).length,
+      };
+    });
+  }
+
+  function deleteRecognitionMenuItem(id: string) {
+    setRecognitionSummary((current) => {
+      if (!current) return current;
+      const nextItems = current.menuItems.filter((item) => item.id !== id);
+      return {
+        ...current,
+        menuItems: nextItems,
+        menuCount: nextItems.length,
+        selectedMenuCount: nextItems.filter((item) => item.selected && item.name.trim()).length,
+      };
+    });
+  }
+
+  function addRecognitionMenuItem() {
+    setRecognitionSummary((current) => {
+      if (!current) return current;
+      const nextItems = [
+        ...current.menuItems,
+        {
+          id: `manual-${Date.now()}`,
+          name: "",
+          price: "",
+          category: current.menuItems[current.menuItems.length - 1]?.category || "精選菜單",
+          selected: false,
+          confidence: 0,
+          status: "review" as const,
+        },
+      ];
+      return {
+        ...current,
+        menuItems: nextItems,
+        menuCount: nextItems.length,
+      };
+    });
+  }
+
   function applySelectedRecognition() {
     if (!recognitionSummary) return;
-    const hasSelected = recognitionSummary.fieldStatus.some((item) => item.selected && item.filled);
-    if (!hasSelected) return;
+    const hasSelectedField = recognitionSummary.fieldStatus.some((item) => item.selected && item.filled);
+    const hasSelectedItems = recognitionSummary.menuItems.some((item) => item.selected && item.name.trim());
+    if (!hasSelectedField && !hasSelectedItems) return;
 
     setForm((current) => applyRecognitionToForm(current, recognitionSummary));
     setRecognitionSummary((current) => {
@@ -388,7 +376,7 @@ export function useHomeMenuBuilder() {
         ),
       };
     });
-    setRecognitionNotice("已將勾選欄位套用到表單，請再檢查一次後生成菜單。");
+    setRecognitionNotice("已把勾選的候選資料匯入表單，請再檢查一次後生成菜單。");
   }
 
   async function generateMenu() {
@@ -477,6 +465,11 @@ export function useHomeMenuBuilder() {
     generateMenu,
     recognizeMenuImage,
     toggleRecognitionField,
+    updateRecognitionField,
+    toggleRecognitionMenuItem,
+    updateRecognitionMenuItem,
+    deleteRecognitionMenuItem,
+    addRecognitionMenuItem,
     applySelectedRecognition,
     clearRecognition: () => {
       setRecognitionNotice("");

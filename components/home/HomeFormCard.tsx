@@ -30,6 +30,11 @@ export function HomeFormCard({
   onRecognizeImage,
   onClearRecognition,
   onToggleRecognitionField,
+  onUpdateRecognitionField,
+  onToggleRecognitionMenuItem,
+  onUpdateRecognitionMenuItem,
+  onDeleteRecognitionMenuItem,
+  onAddRecognitionMenuItem,
   onApplySelectedRecognition,
 }: {
   form: HomeFormState;
@@ -65,6 +70,11 @@ export function HomeFormCard({
   onRecognizeImage: (file: File | null | undefined) => Promise<void>;
   onClearRecognition: () => void;
   onToggleRecognitionField: (field: string) => void;
+  onUpdateRecognitionField: (field: string, value: string) => void;
+  onToggleRecognitionMenuItem: (id: string) => void;
+  onUpdateRecognitionMenuItem: (id: string, patch: { name?: string; price?: string; category?: string }) => void;
+  onDeleteRecognitionMenuItem: (id: string) => void;
+  onAddRecognitionMenuItem: () => void;
   onApplySelectedRecognition: () => void;
 }) {
   const selectedTheme = themeOptions.find((item) => item.value === form.theme) ?? themeOptions[0];
@@ -108,7 +118,7 @@ export function HomeFormCard({
           maxWidth: 640,
         }}
       >
-        先填店名、貼上菜單、挑好風格。現在也能先上傳菜單圖片，自動辨識後幫你把資料帶進表單。
+        先填店名、貼上菜單、挑好風格。現在也能先上傳菜單圖片，交給 AI Vision 理解內容後，整理成可確認的候選結果再匯入。
       </p>
 
       <div
@@ -120,9 +130,9 @@ export function HomeFormCard({
         }}
       >
         {[
-          ["先填基本資料", "店名、菜單、主題先完成就能生成"],
-          ["圖片先清晰化", "上傳後會先做對比強化，再開始辨識"],
-          ["辨識後先確認", "會顯示摘要，讓你逐項檢查再生成"],
+          ["先上傳菜單照", "AI 會先看懂圖片，再整理成候選資料"],
+          ["候選結果可編輯", "店名、電話、地址、營業時間都能先修正"],
+          ["菜單逐筆確認", "先預覽、勾選、刪除後，再匯入表單"],
         ].map(([title, desc]) => (
           <div key={title} style={{ padding: 14, borderRadius: 16, border: currentTheme.inputBorder, background: currentTheme.inputBg }}>
             <div style={{ fontWeight: 800, fontSize: 14 }}>{title}</div>
@@ -140,6 +150,11 @@ export function HomeFormCard({
           onRecognizeImage={onRecognizeImage}
           onClearRecognition={onClearRecognition}
           onToggleField={onToggleRecognitionField}
+          onUpdateField={onUpdateRecognitionField}
+          onToggleMenuItem={onToggleRecognitionMenuItem}
+          onUpdateMenuItem={onUpdateRecognitionMenuItem}
+          onDeleteMenuItem={onDeleteRecognitionMenuItem}
+          onAddMenuItem={onAddRecognitionMenuItem}
           onApplySelected={onApplySelectedRecognition}
         />
       </FieldBlock>
@@ -301,7 +316,7 @@ export function HomeFormCard({
 
       <div className="uu-home-helper-panel" style={{ color: currentTheme.subText }}>
         <strong style={{ color: currentTheme.text }}>建議流程</strong>
-        <span>先上傳菜單圖片辨識，再看辨識摘要是否有抓到店名、電話與菜單筆數，確認後再建立公開頁。</span>
+        <span>先上傳菜單圖片讓 AI 整理候選結果，再確認基本資料與菜單筆項，最後再建立公開頁。</span>
       </div>
 
       <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>

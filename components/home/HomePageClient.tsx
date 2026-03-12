@@ -30,6 +30,11 @@ export default function HomePageClient() {
     generateMenu,
     recognizeMenuImage,
     toggleRecognitionField,
+    updateRecognitionField,
+    toggleRecognitionMenuItem,
+    updateRecognitionMenuItem,
+    deleteRecognitionMenuItem,
+    addRecognitionMenuItem,
     applySelectedRecognition,
     clearRecognition,
     copyUrl,
@@ -98,6 +103,11 @@ export default function HomePageClient() {
             onRecognizeImage={recognizeMenuImage}
             onClearRecognition={clearRecognition}
             onToggleRecognitionField={toggleRecognitionField}
+            onUpdateRecognitionField={updateRecognitionField}
+            onToggleRecognitionMenuItem={toggleRecognitionMenuItem}
+            onUpdateRecognitionMenuItem={updateRecognitionMenuItem}
+            onDeleteRecognitionMenuItem={deleteRecognitionMenuItem}
+            onAddRecognitionMenuItem={addRecognitionMenuItem}
             onApplySelectedRecognition={applySelectedRecognition}
           />
 
