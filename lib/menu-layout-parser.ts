@@ -20,6 +20,7 @@ type Row = {
   text: string;
   x0: number;
   x1: number;
+  words?: NormalizedWord[];
 };
 
 type Column = {
@@ -122,11 +123,114 @@ function clusterRows(words: NormalizedWord[], tolerance = 18) {
       last.x0 = Math.min(last.x0, word.x0);
       last.x1 = Math.max(last.x1, word.x1);
       last.y = (last.y + word.yc) / 2;
+      last.words = [...(last.words || []), word].sort((a, b) => a.x0 - b.x0);
     } else {
-      rows.push({ y: word.yc, text: word.text, x0: word.x0, x1: word.x1 });
+      rows.push({ y: word.yc, text: word.text, x0: word.x0, x1: word.x1, words: [word] });
     }
   }
-  return rows.map((row) => ({ ...row, text: cleanWord(row.text) })).filter((row) => row.text);
+  return rows
+    .map((row) => ({
+      ...row,
+      text: cleanWord(row.text),
+      words: [...(row.words || [])].sort((a, b) => a.x0 - b.x0),
+    }))
+    .filter((row) => row.text);
+}
+
+
+
+type RowCell = {
+  text: string;
+  x0: number;
+  x1: number;
+};
+
+function splitRowIntoCells(row: Row) {
+  const words = [...(row.words || [])].sort((a, b) => a.x0 - b.x0);
+  if (!words.length) return [{ text: row.text, x0: row.x0, x1: row.x1 } satisfies RowCell];
+
+  const gaps: number[] = [];
+  for (let i = 1; i < words.length; i += 1) gaps.push(words[i].x0 - words[i - 1].x1);
+  const avgGap = gaps.length ? gaps.reduce((sum, gap) => sum + gap, 0) / gaps.length : 0;
+  const splitGap = Math.max(18, avgGap * 2.4);
+
+  const cells: RowCell[] = [];
+  let bucket: NormalizedWord[] = [];
+  for (let i = 0; i < words.length; i += 1) {
+    const word = words[i];
+    const prev = words[i - 1];
+    const gap = prev ? word.x0 - prev.x1 : 0;
+    if (bucket.length && gap > splitGap) {
+      cells.push({
+        text: cleanWord(bucket.map((item) => item.text).join(" ")),
+        x0: bucket[0].x0,
+        x1: bucket[bucket.length - 1].x1,
+      });
+      bucket = [];
+    }
+    bucket.push(word);
+  }
+  if (bucket.length) {
+    cells.push({
+      text: cleanWord(bucket.map((item) => item.text).join(" ")),
+      x0: bucket[0].x0,
+      x1: bucket[bucket.length - 1].x1,
+    });
+  }
+  return cells.filter((cell) => cell.text);
+}
+
+function parseRowsAsTable(menuWords: NormalizedWord[]) {
+  const rows = clusterRows(menuWords, 18);
+  const output: string[] = [];
+  let currentCategory = "";
+
+  for (const row of rows) {
+    const cells = splitRowIntoCells(row);
+    if (!cells.length) continue;
+
+    for (let i = 0; i < cells.length; i += 1) {
+      const current = cells[i]?.text || "";
+      const next = cells[i + 1]?.text || "";
+      const nextNext = cells[i + 2]?.text || "";
+      if (!current) continue;
+
+      const category = normalizeCategory(current);
+      if (category) {
+        if (output[output.length - 1] !== category) output.push(category);
+        currentCategory = category;
+        continue;
+      }
+
+      const normalized = normalizeMenuLine(current);
+      if (normalized) {
+        if (!currentCategory && !output.length) output.push("精選菜單");
+        output.push(normalized);
+        continue;
+      }
+
+      if (looksLikeDish(current) && /^\d{2,4}$/.test(next)) {
+        const joined = normalizeMenuLine(`${current} ${next}`);
+        if (joined) {
+          if (!currentCategory && !output.length) output.push("精選菜單");
+          output.push(joined);
+          i += 1;
+          continue;
+        }
+      }
+
+      if (looksLikeDish(current) && looksLikeDish(next) && /^\d{2,4}$/.test(nextNext)) {
+        const joined = normalizeMenuLine(`${current}${next} ${nextNext}`);
+        if (joined) {
+          if (!currentCategory && !output.length) output.push("精選菜單");
+          output.push(joined);
+          i += 2;
+        }
+      }
+    }
+  }
+
+  return output.filter((line, index) => output.indexOf(line) === index);
 }
 
 function buildColumns(words: NormalizedWord[]) {
@@ -252,8 +356,15 @@ export function parseOcrWordsToStructuredMenu(words: OcrWordBox[]) {
     .map((row) => row.text)
     .filter(Boolean);
 
+  const tableLines = parseRowsAsTable(menuWords);
   const columns = buildColumns(menuWords);
   const menuLines: string[] = [];
+
+  for (const line of tableLines) {
+    if (!line) continue;
+    const prev = menuLines[menuLines.length - 1];
+    if (prev !== line) menuLines.push(line);
+  }
   for (const column of columns) {
     for (const line of parseColumn(column)) {
       if (!line) continue;

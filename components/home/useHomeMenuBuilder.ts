@@ -114,7 +114,7 @@ function normalizeCanvasForOcr(source: HTMLCanvasElement) {
 
 async function preprocessImageForOcr(file: File) {
   const image = await loadImage(file);
-  const maxWidth = 2200;
+  const maxWidth = 2800;
   const scale = Math.min(1, maxWidth / Math.max(image.width, 1));
   const width = Math.max(1, Math.round(image.width * scale));
   const height = Math.max(1, Math.round(image.height * scale));
@@ -142,35 +142,43 @@ async function canvasToBlob(canvas: HTMLCanvasElement) {
 }
 
 async function buildOcrSlices(canvas: HTMLCanvasElement) {
-  const regions: Array<{ id: string; x: number; y: number; width: number; height: number }> = [
+  const regions: Array<{ id: string; x: number; y: number; width: number; height: number; scale?: number }> = [
     { id: "full", x: 0, y: 0, width: canvas.width, height: canvas.height },
-    { id: "header", x: 0, y: 0, width: canvas.width, height: Math.max(180, Math.round(canvas.height * 0.28)) },
+    { id: "header", x: 0, y: 0, width: canvas.width, height: Math.max(180, Math.round(canvas.height * 0.24)) },
+    { id: "body", x: 0, y: Math.round(canvas.height * 0.18), width: canvas.width, height: Math.max(220, Math.round(canvas.height * 0.82)) },
   ];
 
   if (canvas.width >= 720) {
-    const bodyY = Math.round(canvas.height * 0.2);
-    const bodyHeight = Math.max(200, canvas.height - bodyY);
-    const gutter = Math.max(12, Math.round(canvas.width * 0.03));
-    const half = Math.max(180, Math.round((canvas.width - gutter) / 2));
+    const bodyY = Math.round(canvas.height * 0.18);
+    const bodyHeight = Math.max(220, canvas.height - bodyY);
+    const half = Math.max(180, Math.round(canvas.width / 2));
+    const quarterHeight = Math.max(180, Math.round(bodyHeight / 2));
     regions.push(
-      { id: "left", x: 0, y: bodyY, width: half, height: bodyHeight },
-      { id: "right", x: Math.max(0, canvas.width - half), y: bodyY, width: half, height: bodyHeight },
+      { id: "left", x: 0, y: bodyY, width: half, height: bodyHeight, scale: 1.35 },
+      { id: "right", x: Math.max(0, canvas.width - half), y: bodyY, width: half, height: bodyHeight, scale: 1.35 },
+      { id: "left-top", x: 0, y: bodyY, width: half, height: quarterHeight, scale: 1.7 },
+      { id: "left-bottom", x: 0, y: Math.max(bodyY, canvas.height - quarterHeight), width: half, height: quarterHeight, scale: 1.7 },
+      { id: "right-top", x: Math.max(0, canvas.width - half), y: bodyY, width: half, height: quarterHeight, scale: 1.7 },
+      { id: "right-bottom", x: Math.max(0, canvas.width - half), y: Math.max(bodyY, canvas.height - quarterHeight), width: half, height: quarterHeight, scale: 1.7 },
     );
   } else {
     const halfH = Math.max(180, Math.round(canvas.height / 2));
     regions.push(
-      { id: "top", x: 0, y: 0, width: canvas.width, height: halfH },
-      { id: "bottom", x: 0, y: Math.max(0, canvas.height - halfH), width: canvas.width, height: halfH },
+      { id: "top", x: 0, y: 0, width: canvas.width, height: halfH, scale: 1.25 },
+      { id: "bottom", x: 0, y: Math.max(0, canvas.height - halfH), width: canvas.width, height: halfH, scale: 1.25 },
     );
   }
 
   const unique = new Map<string, { blob: Blob; x: number; y: number }>();
   for (const region of regions) {
-    const slice = makeCanvas(region.width, region.height);
-    const ctx = slice.getContext("2d");
+    const scaledWidth = Math.max(1, Math.round(region.width * (region.scale || 1)));
+    const scaledHeight = Math.max(1, Math.round(region.height * (region.scale || 1)));
+    const slice = makeCanvas(scaledWidth, scaledHeight);
+    const ctx = slice.getContext("2d", { willReadFrequently: true });
     if (!ctx) continue;
-    ctx.drawImage(canvas, region.x, region.y, region.width, region.height, 0, 0, region.width, region.height);
-    unique.set(region.id, { blob: await canvasToBlob(slice), x: region.x, y: region.y });
+    ctx.drawImage(canvas, region.x, region.y, region.width, region.height, 0, 0, scaledWidth, scaledHeight);
+    const normalized = normalizeCanvasForOcr(slice);
+    unique.set(region.id, { blob: await canvasToBlob(normalized), x: region.x, y: region.y });
   }
 
   return [...unique.values()];

@@ -388,21 +388,25 @@ function formatMenuDraft(lines: string[]) {
 
 function restaurantScore(line: string) {
   const cleaned = cleanOcrLine(line).replace(/\s+/g, "").trim();
-  if (!cleaned || cleaned.length < 2 || cleaned.length > 18) return -999;
+  if (!cleaned || cleaned.length < 3 || cleaned.length > 12) return -999;
+  if (/\d/.test(cleaned) || extractPrice(cleaned)) return -999;
+  if (normalizeCategory(cleaned)) return -999;
   if (looksLikePhone(cleaned) || looksLikeHours(cleaned) || looksLikeAddress(cleaned)) return -999;
   if (MENU_BLACKLIST_RE.test(cleaned)) return -999;
   const cjk = countCjk(cleaned);
   const letters = countLetters(cleaned);
-  if (cjk < 2 || letters > 0) return -999;
+  if (cjk < 3 || letters > 0) return -999;
   let score = cjk;
-  if (RESTAURANT_HINT_RE.test(cleaned)) score += 10;
-  if (/友愛|魚香|阿明|老|小|大/.test(cleaned)) score += 1;
+  if (RESTAURANT_HINT_RE.test(cleaned)) score += 12;
+  if (/友愛|魚香|阿明|老|小|大/.test(cleaned)) score += 2;
+  if (cleaned.length >= 4 && cleaned.length <= 8) score += 2;
   return score;
 }
 
 function detectRestaurantName(lines: string[]) {
-  const candidates = lines
-    .map((line) => ({ line: cleanOcrLine(line), score: restaurantScore(line) }))
+  const scoped = lines.slice(0, 12);
+  const candidates = scoped
+    .map((line, index) => ({ line: cleanOcrLine(line), score: restaurantScore(line) - index * 0.35 }))
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score);
   return candidates[0]?.line || "";
@@ -445,9 +449,14 @@ function removeMetadataLines(lines: string[], metadata: string[]) {
 export function parseRecognizedMenu(rawText: string, words?: OcrWordBox[]) {
   const structured = words?.length ? parseOcrWordsToStructuredMenu(words) : null;
 
+  const headerSeed = String(rawText || "")
+    .split(/\r?\n+/)
+    .map(cleanOcrLine)
+    .filter(Boolean)
+    .slice(0, 12);
   const seededRaw = [rawText, structured?.menuLines?.join("\n") || ""].filter(Boolean).join("\n");
   const initialLines = buildSmartLines(seededRaw);
-  const restaurant = structured?.restaurant || detectRestaurantName(initialLines);
+  const restaurant = structured?.restaurant || detectRestaurantName(headerSeed.length ? headerSeed : initialLines);
   const phone = structured?.phone ? normalizePhoneValue(structured.phone) : detectPhone(initialLines, seededRaw);
   const hours = structured?.hours || detectHours(initialLines, seededRaw);
   const address = structured?.address || detectAddress(initialLines, seededRaw);
